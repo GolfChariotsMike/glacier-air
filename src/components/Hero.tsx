@@ -12,8 +12,7 @@ export default function Hero() {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage:
-            "url('https://glacierair.com.au/wp-content/uploads/2022/10/for-WEB-152-High-St-Fremantle-19.jpeg')",
+          backgroundImage: "url('/hero-bg.jpg')",
         }}
       />
       {/* Gradient overlays */}
