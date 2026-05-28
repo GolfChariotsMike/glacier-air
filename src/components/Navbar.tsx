@@ -32,19 +32,13 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <a href="#home" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center group-hover:border-blue-400/50 transition-colors overflow-hidden">
-            <Image
-              src="https://glacierair.com.au/wp-content/uploads/2022/09/LOGO-white-transparent-glacierair.png"
-              alt="Glacier Air Logo"
-              width={36}
-              height={36}
-              className="object-contain"
-              unoptimized
-            />
-          </div>
-          <span className="font-semibold text-white text-lg tracking-tight">
-            Glacier<span className="text-blue-400">Air</span>
-          </span>
+          <Image
+            src="/glacier-air-logo.png"
+            alt="Glacier Air"
+            width={160}
+            height={32}
+            className="object-contain h-8 w-auto"
+          />
         </a>
 
         {/* Desktop nav */}

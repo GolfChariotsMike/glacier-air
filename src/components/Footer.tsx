@@ -13,19 +13,13 @@ export default function Footer() {
           {/* Brand */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center overflow-hidden">
-                <Image
-                  src="https://glacierair.com.au/wp-content/uploads/2022/09/LOGO-white-transparent-glacierair.png"
-                  alt="Glacier Air Logo"
-                  width={36}
-                  height={36}
-                  className="object-contain"
-                  unoptimized
-                />
-              </div>
-              <span className="font-semibold text-white text-lg">
-                Glacier<span className="text-blue-400">Air</span>
-              </span>
+              <Image
+                src="/glacier-air-logo.png"
+                alt="Glacier Air"
+                width={160}
+                height={32}
+                className="object-contain h-8 w-auto"
+              />
             </div>
             <p className="text-slate-400 text-sm leading-relaxed max-w-xs mb-4">
               Family-owned air conditioning, refrigeration and mechanical
