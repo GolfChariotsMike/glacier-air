@@ -15,7 +15,7 @@ const services = [
       "Service & repairs",
     ],
     image:
-      "https://glacierair.com.au/wp-content/uploads/2022/10/for-WEB-152-High-St-Fremantle-7.jpeg",
+      "/images/fremantle-7.webp",
   },
   {
     icon: Thermometer,
@@ -31,7 +31,7 @@ const services = [
       "Emergency breakdown response",
     ],
     image:
-      "https://glacierair.com.au/wp-content/uploads/2022/10/received_224653333086044.jpeg",
+      "/images/refrigeration.webp",
   },
   {
     icon: Wrench,
@@ -47,7 +47,7 @@ const services = [
       "Energy efficiency audits",
     ],
     image:
-      "https://glacierair.com.au/wp-content/uploads/2022/10/for-WEB-152-High-St-Fremantle-13.jpeg",
+      "/images/fremantle-13.webp",
   },
 ];
 

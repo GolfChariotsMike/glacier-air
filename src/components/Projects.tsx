@@ -3,10 +3,10 @@ const projects = [
     title: "Fremantle Office AC Fitout",
     category: "Commercial Air Conditioning",
     images: [
-      "https://glacierair.com.au/wp-content/uploads/2022/10/for-WEB-152-High-St-Fremantle-19.jpeg",
-      "https://glacierair.com.au/wp-content/uploads/2022/10/for-WEB-152-High-St-Fremantle-7.jpeg",
-      "https://glacierair.com.au/wp-content/uploads/2022/10/for-WEB-152-High-St-Fremantle-13.jpeg",
-      "https://glacierair.com.au/wp-content/uploads/2022/10/for-WEB-152-High-St-Fremantle-16.jpeg",
+      "/images/fremantle-19.webp",
+      "/images/fremantle-7.webp",
+      "/images/fremantle-13.webp",
+      "/images/fremantle-16.webp",
     ],
     description:
       "Full air conditioning fitout for a multi-tenancy commercial office in Fremantle. Design, supply and installation.",
@@ -16,10 +16,10 @@ const projects = [
     title: "Nikola Estate Barn AC",
     category: "Winery Refrigeration",
     images: [
-      "https://glacierair.com.au/wp-content/uploads/2022/10/received_224653333086044.jpeg",
-      "https://glacierair.com.au/wp-content/uploads/2022/10/received_319472319685046.jpeg",
-      "https://glacierair.com.au/wp-content/uploads/2022/10/received_1254918434986995.jpeg",
-      "https://glacierair.com.au/wp-content/uploads/2022/10/319472319685046-2.jpeg",
+      "/images/refrigeration.webp",
+      "/images/about-1.webp",
+      "/images/about-2.webp",
+      "/images/nikola-estate.webp",
     ],
     description:
       "Specialised winery barn refrigeration and air conditioning for Nikola Estate in the Great Southern region.",

@@ -19,7 +19,7 @@ export default function About() {
               <div className="rounded-2xl overflow-hidden h-64 col-span-2">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="https://glacierair.com.au/wp-content/uploads/2022/10/for-WEB-152-High-St-Fremantle-16.jpeg"
+                  src="/images/fremantle-16.webp"
                   alt="Glacier Air team at work"
                   className="w-full h-full object-cover"
                 />
@@ -27,7 +27,7 @@ export default function About() {
               <div className="rounded-2xl overflow-hidden h-44">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="https://glacierair.com.au/wp-content/uploads/2022/10/received_319472319685046.jpeg"
+                  src="/images/about-1.webp"
                   alt="Refrigeration installation"
                   className="w-full h-full object-cover"
                 />
@@ -35,7 +35,7 @@ export default function About() {
               <div className="rounded-2xl overflow-hidden h-44">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="https://glacierair.com.au/wp-content/uploads/2022/10/received_1254918434986995.jpeg"
+                  src="/images/about-2.webp"
                   alt="AC installation"
                   className="w-full h-full object-cover"
                 />
