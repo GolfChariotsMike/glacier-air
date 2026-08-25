@@ -1,3 +1,6 @@
+"use client";
+import { useEffect, useRef } from "react";
+
 const projects = [
   {
     title: "Fremantle Office AC Fitout",
@@ -28,11 +31,27 @@ const projects = [
 ];
 
 export default function Projects() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) e.target.classList.add("visible");
+        });
+      },
+      { threshold: 0.1 }
+    );
+    const els = sectionRef.current?.querySelectorAll(".reveal");
+    els?.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section id="projects" className="py-24 bg-[#0a0f1e]">
+    <section id="projects" className="py-24 bg-[#0a0f1e]" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-16 reveal">
           <p className="text-blue-400 text-sm font-semibold uppercase tracking-widest mb-3">
             Our Work
           </p>
@@ -44,28 +63,26 @@ export default function Projects() {
           </p>
         </div>
 
-        <div className="space-y-12">
+        <div className="space-y-20">
           {projects.map((project, pi) => (
             <div
               key={project.title}
-              className={`grid lg:grid-cols-2 gap-8 items-center ${
-                pi % 2 === 1 ? "lg:flex-row-reverse" : ""
-              }`}
+              className={`reveal grid lg:grid-cols-2 gap-10 items-center`}
             >
               {/* Image grid */}
               <div className={`grid grid-cols-2 gap-3 ${pi % 2 === 1 ? "lg:order-2" : ""}`}>
                 {project.images.slice(0, 4).map((img, i) => (
                   <div
                     key={img}
-                    className={`rounded-xl overflow-hidden ${
-                      i === 0 && project.featured ? "col-span-2 h-52" : "h-36"
+                    className={`rounded-2xl overflow-hidden img-zoom ring-1 ring-white/5 ${
+                      i === 0 && project.featured ? "col-span-2 h-56" : "h-36"
                     }`}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={img}
                       alt={`${project.title} ${i + 1}`}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover"
                     />
                   </div>
                 ))}
@@ -84,9 +101,10 @@ export default function Projects() {
                 </p>
                 <a
                   href="#contact"
-                  className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-blue-500/30 text-blue-400 hover:bg-blue-500/10 font-semibold transition-all duration-300 hover:border-blue-400/50 group"
                 >
-                  Enquire about a similar project →
+                  Enquire about a similar project
+                  <span className="transition-transform group-hover:translate-x-1">→</span>
                 </a>
               </div>
             </div>

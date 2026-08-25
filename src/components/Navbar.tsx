@@ -23,9 +23,9 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
-          ? "bg-[#0a0f1e]/95 backdrop-blur-md shadow-lg shadow-blue-950/20"
+          ? "bg-[#0a0f1e]/90 backdrop-blur-xl shadow-lg shadow-blue-950/30 border-b border-white/5"
           : "bg-transparent"
       }`}
     >
@@ -37,7 +37,7 @@ export default function Navbar() {
             alt="Glacier Air"
             width={160}
             height={32}
-            className="object-contain h-8 w-auto"
+            className="object-contain h-8 w-auto transition-opacity group-hover:opacity-90"
           />
         </a>
 
@@ -47,7 +47,7 @@ export default function Navbar() {
             <a
               key={l.label}
               href={l.href}
-              className="text-sm text-slate-300 hover:text-white transition-colors font-medium"
+              className="nav-link text-sm text-slate-300 hover:text-white transition-colors duration-200 font-medium py-1"
             >
               {l.label}
             </a>
@@ -58,14 +58,14 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-4">
           <a
             href="tel:0892423111"
-            className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 font-medium"
+            className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors"
           >
             <Phone className="w-4 h-4" />
             (08) 9242 3111
           </a>
           <a
             href="#contact"
-            className="px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-400 text-white text-sm font-semibold transition-colors"
+            className="px-5 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-sm font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5"
           >
             Get a Quote
           </a>
@@ -73,26 +73,32 @@ export default function Navbar() {
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden text-white"
+          className="md:hidden text-white p-1 rounded-lg hover:bg-white/5 transition-colors"
           onClick={() => setOpen(!open)}
+          aria-label="Toggle menu"
         >
           {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 
       {/* Mobile menu */}
-      {open && (
-        <div className="md:hidden bg-[#0d1428] border-t border-white/5 px-6 py-4 flex flex-col gap-4">
+      <div
+        className={`md:hidden overflow-hidden transition-all duration-300 ${
+          open ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="bg-[#0d1428]/95 backdrop-blur-xl border-t border-white/5 px-6 py-4 flex flex-col gap-4">
           {navLinks.map((l) => (
             <a
               key={l.label}
               href={l.href}
-              className="text-slate-300 hover:text-white font-medium"
+              className="text-slate-300 hover:text-white font-medium transition-colors py-1"
               onClick={() => setOpen(false)}
             >
               {l.label}
             </a>
           ))}
+          <div className="h-px bg-white/5 my-1" />
           <a
             href="tel:0892423111"
             className="text-blue-400 font-medium flex items-center gap-2"
@@ -101,13 +107,13 @@ export default function Navbar() {
           </a>
           <a
             href="#contact"
-            className="px-4 py-2 rounded-lg bg-blue-500 text-white text-center font-semibold"
+            className="px-4 py-3 rounded-xl bg-blue-500 text-white text-center font-semibold hover:bg-blue-400 transition-colors"
             onClick={() => setOpen(false)}
           >
             Get a Quote
           </a>
         </div>
-      )}
+      </div>
     </nav>
   );
 }
