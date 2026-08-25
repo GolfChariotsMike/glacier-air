@@ -16,7 +16,7 @@ function useTypewriter(words: string[]) {
 
     const timeout = setTimeout(() => {
       if (!isDeleting && text === current) {
-        setTimeout(() => setIsDeleting(true), 1800);
+        setTimeout(() => setIsDeleting(true), 800);
         return;
       }
       if (isDeleting && text === "") {
@@ -46,8 +46,9 @@ export default function Hero() {
 
     let animId: number;
     const resize = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
+      const section = canvas.parentElement;
+      canvas.width = section ? section.offsetWidth : window.innerWidth;
+      canvas.height = section ? section.offsetHeight : window.innerHeight;
     };
     resize();
     window.addEventListener("resize", resize);
