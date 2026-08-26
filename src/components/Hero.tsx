@@ -9,33 +9,41 @@ function useTypewriter(words: string[]) {
   const [text, setText] = useState("");
   const [wordIndex, setWordIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [done, setDone] = useState(false);
 
   useEffect(() => {
-    const current = words[wordIndex % words.length];
+    if (done) return;
+
+    const current = words[wordIndex];
     const speed = isDeleting ? 40 : 70;
 
     const timeout = setTimeout(() => {
+      // Finished typing the last word — stop
+      if (!isDeleting && text === current && wordIndex === words.length - 1) {
+        setDone(true);
+        return;
+      }
       if (!isDeleting && text === current) {
         setTimeout(() => setIsDeleting(true), 800);
         return;
       }
       if (isDeleting && text === "") {
         setIsDeleting(false);
-        setWordIndex((i) => (i + 1) % words.length);
+        setWordIndex((i) => i + 1);
         return;
       }
       setText(isDeleting ? current.slice(0, text.length - 1) : current.slice(0, text.length + 1));
     }, speed);
 
     return () => clearTimeout(timeout);
-  }, [text, isDeleting, wordIndex, words]);
+  }, [text, isDeleting, wordIndex, words, done]);
 
-  return text;
+  return { text, done };
 }
 
 export default function Hero() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const typedText = useTypewriter(typewriterWords);
+  const { text: typedText, done: typewriterDone } = useTypewriter(typewriterWords);
 
   // Floating particles
   useEffect(() => {
@@ -128,7 +136,7 @@ export default function Hero() {
           {/* Typewriter line — nowrap prevents layout shift on long words */}
           <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 min-h-[1.2em] whitespace-nowrap">
             <span className="gradient-text">{typedText}</span>
-            <span className="cursor" />
+            {!typewriterDone && <span className="cursor" />}
           </div>
 
           <p className="text-lg md:text-xl text-slate-300 mb-8 leading-relaxed max-w-xl">
