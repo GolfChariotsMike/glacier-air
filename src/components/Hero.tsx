@@ -125,8 +125,8 @@ export default function Hero() {
             Experts in
           </h1>
 
-          {/* Typewriter line */}
-          <div className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 min-h-[1.2em]">
+          {/* Typewriter line — nowrap prevents layout shift on long words */}
+          <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 min-h-[1.2em] whitespace-nowrap">
             <span className="gradient-text">{typedText}</span>
             <span className="cursor" />
           </div>
