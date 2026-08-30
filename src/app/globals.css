@@ -179,11 +179,6 @@ body {
     animation: none;
     transform: scale(1.08) translate3d(0, 0, 0);
   }
-  @media (min-width: 768px) {
-    .hero-kenburns {
-      transform: translate3d(28%, 0, 0) scale(1.1);
-    }
-  }
   .badge-shimmer,
   .cursor {
     animation: none;
@@ -199,5 +194,10 @@ body {
   }
   .glow-card:hover {
     transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) and (min-width: 768px) {
+  .hero-kenburns {
+    transform: translate3d(28%, 0, 0) scale(1.1);
   }
 }
