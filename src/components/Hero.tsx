@@ -69,19 +69,23 @@ export default function Hero() {
     window.addEventListener("resize", resize);
 
     const count = 55;
-    const flakes = Array.from({ length: count }, () => ({
-      x: Math.random() * viewW,
-      y: Math.random() * viewH,
-      // Large enough for 6-fold arms to read; still a light overlay
-      r: Math.random() * 4.2 + 2.4,
-      speed: Math.random() * 0.35 + 0.1,
-      opacity: Math.random() * 0.4 + 0.1,
-      drift: (Math.random() - 0.5) * 0.18,
-      sway: Math.random() * 0.35 + 0.15,
-      phase: Math.random() * Math.PI * 2,
-      spin: Math.random() * Math.PI * 2,
-      spinSpeed: (Math.random() - 0.5) * 0.012,
-    }));
+    const flakes = Array.from({ length: count }, (_, i) => {
+      // A few nearer flakes carry the snowflake silhouette; the rest stay small
+      const near = i < 18;
+      return {
+        x: Math.random() * viewW,
+        y: Math.random() * viewH,
+        r: near ? Math.random() * 6 + 10 : Math.random() * 3.5 + 5,
+        speed: Math.random() * 0.35 + 0.1,
+        opacity: near ? Math.random() * 0.22 + 0.38 : Math.random() * 0.25 + 0.2,
+        drift: (Math.random() - 0.5) * 0.18,
+        sway: Math.random() * 0.35 + 0.15,
+        phase: Math.random() * Math.PI * 2,
+        spin: Math.random() * Math.PI * 2,
+        spinSpeed: (Math.random() - 0.5) * 0.012,
+        branched: near,
+      };
+    });
 
     const drawSnowflake = (
       x: number,
@@ -89,13 +93,14 @@ export default function Hero() {
       size: number,
       rotation: number,
       opacity: number,
+      branched: boolean,
     ) => {
       ctx.save();
       ctx.translate(x, y);
       ctx.rotate(rotation);
       ctx.strokeStyle = `rgba(147, 197, 253, ${opacity})`;
       ctx.fillStyle = `rgba(147, 197, 253, ${opacity})`;
-      ctx.lineWidth = Math.max(0.7, size * 0.14);
+      ctx.lineWidth = branched ? Math.max(1.2, size * 0.13) : Math.max(0.9, size * 0.16);
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
 
@@ -106,27 +111,32 @@ export default function Hero() {
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.lineTo(0, -size);
-        // Side prongs so it reads as a flake, not a plus sign
-        const mid = -size * 0.52;
-        const prong = size * 0.38;
-        ctx.moveTo(0, mid);
-        ctx.lineTo(-prong, mid - prong * 0.55);
-        ctx.moveTo(0, mid);
-        ctx.lineTo(prong, mid - prong * 0.55);
-        if (size > 4.4) {
-          const inner = -size * 0.28;
-          const innerLen = size * 0.2;
-          ctx.moveTo(0, inner);
-          ctx.lineTo(-innerLen, inner - innerLen * 0.45);
-          ctx.moveTo(0, inner);
-          ctx.lineTo(innerLen, inner - innerLen * 0.45);
+        if (branched) {
+          // Classic dendrite: V-prongs at two stations along each arm
+          const stations = [
+            { y: -size * 0.42, len: size * 0.34 },
+            { y: -size * 0.7, len: size * 0.26 },
+          ];
+          for (const s of stations) {
+            ctx.moveTo(0, s.y);
+            ctx.lineTo(-s.len, s.y - s.len * 0.55);
+            ctx.moveTo(0, s.y);
+            ctx.lineTo(s.len, s.y - s.len * 0.55);
+          }
+        } else {
+          const mid = -size * 0.58;
+          const prong = size * 0.32;
+          ctx.moveTo(0, mid);
+          ctx.lineTo(-prong, mid - prong * 0.5);
+          ctx.moveTo(0, mid);
+          ctx.lineTo(prong, mid - prong * 0.5);
         }
         ctx.stroke();
         ctx.restore();
       }
 
       ctx.beginPath();
-      ctx.arc(0, 0, Math.max(0.5, size * 0.1), 0, Math.PI * 2);
+      ctx.arc(0, 0, Math.max(0.7, size * 0.12), 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
     };
@@ -134,7 +144,7 @@ export default function Hero() {
     const draw = () => {
       ctx.clearRect(0, 0, viewW, viewH);
       flakes.forEach((p) => {
-        drawSnowflake(p.x, p.y, p.r, p.spin, p.opacity);
+        drawSnowflake(p.x, p.y, p.r, p.spin, p.opacity, p.branched);
         p.y += p.speed;
         p.phase += 0.012;
         p.x += p.drift + Math.sin(p.phase) * p.sway * 0.35;
