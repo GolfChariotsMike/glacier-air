@@ -1,13 +1,7 @@
 import { NextResponse } from "next/server";
+import { ENQUIRY_TYPE_VALUES } from "@/lib/enquiry-types";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const ENQUIRY_TYPES = [
-  "Air Conditioning",
-  "Refrigeration",
-  "Mechanical Services",
-  "Service & Maintenance",
-  "Other",
-] as const;
 
 type Enquiry = {
   name: string;
@@ -52,7 +46,7 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
-  if (!(ENQUIRY_TYPES as readonly string[]).includes(enquiry.type)) {
+  if (!(ENQUIRY_TYPE_VALUES as readonly string[]).includes(enquiry.type)) {
     return NextResponse.json(
       { ok: false, error: "Please choose an enquiry type." },
       { status: 400 }

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { ArrowRight, CheckCircle2, Phone } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 
 const badges = ["ARC Licence AU18839", "AIRAH Member", "HIA Member", "Family Owned"];
 const typewriterWords = [
@@ -8,6 +8,24 @@ const typewriterWords = [
   "Refrigeration",
   "Mechanical Services",
   "HVAC Design",
+];
+
+const serviceTiles = [
+  {
+    title: "Air Conditioning",
+    href: "#air-conditioning",
+    image: "/images/tile-air-conditioning.jpg",
+  },
+  {
+    title: "Refrigeration",
+    href: "#refrigeration",
+    image: "/images/tile-refrigeration.jpg",
+  },
+  {
+    title: "Mechanical Services",
+    href: "#mechanical-services",
+    image: "/images/tile-mechanical.jpg",
+  },
 ];
 
 function usePrefersReducedMotion() {
@@ -65,7 +83,7 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="relative min-h-screen flex items-center overflow-hidden"
+      className="relative min-h-screen flex flex-col"
     >
       <div className="absolute inset-0 overflow-hidden">
         <div
@@ -74,9 +92,9 @@ export default function Hero() {
         />
       </div>
       <div className="absolute inset-0 bg-gradient-to-r from-[#050a18]/80 via-[#050a18]/50 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f1e]/70 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#050a18]/80 via-transparent to-transparent" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-20">
+      <div className="relative z-10 flex-1 flex items-center max-w-7xl mx-auto w-full px-6 pt-24 pb-8">
         <div className="max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full badge-shimmer border border-blue-500/25 text-blue-300 text-sm font-medium mb-6">
             <span className="w-2 h-2 rounded-full bg-[#E01F26] animate-pulse motion-reduce:animate-none" />
@@ -113,7 +131,7 @@ export default function Hero() {
             ))}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 mb-12">
+          <div className="flex flex-col sm:flex-row gap-4 mb-8">
             <a
               href="#contact"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-semibold text-lg transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
@@ -139,20 +157,31 @@ export default function Hero() {
         </div>
       </div>
 
-      <a
-        href="tel:0892423111"
-        className="absolute bottom-8 right-6 hidden lg:flex items-center gap-3 glass-panel rounded-2xl px-5 py-4 hover:border-[#E01F26]/25 transition-all duration-300 group hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-950/40 motion-reduce:transition-none motion-reduce:hover:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E01F26]/80"
-      >
-        <div className="w-10 h-10 rounded-xl bg-[#E01F26]/15 flex items-center justify-center">
-          <Phone className="w-5 h-5 text-[#E01F26]" />
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 pb-8 md:-mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-stretch">
+          {serviceTiles.map((tile) => (
+            <a
+              key={tile.title}
+              href={tile.href}
+              className="group relative min-w-0 h-44 md:h-48 overflow-hidden rounded-2xl ring-1 ring-white/15"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={tile.image}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050a18]/90 via-[#050a18]/35 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-5">
+                <p className="text-white font-semibold text-lg leading-tight">{tile.title}</p>
+                <span className="mt-1 inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-widest text-blue-300">
+                  Learn more <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+                </span>
+              </div>
+            </a>
+          ))}
         </div>
-        <div>
-          <p className="text-xs text-slate-400 mb-0.5">Call us today</p>
-          <p className="text-white font-semibold group-hover:text-blue-400 transition-colors">
-            (08) 9242 3111
-          </p>
-        </div>
-      </a>
+      </div>
     </section>
   );
 }

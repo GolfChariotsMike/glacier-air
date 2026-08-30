@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Phone, Mail, MapPin, Send } from "lucide-react";
+import { ENQUIRY_TYPES } from "@/lib/enquiry-types";
 
 const fieldClass =
   "w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-colors text-sm";
@@ -267,11 +268,11 @@ export default function Contact() {
                     className={fieldClass}
                   >
                     <option value="" disabled className="bg-[#0d1428]">Select enquiry type</option>
-                    <option value="Air Conditioning" className="bg-[#0d1428]">Air Conditioning</option>
-                    <option value="Refrigeration" className="bg-[#0d1428]">Refrigeration</option>
-                    <option value="Mechanical Services" className="bg-[#0d1428]">Mechanical Services</option>
-                    <option value="Service & Maintenance" className="bg-[#0d1428]">Service & Maintenance</option>
-                    <option value="Other" className="bg-[#0d1428]">Other</option>
+                    {ENQUIRY_TYPES.map((t) => (
+                      <option key={t.value} value={t.value} className="bg-[#0d1428]">
+                        {t.label}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>

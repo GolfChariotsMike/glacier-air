@@ -1,7 +1,7 @@
 "use client";
 import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
 
-const projects = [
+const featured = [
   {
     title: "Fremantle Office AC Fitout",
     category: "Commercial Air Conditioning",
@@ -13,7 +13,6 @@ const projects = [
     ],
     description:
       "Full air conditioning fitout for a multi-tenancy commercial office in Fremantle. Design, supply and installation.",
-    featured: true,
   },
   {
     title: "Nikola Estate Barn AC",
@@ -26,8 +25,17 @@ const projects = [
     ],
     description:
       "Specialised winery barn refrigeration and air conditioning for Nikola Estate in the Great Southern region.",
-    featured: false,
   },
+];
+
+const moreProjects = [
+  { title: "Daiwa Foods Cold Storage", image: "/images/refrigeration.webp" },
+  { title: "Henley Park Wines chiller upgrade", image: "/images/nikola-estate.webp" },
+  { title: "New West Foods Cold Storage", image: "/images/about-1.webp" },
+  { title: "Primero HVAC installation, Pilbara", image: "/images/fremantle-13.webp" },
+  { title: "Shelf Subsea Dive Chiller Overhaul", image: "/images/about-2.webp" },
+  { title: "West Cape Howe winery chiller upgrade", image: "/images/tile-refrigeration.jpg" },
+  { title: "Windsor Cinema AC upgrade", image: "/images/fremantle-7.webp" },
 ];
 
 export default function Projects() {
@@ -36,7 +44,6 @@ export default function Projects() {
   return (
     <section id="projects" className="py-24 bg-[#0a0f1e]" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-6">
-        {/* Header */}
         <div className="text-center mb-16 reveal">
           <p className="text-blue-400 text-sm font-semibold uppercase tracking-widest mb-3">
             Our Work
@@ -45,36 +52,34 @@ export default function Projects() {
             Recent Projects
           </h2>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            A snapshot of our recent installations across Perth and regional WA.
+            Air conditioning and commercial refrigeration jobs across Perth, the SouthWest and the Great Southern.
           </p>
         </div>
 
         <div className="space-y-20">
-          {projects.map((project, pi) => (
+          {featured.map((project, pi) => (
             <div
               key={project.title}
               className={`reveal reveal-delay-${pi + 1} grid lg:grid-cols-2 gap-10 items-center`}
             >
-              {/* Image grid */}
               <div className={`grid grid-cols-2 gap-3 ${pi % 2 === 1 ? "lg:order-2" : ""}`}>
                 {project.images.slice(0, 4).map((img, i) => (
                   <div
                     key={img}
                     className={`rounded-2xl overflow-hidden img-zoom ring-1 ring-white/5 ${
-                      i === 0 && project.featured ? "col-span-2 h-56" : "h-36"
+                      i === 0 ? "col-span-2 h-56" : "h-36"
                     }`}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={img}
-                      alt={`${project.title} ${i + 1}`}
+                      alt=""
                       className="w-full h-full object-cover"
                     />
                   </div>
                 ))}
               </div>
 
-              {/* Content */}
               <div className={pi % 2 === 1 ? "lg:order-1" : ""}>
                 <span className="inline-block px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold uppercase tracking-wide mb-4">
                   {project.category}
@@ -95,6 +100,27 @@ export default function Projects() {
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="mt-20 reveal">
+          <h3 className="text-xl font-semibold text-white mb-2">More projects</h3>
+          <p className="text-slate-500 text-sm mb-8">
+            Names from completed jobs. Photos are from our WA installs, not unique shots of each site.
+          </p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {moreProjects.map((p) => (
+              <div
+                key={p.title}
+                className="rounded-2xl overflow-hidden ring-1 ring-white/5 bg-white/[0.02]"
+              >
+                <div className="h-28 overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.image} alt="" className="w-full h-full object-cover opacity-80" />
+                </div>
+                <p className="px-4 py-3 text-sm font-medium text-slate-200">{p.title}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

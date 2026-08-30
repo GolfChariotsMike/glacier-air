@@ -163,6 +163,27 @@ body {
   transform: scale(1.07);
 }
 
+/* ── Client logo marquee ── */
+@keyframes client-marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.client-marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+.client-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: client-marquee 42s linear infinite;
+}
+.client-marquee:hover .client-marquee-track {
+  animation-play-state: paused;
+}
+.client-marquee-dup {
+  display: flex;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -170,6 +191,24 @@ body {
   .hero-kenburns {
     animation: none;
     transform: none;
+  }
+  .client-marquee-track {
+    animation: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    row-gap: 1.5rem;
+  }
+  .client-marquee-track > .flex {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
+  .client-marquee-dup {
+    display: none;
+  }
+  .client-marquee {
+    mask-image: none;
   }
   .badge-shimmer,
   .cursor {

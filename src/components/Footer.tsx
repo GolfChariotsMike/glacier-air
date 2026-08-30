@@ -2,9 +2,9 @@ import Image from "next/image";
 
 const links = {
   Services: [
-    { label: "Air Conditioning", href: "#services" },
-    { label: "Refrigeration", href: "#services" },
-    { label: "Mechanical Services", href: "#services" },
+    { label: "Air Conditioning", href: "#air-conditioning" },
+    { label: "Refrigeration", href: "#refrigeration" },
+    { label: "Mechanical Services", href: "#mechanical-services" },
     { label: "Maintenance", href: "#services" },
   ],
   Company: [

@@ -1,52 +1,51 @@
 "use client";
-import { Wind, Thermometer, Wrench, ChevronRight } from "lucide-react";
+import { Wind, Thermometer, Wrench, ChevronRight, ShieldCheck } from "lucide-react";
 import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
 
 const services = [
   {
+    id: "air-conditioning",
     icon: Wind,
     title: "Air Conditioning",
     color: "blue",
     description:
-      "Residential and commercial air conditioning solutions across Perth and WA. Split systems, ducted, multi-head — we do it all.",
+      "Residential and commercial air conditioning as distinct jobs — design, install, service and maintain for homes and workplaces separately.",
     features: [
-      "Split system supply & install",
-      "Ducted AC systems",
-      "Multi-head/VRF systems",
-      "Preventive maintenance",
-      "Service & repairs",
+      "Residential air conditioning — design, installation, service and maintenance",
+      "Commercial air conditioning — design, installation, service and maintenance",
+      "Panasonic authorised warranty agent and repairer",
+      "Hire air conditioning solutions",
     ],
-    image: "/images/fremantle-7.webp",
+    image: "/images/tile-air-conditioning.jpg",
   },
   {
+    id: "refrigeration",
     icon: Thermometer,
     title: "Refrigeration",
     color: "cyan",
     description:
-      "Commercial and industrial refrigeration including winery systems. Temperature-critical environments done right.",
+      "Temperature-critical plant for hospitality, food storage and wine — from cool rooms to glycol and ammonia systems.",
     features: [
-      "Commercial cool rooms",
-      "Winery refrigeration systems",
-      "Industrial freezer rooms",
-      "Display cabinet installs",
-      "Emergency breakdown response",
+      "Commercial refrigeration — design, installation, service and maintenance",
+      "Winery glycol refrigeration — design, installation, service and maintenance",
+      "Ammonia refrigeration service and maintenance",
+      "Hire chillers",
     ],
-    image: "/images/refrigeration.webp",
+    image: "/images/tile-refrigeration.jpg",
   },
   {
+    id: "mechanical-services",
     icon: Wrench,
     title: "Mechanical Services",
     color: "indigo",
     description:
-      "End-to-end mechanical services for commercial and light industrial buildings. Design through to ongoing maintenance.",
+      "Ventilation and compliance work for commercial and light industrial buildings across Perth and regional WA.",
     features: [
-      "HVAC design & consulting",
-      "Mechanical system installation",
-      "Scheduled maintenance contracts",
-      "Compliance & inspections",
-      "Energy efficiency audits",
+      "Commercial exhaust — design, installation, service and maintenance",
+      "Fresh air — design, installation, service and maintenance",
+      "Compliance and certification",
     ],
-    image: "/images/fremantle-13.webp",
+    image: "/images/tile-mechanical.jpg",
   },
 ];
 
@@ -60,9 +59,8 @@ export default function Services() {
   const sectionRef = useRevealOnScroll();
 
   return (
-    <section id="services" className="py-24 bg-[#0d1528] border-t border-white/[0.06]" ref={sectionRef}>
+    <section id="services" className="py-24 pt-28 bg-[#0d1528] border-t border-white/[0.06]" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-6">
-        {/* Header */}
         <div className="text-center mb-16 reveal">
           <p className="text-blue-400 text-sm font-semibold uppercase tracking-widest mb-3">
             What We Do
@@ -71,12 +69,11 @@ export default function Services() {
             Our Services
           </h2>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            From design to installation to long-term maintenance — we cover the
-            full lifecycle of your air and refrigeration systems.
+            Commercial and residential air conditioning, commercial refrigeration,
+            winery refrigeration, mechanical services and Panasonic warranty repairs.
           </p>
         </div>
 
-        {/* Service cards */}
         <div className="grid md:grid-cols-3 gap-6">
           {services.map((svc, i) => {
             const Icon = svc.icon;
@@ -84,10 +81,10 @@ export default function Services() {
             return (
               <div
                 key={svc.title}
-                className={`reveal reveal-delay-${i + 1} glow-card group rounded-2xl border border-white/5 overflow-hidden hover:shadow-2xl ${c.glow}`}
+                id={svc.id}
+                className={`reveal reveal-delay-${i + 1} glow-card group rounded-2xl border border-white/5 overflow-hidden hover:shadow-2xl scroll-mt-28 ${c.glow}`}
                 style={{ backgroundColor: "rgba(255,255,255,0.02)" }}
               >
-                {/* Image */}
                 <div className="h-48 overflow-hidden img-zoom">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -98,7 +95,6 @@ export default function Services() {
                 </div>
 
                 <div className="p-6">
-                  {/* Icon */}
                   <div
                     className={`w-12 h-12 rounded-xl border flex items-center justify-center mb-4 transition-all duration-300 ${c.icon}`}
                   >
@@ -121,13 +117,31 @@ export default function Services() {
                     href="#contact"
                     className={`text-sm font-semibold ${c.accent} hover:underline flex items-center gap-1 group/link`}
                   >
-                    Get a quote{" "}
+                    Enquire about this service{" "}
                     <ChevronRight className="w-4 h-4 transition-transform group-hover/link:translate-x-1" />
                   </a>
                 </div>
               </div>
             );
           })}
+        </div>
+
+        <div className="reveal mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-4 rounded-2xl border border-blue-500/20 bg-blue-500/5 px-6 py-5">
+          <div className="w-12 h-12 rounded-xl bg-blue-500/15 border border-blue-500/25 flex items-center justify-center shrink-0">
+            <ShieldCheck className="w-6 h-6 text-blue-400" />
+          </div>
+          <div className="flex-1">
+            <p className="text-white font-semibold">Panasonic authorised warranty agent and repairer</p>
+            <p className="text-slate-400 text-sm mt-1">
+              Warranty repairs and service on Panasonic air conditioning we install — residential and commercial.
+            </p>
+          </div>
+          <a
+            href="#contact"
+            className="shrink-0 text-sm font-semibold text-blue-300 hover:text-white transition-colors"
+          >
+            Warranty enquiry →
+          </a>
         </div>
       </div>
     </section>
