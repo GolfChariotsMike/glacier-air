@@ -37,12 +37,27 @@ export default function Footer() {
               ARC Licence AU18839 · AIRAH Member · HIA Member
             </p>
             <div className="flex items-center gap-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/badges/airah.jpg" alt="AIRAH" className="h-12 w-12 rounded object-contain bg-white p-0.5" />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/badges/arc.jpg" alt="ARC" className="h-12 w-12 rounded object-contain bg-white p-0.5" />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/badges/hia.jpg" alt="HIA" className="h-12 w-12 rounded object-contain bg-white p-0.5" />
+              <Image
+                src="/images/badges/airah.jpg"
+                alt="AIRAH"
+                width={48}
+                height={48}
+                className="h-12 w-12 rounded object-contain bg-white p-0.5"
+              />
+              <Image
+                src="/images/badges/arc.jpg"
+                alt="ARC"
+                width={48}
+                height={48}
+                className="h-12 w-12 rounded object-contain bg-white p-0.5"
+              />
+              <Image
+                src="/images/badges/hia.jpg"
+                alt="HIA"
+                width={48}
+                height={48}
+                className="h-12 w-12 rounded object-contain bg-white p-0.5"
+              />
             </div>
           </div>
 

@@ -37,6 +37,7 @@ export default function Navbar() {
             alt="Glacier Air"
             width={160}
             height={32}
+            loading="eager"
             className="object-contain h-8 w-auto transition-opacity group-hover:opacity-90"
           />
         </a>

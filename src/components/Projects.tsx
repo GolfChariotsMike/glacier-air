@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
 
 const featured = [
@@ -14,10 +15,10 @@ const featured = [
   {
     title: "Nikola Estate Barn AC",
     images: [
-      "/images/projects/nikola-1.jpg",
-      "/images/projects/nikola-2.jpg",
-      "/images/projects/nikola-3.jpg",
-      "/images/projects/nikola-4.jpg",
+      "/images/projects/nikola-1.webp",
+      "/images/projects/nikola-2.webp",
+      "/images/projects/nikola-3.webp",
+      "/images/projects/nikola-4.webp",
     ],
   },
 ];
@@ -25,39 +26,39 @@ const featured = [
 const moreProjects = [
   {
     title: "Daiwa Foods Cold Storage",
-    images: ["/images/projects/daiwa-foods.jpg", "/images/projects/daiwa-2.jpg"],
+    images: ["/images/projects/daiwa-foods.webp", "/images/projects/daiwa-2.webp"],
   },
   {
     title: "Henley Park Wines chiller upgrade",
     images: [
-      "/images/projects/henley-park.jpg",
-      "/images/projects/henley-2.jpg",
-      "/images/projects/henley-3.jpg",
+      "/images/projects/henley-park.webp",
+      "/images/projects/henley-2.webp",
+      "/images/projects/henley-3.webp",
     ],
   },
   {
     title: "New West Foods Cold Storage",
     images: [
-      "/images/projects/new-west-foods.jpg",
-      "/images/projects/new-west-2.jpg",
-      "/images/projects/new-west-3.jpg",
+      "/images/projects/new-west-foods.webp",
+      "/images/projects/new-west-2.webp",
+      "/images/projects/new-west-3.webp",
     ],
   },
   {
     title: "Primero HVAC installation, Pilbara",
-    images: ["/images/projects/primero.jpg", "/images/projects/primero-2.jpg"],
+    images: ["/images/projects/primero.webp", "/images/projects/primero-2.webp"],
   },
   {
     title: "Shelf Subsea Dive Chiller Overhaul",
-    images: ["/images/projects/shelf-subsea.jpg", "/images/projects/shelf-2.jpg"],
+    images: ["/images/projects/shelf-subsea.webp", "/images/projects/shelf-2.webp"],
   },
   {
     title: "West Cape Howe winery chiller upgrade",
-    images: ["/images/projects/west-cape-howe.jpg", "/images/projects/west-cape-2.jpg"],
+    images: ["/images/projects/west-cape-howe.webp", "/images/projects/west-cape-2.webp"],
   },
   {
     title: "Windsor Cinema AC upgrade",
-    images: ["/images/projects/windsor-cinema.jpg"],
+    images: ["/images/projects/windsor-cinema.webp"],
   },
 ];
 
@@ -89,12 +90,21 @@ export default function Projects() {
                 {project.images.slice(0, 4).map((img) => (
                   <div
                     key={img}
-                    className={`rounded-2xl overflow-hidden img-zoom ring-1 ring-white/5 ${
+                    className={`relative rounded-2xl overflow-hidden img-zoom ring-1 ring-white/5 ${
                       img === project.images[0] ? "col-span-2 h-56" : "h-36"
                     }`}
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <Image
+                      src={img}
+                      alt={project.title}
+                      fill
+                      sizes={
+                        img === project.images[0]
+                          ? "(max-width: 1024px) 100vw, 50vw"
+                          : "(max-width: 1024px) 50vw, 25vw"
+                      }
+                      className="object-cover"
+                    />
                   </div>
                 ))}
               </div>
@@ -123,9 +133,14 @@ export default function Projects() {
               >
                 <div className={`grid ${p.images.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
                   {p.images.slice(0, 2).map((img) => (
-                    <div key={img} className="h-36 overflow-hidden">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={img} alt="" className="w-full h-full object-cover" />
+                    <div key={img} className="relative h-36 overflow-hidden">
+                      <Image
+                        src={img}
+                        alt={p.title}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover"
+                      />
                     </div>
                   ))}
                 </div>

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
+import Image from "next/image";
 
 const badges = ["ARC Licence AU18839", "AIRAH Member", "HIA Member", "Family Owned"];
 const typewriterWords = [
@@ -65,10 +66,17 @@ export default function Hero() {
   return (
     <section id="home" className="relative min-h-screen overflow-hidden">
       <div className="absolute inset-0 overflow-hidden">
-        <div
-          className="hero-kenburns absolute inset-0 bg-cover bg-no-repeat bg-[position:54%_center]"
-          style={{ backgroundImage: "url('/images/hero-bg.webp')" }}
-        />
+        <div className="hero-kenburns absolute inset-0">
+          <Image
+            src="/images/hero-bg.webp"
+            alt=""
+            fill
+            sizes="100vw"
+            quality={75}
+            preload
+            className="object-cover object-[54%_center]"
+          />
+        </div>
       </div>
       <div className="absolute inset-0 bg-gradient-to-r from-[#050a18]/80 via-[#050a18]/50 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-t from-[#050a18]/80 via-transparent to-transparent" />

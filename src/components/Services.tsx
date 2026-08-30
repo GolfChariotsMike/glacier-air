@@ -1,5 +1,6 @@
 "use client";
 import { Wind, Thermometer, Wrench, ChevronRight } from "lucide-react";
+import Image from "next/image";
 import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
 
 const specialisms = [
@@ -24,7 +25,7 @@ const services = [
       "Panasonic authorised warranty agent and repairer",
       "Hire air conditioning solutions",
     ],
-    image: "/images/tile-air-conditioning.jpg",
+    image: "/images/tile-air-conditioning.webp",
   },
   {
     id: "refrigeration",
@@ -38,7 +39,7 @@ const services = [
       "Ammonia refrigeration service and maintenance",
       "Hire chillers",
     ],
-    image: "/images/tile-refrigeration.jpg",
+    image: "/images/tile-refrigeration.webp",
   },
   {
     id: "mechanical-services",
@@ -51,7 +52,7 @@ const services = [
       "Fresh air — design, installation, service and maintenance",
       "Compliance and certification",
     ],
-    image: "/images/tile-mechanical.jpg",
+    image: "/images/tile-mechanical.webp",
   },
 ];
 
@@ -82,12 +83,13 @@ export default function Services() {
                 id={svc.id}
                 className={`reveal reveal-delay-${i + 1} group rounded-2xl border border-white/20 overflow-hidden scroll-mt-28 bg-[#1a4a82]/85 shadow-lg shadow-black/20 hover:border-white/35 hover:shadow-xl hover:shadow-black/30 transition-shadow`}
               >
-                <div className="h-48 overflow-hidden img-zoom">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                <div className="relative h-48 overflow-hidden img-zoom">
+                  <Image
                     src={svc.image}
                     alt={svc.title}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover"
                   />
                 </div>
 
@@ -122,10 +124,12 @@ export default function Services() {
         </div>
 
         <div className="reveal mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-4 rounded-2xl border border-white/20 bg-black/20 px-6 py-5">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src="/images/panasonic-logo.svg"
             alt="Panasonic"
+            width={160}
+            height={32}
+            unoptimized
             className="h-7 sm:h-8 w-auto shrink-0 brightness-0 invert opacity-95"
           />
           <div className="flex-1">

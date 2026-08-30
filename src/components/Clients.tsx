@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const clients = [
   { name: "Home Base Perth", src: "/images/clients/home-base-perth.png" },
   { name: "Forest Hill Vineyard", src: "/images/clients/forest-hill-vineyard.png" },
@@ -19,12 +21,13 @@ function LogoRow({ duplicate = false }: { duplicate?: boolean }) {
       {clients.map((c) => (
         <div
           key={`${c.name}${duplicate ? "-dup" : ""}`}
-          className="flex h-16 w-44 shrink-0 items-center justify-center px-6"
+          className="relative flex h-16 w-44 shrink-0 items-center justify-center px-6"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={c.src}
             alt={duplicate ? "" : c.name}
+            width={176}
+            height={48}
             className="max-h-12 w-auto max-w-full object-contain invert opacity-80"
           />
         </div>

@@ -1,5 +1,6 @@
 "use client";
 import { Award, Users, MapPin, Clock } from "lucide-react";
+import Image from "next/image";
 import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
 
 const stats = [
@@ -19,28 +20,31 @@ export default function About() {
           {/* Left — images */}
           <div className="relative reveal">
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-2xl overflow-hidden h-64 col-span-2 img-zoom ring-1 ring-white/5">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+              <div className="relative rounded-2xl overflow-hidden h-64 col-span-2 img-zoom ring-1 ring-white/5">
+                <Image
                   src="/images/fremantle-16.webp"
                   alt="Glacier Air team at work"
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover"
                 />
               </div>
-              <div className="rounded-2xl overflow-hidden h-44 img-zoom ring-1 ring-white/5">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+              <div className="relative rounded-2xl overflow-hidden h-44 img-zoom ring-1 ring-white/5">
+                <Image
                   src="/images/about-1.webp"
                   alt="Refrigeration installation"
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 1024px) 50vw, 25vw"
+                  className="object-cover"
                 />
               </div>
-              <div className="rounded-2xl overflow-hidden h-44 img-zoom ring-1 ring-white/5">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+              <div className="relative rounded-2xl overflow-hidden h-44 img-zoom ring-1 ring-white/5">
+                <Image
                   src="/images/about-2.webp"
                   alt="AC installation"
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 1024px) 50vw, 25vw"
+                  className="object-cover"
                 />
               </div>
             </div>
@@ -98,12 +102,27 @@ export default function About() {
             </div>
 
             <div className="flex flex-wrap items-center gap-6 mb-8">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/badges/airah.jpg" alt="AIRAH member" className="h-14 w-14 rounded-lg object-contain bg-white p-1" />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/badges/arc.jpg" alt="ARC licence AU18839" className="h-14 w-14 rounded-lg object-contain bg-white p-1" />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/badges/hia.jpg" alt="HIA member" className="h-14 w-14 rounded-lg object-contain bg-white p-1" />
+              <Image
+                src="/images/badges/airah.jpg"
+                alt="AIRAH member"
+                width={56}
+                height={56}
+                className="h-14 w-14 rounded-lg object-contain bg-white p-1"
+              />
+              <Image
+                src="/images/badges/arc.jpg"
+                alt="ARC licence AU18839"
+                width={56}
+                height={56}
+                className="h-14 w-14 rounded-lg object-contain bg-white p-1"
+              />
+              <Image
+                src="/images/badges/hia.jpg"
+                alt="HIA member"
+                width={56}
+                height={56}
+                className="h-14 w-14 rounded-lg object-contain bg-white p-1"
+              />
             </div>
 
             <a
