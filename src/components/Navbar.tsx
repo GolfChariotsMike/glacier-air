@@ -58,7 +58,7 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-4">
           <a
             href="tel:0892423111"
-            className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors"
+            className="flex items-center gap-2 text-sm text-slate-200 hover:text-white font-medium transition-colors"
           >
             <Phone className="w-4 h-4" />
             (08) 9242 3111
@@ -101,7 +101,7 @@ export default function Navbar() {
           <div className="h-px bg-white/5 my-1" />
           <a
             href="tel:0892423111"
-            className="text-blue-400 font-medium flex items-center gap-2"
+            className="text-slate-200 font-medium flex items-center gap-2"
           >
             <Phone className="w-4 h-4" /> (08) 9242 3111
           </a>
