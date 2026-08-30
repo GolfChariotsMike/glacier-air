@@ -25,7 +25,7 @@ function LogoRow({ duplicate = false }: { duplicate?: boolean }) {
           <img
             src={c.src}
             alt={duplicate ? "" : c.name}
-            className="max-h-12 w-auto max-w-full object-contain brightness-0 invert opacity-80"
+            className="max-h-12 w-auto max-w-full object-contain invert opacity-80"
           />
         </div>
       ))}

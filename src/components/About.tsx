@@ -97,7 +97,7 @@ export default function About() {
               })}
             </div>
 
-            <div className="flex flex-wrap items-center gap-6 mb-8 reveal reveal-delay-3">
+            <div className="flex flex-wrap items-center gap-6 mb-8">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/images/badges/airah.jpg" alt="AIRAH member" className="h-14 w-14 rounded-lg object-contain bg-white p-1" />
               {/* eslint-disable-next-line @next/next/no-img-element */}

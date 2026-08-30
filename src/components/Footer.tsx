@@ -38,11 +38,11 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/badges/airah.jpg" alt="AIRAH" className="h-10 w-10 rounded object-contain bg-white p-0.5" />
+              <img src="/images/badges/airah.jpg" alt="AIRAH" className="h-12 w-12 rounded object-contain bg-white p-0.5" />
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/badges/arc.jpg" alt="ARC" className="h-10 w-10 rounded object-contain bg-white p-0.5" />
+              <img src="/images/badges/arc.jpg" alt="ARC" className="h-12 w-12 rounded object-contain bg-white p-0.5" />
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/badges/hia.jpg" alt="HIA" className="h-10 w-10 rounded object-contain bg-white p-0.5" />
+              <img src="/images/badges/hia.jpg" alt="HIA" className="h-12 w-12 rounded object-contain bg-white p-0.5" />
             </div>
           </div>
 
