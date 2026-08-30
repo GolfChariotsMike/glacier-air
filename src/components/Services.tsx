@@ -1,5 +1,5 @@
 "use client";
-import { Wind, Thermometer, Wrench, ChevronRight, ShieldCheck } from "lucide-react";
+import { Wind, Thermometer, Wrench, ChevronRight } from "lucide-react";
 import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
 
 const specialisms = [
@@ -135,9 +135,12 @@ export default function Services() {
         </div>
 
         <div className="reveal mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-4 rounded-2xl border border-blue-500/20 bg-blue-500/5 px-6 py-5">
-          <div className="w-12 h-12 rounded-xl bg-blue-500/15 border border-blue-500/25 flex items-center justify-center shrink-0">
-            <ShieldCheck className="w-6 h-6 text-blue-400" />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/panasonic-logo.svg"
+            alt="Panasonic"
+            className="h-7 sm:h-8 w-auto shrink-0 brightness-0 invert opacity-95"
+          />
           <div className="flex-1">
             <p className="text-white font-semibold">Panasonic authorised warranty agent and repairer</p>
             <p className="text-slate-400 text-sm mt-1">
