@@ -69,12 +69,12 @@ export default function Hero() {
     >
       <div className="absolute inset-0 overflow-hidden">
         <div
-          className="hero-kenburns absolute inset-0 bg-cover bg-no-repeat bg-[position:65%_center] md:bg-center"
+          className="hero-kenburns absolute inset-0 bg-cover bg-no-repeat bg-[position:54%_center]"
           style={{ backgroundImage: "url('/images/hero-bg.webp')" }}
         />
       </div>
-      <div className="absolute inset-0 bg-gradient-to-r from-[#050a18]/95 via-[#050a18]/72 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f1e] via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#050a18]/80 via-[#050a18]/50 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f1e]/70 via-transparent to-transparent" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-20">
         <div className="max-w-2xl">

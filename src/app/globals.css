@@ -28,24 +28,15 @@ body {
   }
 }
 
-/* ── Ken Burns on the hero rooftop photo ── */
-@keyframes ken-burns-mobile {
-  0%   { transform: scale(1.08) translate3d(0, 0, 0); }
-  100% { transform: scale(1.16) translate3d(-3%, -2%, 0); }
-}
-@keyframes ken-burns-desktop {
-  /* Offset keeps the plant to the right of the type; cover-fit has no spare X crop. */
-  0%   { transform: translate3d(22%, 0, 0) scale(1.1); }
-  100% { transform: translate3d(32%, -3%, 0) scale(1.18); }
+/* ── Ken Burns on the hero rooftop photo (scale only — no X slide) ── */
+@keyframes ken-burns {
+  0%   { transform: scale(1); }
+  100% { transform: scale(1.08); }
 }
 .hero-kenburns {
-  animation: ken-burns-mobile 28s ease-in-out infinite alternate;
+  transform-origin: center center;
+  animation: ken-burns 22s ease-in-out infinite alternate;
   will-change: transform;
-}
-@media (min-width: 768px) {
-  .hero-kenburns {
-    animation-name: ken-burns-desktop;
-  }
 }
 
 /* ── Scroll reveal ── */
@@ -178,7 +169,7 @@ body {
   }
   .hero-kenburns {
     animation: none;
-    transform: scale(1.08) translate3d(0, 0, 0);
+    transform: none;
   }
   .badge-shimmer,
   .cursor {
@@ -195,10 +186,5 @@ body {
   }
   .glow-card:hover {
     transform: none;
-  }
-}
-@media (prefers-reduced-motion: reduce) and (min-width: 768px) {
-  .hero-kenburns {
-    transform: translate3d(28%, 0, 0) scale(1.1);
   }
 }
