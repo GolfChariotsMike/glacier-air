@@ -2,6 +2,15 @@
 import { Wind, Thermometer, Wrench, ChevronRight, ShieldCheck } from "lucide-react";
 import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
 
+const specialisms = [
+  "Commercial Air Conditioning",
+  "Residential Air Conditioning",
+  "Commercial Refrigeration",
+  "Mechanical Services",
+  "Winery Refrigeration",
+  "Panasonic Warranty Repairs",
+];
+
 const services = [
   {
     id: "air-conditioning",
@@ -24,7 +33,7 @@ const services = [
     title: "Refrigeration",
     color: "cyan",
     description:
-      "Temperature-critical plant for hospitality, food storage and wine — from cool rooms to glycol and ammonia systems.",
+      "Commercial refrigeration and winery glycol systems — from cold rooms to ammonia plant — plus hire chillers.",
     features: [
       "Commercial refrigeration — design, installation, service and maintenance",
       "Winery glycol refrigeration — design, installation, service and maintenance",
@@ -63,14 +72,13 @@ export default function Services() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16 reveal">
           <p className="text-blue-400 text-sm font-semibold uppercase tracking-widest mb-3">
-            What We Do
+            We specialise in
           </p>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Our Services
           </h2>
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            Commercial and residential air conditioning, commercial refrigeration,
-            winery refrigeration, mechanical services and Panasonic warranty repairs.
+          <p className="text-slate-400 text-sm md:text-base max-w-4xl mx-auto leading-relaxed uppercase tracking-wide">
+            {specialisms.join(" – ")}
           </p>
         </div>
 
@@ -142,6 +150,49 @@ export default function Services() {
           >
             Warranty enquiry →
           </a>
+        </div>
+
+        <div className="mt-16 grid lg:grid-cols-2 gap-10 reveal">
+          <div>
+            <h3 className="text-2xl font-bold text-white mb-4">Commercial air conditioning</h3>
+            <p className="text-slate-400 leading-relaxed">
+              Commercial air conditioning is widely used in industrial and commercial spaces.
+              A suitable working environment improves comfort in both winter and summer.
+              We find a solution for the space — office, warehouse or retail.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-2xl font-bold text-white mb-4">Commercial refrigeration</h3>
+            <p className="text-slate-400 leading-relaxed mb-6">
+              Commercial refrigeration — cold rooms — is used in hospitality: restaurants, bars
+              and wineries. We design, install, maintain and repair systems for different sizes
+              and needs.
+            </p>
+            <div className="space-y-4 text-sm">
+              <div>
+                <p className="text-white font-semibold mb-1">Design</p>
+                <p className="text-slate-400 leading-relaxed">
+                  Room size, insulation, stored goods (fruit, vegetables, dairy, meat) and daily
+                  loading all feed the design. Thermal insulation of walls and ceiling determines
+                  how the cool room performs.
+                </p>
+              </div>
+              <div>
+                <p className="text-white font-semibold mb-1">Installation</p>
+                <p className="text-slate-400 leading-relaxed">
+                  Walk-in fridge, wine cooler or commercial freezer — we install for restaurants,
+                  bars and similar sites.
+                </p>
+              </div>
+              <div>
+                <p className="text-white font-semibold mb-1">Maintenance and repairs</p>
+                <p className="text-slate-400 leading-relaxed">
+                  Electrical or gas issues, filters and drains, ice build-up — plus advice on
+                  keeping commercial refrigeration in good condition.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

@@ -97,6 +97,15 @@ export default function About() {
               })}
             </div>
 
+            <div className="flex flex-wrap items-center gap-6 mb-8 reveal reveal-delay-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/images/badges/airah.jpg" alt="AIRAH member" className="h-14 w-14 rounded-lg object-contain bg-white p-1" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/images/badges/arc.jpg" alt="ARC licence AU18839" className="h-14 w-14 rounded-lg object-contain bg-white p-1" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/images/badges/hia.jpg" alt="HIA member" className="h-14 w-14 rounded-lg object-contain bg-white p-1" />
+            </div>
+
             <a
               href="#contact"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-semibold transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5 reveal reveal-delay-4"

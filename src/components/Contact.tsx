@@ -100,7 +100,7 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="py-24 bg-[#060c1a]">
+    <section id="contact" className="py-24 bg-[#060c1a] scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16">
           <div>

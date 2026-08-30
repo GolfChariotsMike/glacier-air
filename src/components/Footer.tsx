@@ -33,9 +33,17 @@ export default function Footer() {
               Family-owned air conditioning, refrigeration and mechanical
               services across Perth, SouthWest and Great Southern WA.
             </p>
-            <p className="text-slate-500 text-xs">
+            <p className="text-slate-500 text-xs mb-4">
               ARC Licence AU18839 · AIRAH Member · HIA Member
             </p>
+            <div className="flex items-center gap-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/images/badges/airah.jpg" alt="AIRAH" className="h-10 w-10 rounded object-contain bg-white p-0.5" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/images/badges/arc.jpg" alt="ARC" className="h-10 w-10 rounded object-contain bg-white p-0.5" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/images/badges/hia.jpg" alt="HIA" className="h-10 w-10 rounded object-contain bg-white p-0.5" />
+            </div>
           </div>
 
           {Object.entries(links).map(([cat, items]) => (
