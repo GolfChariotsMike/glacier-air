@@ -60,7 +60,7 @@ export default function Services() {
   const sectionRef = useRevealOnScroll();
 
   return (
-    <section id="services" className="py-24 bg-[#0a0f1e]" ref={sectionRef}>
+    <section id="services" className="py-24 bg-[#0d1528] border-t border-white/[0.06]" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-16 reveal">

@@ -58,9 +58,9 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-4">
           <a
             href="tel:0892423111"
-            className="flex items-center gap-2 text-sm text-slate-200 hover:text-white font-medium transition-colors"
+            className="flex items-center gap-2 text-sm text-slate-200 hover:text-white font-medium transition-colors rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E01F26]/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f1e]"
           >
-            <Phone className="w-4 h-4" />
+            <Phone className="w-4 h-4 text-[#E01F26]" />
             (08) 9242 3111
           </a>
           <a
@@ -103,7 +103,7 @@ export default function Navbar() {
             href="tel:0892423111"
             className="text-slate-200 font-medium flex items-center gap-2"
           >
-            <Phone className="w-4 h-4" /> (08) 9242 3111
+            <Phone className="w-4 h-4 text-[#E01F26]" /> (08) 9242 3111
           </a>
           <a
             href="#contact"

@@ -2,29 +2,58 @@
 import { useState } from "react";
 import { Phone, Mail, MapPin, Send } from "lucide-react";
 
+const fieldClass =
+  "w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-colors text-sm";
+
 export default function Contact() {
-  const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
+    name: "",
     company: "",
     phone: "",
     email: "",
-    subject: "",
+    type: "",
     message: "",
+    website: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("sending");
-    // Simulate form submit (wire up to Formspree/Resend/etc)
-    await new Promise((r) => setTimeout(r, 1200));
-    setStatus("sent");
+    setError("");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          company: form.company,
+          phone: form.phone,
+          email: form.email,
+          type: form.type,
+          message: form.message,
+          website: form.website,
+        }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+      if (!res.ok || !data.ok) {
+        setStatus("error");
+        setError(data.error || "Could not send just now. Call (08) 9242 3111.");
+        return;
+      }
+      setStatus("sent");
+    } catch {
+      setStatus("error");
+      setError("Could not send just now. Call (08) 9242 3111 or email service@glacierair.com.au.");
+    }
   };
 
   return (
     <section id="contact" className="py-24 bg-[#060c1a]">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16">
-          {/* Left — info */}
           <div>
             <p className="text-blue-400 text-sm font-semibold uppercase tracking-widest mb-3">
               Get In Touch
@@ -41,14 +70,14 @@ export default function Contact() {
             <div className="space-y-6">
               <a
                 href="tel:0892423111"
-                className="flex items-center gap-4 group"
+                className="flex items-center gap-4 group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E01F26]/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#060c1a]"
               >
                 <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
                   <Phone className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
                   <p className="text-xs text-slate-500 mb-0.5 uppercase tracking-wide">Phone</p>
-                  <p className="text-white font-semibold group-hover:text-blue-400 transition-colors">
+                  <p className="text-white font-semibold group-hover:text-white transition-colors">
                     (08) 9242 3111
                   </p>
                 </div>
@@ -82,7 +111,6 @@ export default function Contact() {
               </div>
             </div>
 
-            {/* Map embed */}
             <div className="mt-10 rounded-2xl overflow-hidden border border-white/5 h-48">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3385.3457890!2d115.8274!3d-31.8893!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2a32a4f45b45d1af%3A0xc8e3e0e3a3e3e3e3!2s28%20Frobisher%20St%2C%20Osborne%20Park%20WA%206017!5e0!3m2!1sen!2sau!4v1622000000000!5m2!1sen!2sau"
@@ -96,7 +124,6 @@ export default function Contact() {
             </div>
           </div>
 
-          {/* Right — form */}
           <div className="rounded-2xl border border-white/5 p-8" style={{ backgroundColor: "rgba(255,255,255,0.02)" }}>
             {status === "sent" ? (
               <div className="flex flex-col items-center justify-center h-full text-center py-16">
@@ -107,57 +134,89 @@ export default function Contact() {
                 <p className="text-slate-400">We&apos;ll be in touch shortly.</p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-5 relative">
+                <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
+                  <label htmlFor="website">Website</label>
+                  <input
+                    id="website"
+                    name="website"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={form.website}
+                    onChange={(e) => setForm({ ...form, website: e.target.value })}
+                  />
+                </div>
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-xs text-slate-400 uppercase tracking-wide mb-2">
-                      Company
+                    <label className="block text-xs text-slate-400 uppercase tracking-wide mb-2" htmlFor="contact-name">
+                      Name
                     </label>
                     <input
+                      id="contact-name"
                       type="text"
                       required
-                      value={form.company}
-                      onChange={(e) => setForm({ ...form, company: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/8 transition-colors text-sm"
-                      placeholder="Your company"
+                      autoComplete="name"
+                      value={form.name}
+                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      className={fieldClass}
+                      placeholder="Your name"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-slate-400 uppercase tracking-wide mb-2">
-                      Phone
+                    <label className="block text-xs text-slate-400 uppercase tracking-wide mb-2" htmlFor="contact-company">
+                      Company <span className="text-slate-600 normal-case tracking-normal">(optional)</span>
                     </label>
                     <input
-                      type="tel"
-                      required
-                      value={form.phone}
-                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-colors text-sm"
-                      placeholder="0400 000 000"
+                      id="contact-company"
+                      type="text"
+                      autoComplete="organization"
+                      value={form.company}
+                      onChange={(e) => setForm({ ...form, company: e.target.value })}
+                      className={fieldClass}
+                      placeholder="Company name"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs text-slate-400 uppercase tracking-wide mb-2">
-                    Email
+                  <label className="block text-xs text-slate-400 uppercase tracking-wide mb-2" htmlFor="contact-phone">
+                    Phone
                   </label>
                   <input
-                    type="email"
+                    id="contact-phone"
+                    type="tel"
                     required
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-colors text-sm"
-                    placeholder="you@company.com"
+                    autoComplete="tel"
+                    value={form.phone}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    className={fieldClass}
+                    placeholder="0400 000 000"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-slate-400 uppercase tracking-wide mb-2">
+                  <label className="block text-xs text-slate-400 uppercase tracking-wide mb-2" htmlFor="contact-email">
+                    Email
+                  </label>
+                  <input
+                    id="contact-email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    className={fieldClass}
+                    placeholder="you@email.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-slate-400 uppercase tracking-wide mb-2" htmlFor="contact-type">
                     Enquiry Type
                   </label>
                   <select
+                    id="contact-type"
                     required
-                    value={form.subject}
-                    onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-blue-500/50 transition-colors text-sm"
+                    value={form.type}
+                    onChange={(e) => setForm({ ...form, type: e.target.value })}
+                    className={fieldClass}
                   >
                     <option value="" disabled className="bg-[#0d1428]">Select enquiry type</option>
                     <option value="Air Conditioning" className="bg-[#0d1428]">Air Conditioning</option>
@@ -168,18 +227,24 @@ export default function Contact() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs text-slate-400 uppercase tracking-wide mb-2">
+                  <label className="block text-xs text-slate-400 uppercase tracking-wide mb-2" htmlFor="contact-message">
                     Message
                   </label>
                   <textarea
+                    id="contact-message"
                     required
                     rows={5}
                     value={form.message}
                     onChange={(e) => setForm({ ...form, message: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-colors text-sm resize-none"
+                    className={`${fieldClass} resize-none`}
                     placeholder="Tell us about your project or what you need..."
                   />
                 </div>
+                {status === "error" && (
+                  <p className="text-sm text-red-300 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3" role="alert">
+                    {error}
+                  </p>
+                )}
                 <button
                   type="submit"
                   disabled={status === "sending"}

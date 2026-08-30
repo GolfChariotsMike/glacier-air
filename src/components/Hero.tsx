@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Phone } from "lucide-react";
 
 const badges = ["ARC Licence AU18839", "AIRAH Member", "HIA Member", "Family Owned"];
 const typewriterWords = [
@@ -79,7 +79,7 @@ export default function Hero() {
       <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-20">
         <div className="max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full badge-shimmer border border-blue-500/25 text-blue-300 text-sm font-medium mb-6">
-            <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse motion-reduce:animate-none" />
+            <span className="w-2 h-2 rounded-full bg-[#E01F26] animate-pulse motion-reduce:animate-none" />
             Perth, SouthWest & Great Southern WA
           </div>
 
@@ -141,10 +141,10 @@ export default function Hero() {
 
       <a
         href="tel:0892423111"
-        className="absolute bottom-8 right-6 hidden lg:flex items-center gap-3 glass-panel rounded-2xl px-5 py-4 hover:border-blue-500/20 transition-all duration-300 group hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-950/40 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+        className="absolute bottom-8 right-6 hidden lg:flex items-center gap-3 glass-panel rounded-2xl px-5 py-4 hover:border-[#E01F26]/25 transition-all duration-300 group hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-950/40 motion-reduce:transition-none motion-reduce:hover:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E01F26]/80"
       >
-        <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-          <span className="text-blue-400 text-lg">📞</span>
+        <div className="w-10 h-10 rounded-xl bg-[#E01F26]/15 flex items-center justify-center">
+          <Phone className="w-5 h-5 text-[#E01F26]" />
         </div>
         <div>
           <p className="text-xs text-slate-400 mb-0.5">Call us today</p>

@@ -1,8 +1,17 @@
 import Image from "next/image";
 
 const links = {
-  Services: ["Air Conditioning", "Refrigeration", "Mechanical Services", "Maintenance"],
-  Company: ["About Us", "Projects", "Contact"],
+  Services: [
+    { label: "Air Conditioning", href: "#services" },
+    { label: "Refrigeration", href: "#services" },
+    { label: "Mechanical Services", href: "#services" },
+    { label: "Maintenance", href: "#services" },
+  ],
+  Company: [
+    { label: "About Us", href: "#about" },
+    { label: "Projects", href: "#projects" },
+    { label: "Contact", href: "#contact" },
+  ],
 };
 
 export default function Footer() {
@@ -10,7 +19,6 @@ export default function Footer() {
     <footer className="bg-[#050a18] border-t border-white/5 py-16">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid md:grid-cols-4 gap-10 mb-12">
-          {/* Brand */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
               <Image
@@ -35,12 +43,12 @@ export default function Footer() {
               <p className="text-white font-semibold text-sm mb-4">{cat}</p>
               <ul className="space-y-2">
                 {items.map((item) => (
-                  <li key={item}>
+                  <li key={item.label}>
                     <a
-                      href="#"
+                      href={item.href}
                       className="text-slate-400 hover:text-white text-sm transition-colors"
                     >
-                      {item}
+                      {item.label}
                     </a>
                   </li>
                 ))}
