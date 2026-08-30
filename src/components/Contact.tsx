@@ -5,6 +5,33 @@ import { Phone, Mail, MapPin, Send } from "lucide-react";
 const fieldClass =
   "w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-colors text-sm";
 
+async function forwardViaFormSubmit(payload: {
+  name: string;
+  company: string;
+  phone: string;
+  email: string;
+  type: string;
+  message: string;
+}) {
+  const res = await fetch("https://formsubmit.co/ajax/service@glacierair.com.au", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({
+      name: payload.name,
+      email: payload.email,
+      _replyto: payload.email,
+      _subject: `Glacier Air website enquiry: ${payload.type}`,
+      _template: "table",
+      company: payload.company || "(not provided)",
+      phone: payload.phone,
+      type: payload.type,
+      message: payload.message,
+    }),
+  });
+  const data = (await res.json().catch(() => null)) as { success?: string | boolean } | null;
+  return Boolean(res.ok && data && data.success !== "false" && data.success !== false);
+}
+
 export default function Contact() {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [error, setError] = useState("");
@@ -37,13 +64,34 @@ export default function Contact() {
           website: form.website,
         }),
       });
-      const data = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
-      if (!res.ok || !data.ok) {
-        setStatus("error");
-        setError(data.error || "Could not send just now. Call (08) 9242 3111.");
+      const data = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        error?: string;
+        code?: string;
+      };
+
+      if (data.ok) {
+        setStatus("sent");
         return;
       }
-      setStatus("sent");
+
+      if (data.code === "browser-forward") {
+        const forwarded = await forwardViaFormSubmit({
+          name: form.name,
+          company: form.company,
+          phone: form.phone,
+          email: form.email,
+          type: form.type,
+          message: form.message,
+        });
+        if (forwarded) {
+          setStatus("sent");
+          return;
+        }
+      }
+
+      setStatus("error");
+      setError(data.error || "Could not send just now. Call (08) 9242 3111.");
     } catch {
       setStatus("error");
       setError("Could not send just now. Call (08) 9242 3111 or email service@glacierair.com.au.");

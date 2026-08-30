@@ -64,7 +64,10 @@ export async function POST(request: Request) {
 
   try {
     await deliver(enquiry);
-  } catch {
+  } catch (err) {
+    if (err instanceof Error && err.message === "browser-forward") {
+      return NextResponse.json({ ok: false, code: "browser-forward" }, { status: 202 });
+    }
     return NextResponse.json(
       {
         ok: false,
@@ -144,9 +147,15 @@ async function deliver(enquiry: Enquiry) {
     }),
   });
 
-  if (!res.ok) throw new Error("formsubmit");
-  const data = (await res.json().catch(() => null)) as { success?: string | boolean } | null;
-  if (data && (data.success === "false" || data.success === false)) {
+  const raw = await res.text();
+  let data: { success?: string | boolean } | null = null;
+  try {
+    data = JSON.parse(raw) as { success?: string | boolean };
+  } catch {
+    // Cloudflare challenge on datacenter IPs — browser will forward instead.
+    throw new Error("browser-forward");
+  }
+  if (!res.ok || data?.success === "false" || data?.success === false) {
     throw new Error("formsubmit");
   }
 }
