@@ -53,7 +53,7 @@ body {
   pointer-events: none;
 }
 
-/* ── Floating particles ── */
+/* ── Hero snowflake overlay ── */
 #particle-canvas {
   position: absolute;
   inset: 0;

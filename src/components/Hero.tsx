@@ -45,7 +45,7 @@ export default function Hero() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { text: typedText, done: typewriterDone } = useTypewriter(typewriterWords);
 
-  // Floating particles
+  // Light snowflake overlay — same density/speed family as the old dots
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -53,39 +53,98 @@ export default function Hero() {
     if (!ctx) return;
 
     let animId: number;
+    let viewW = 0;
+    let viewH = 0;
+
     const resize = () => {
       const section = canvas.parentElement;
-      canvas.width = section ? section.offsetWidth : window.innerWidth;
-      canvas.height = section ? section.offsetHeight : window.innerHeight;
+      viewW = section ? section.offsetWidth : window.innerWidth;
+      viewH = section ? section.offsetHeight : window.innerHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(viewW * dpr);
+      canvas.height = Math.round(viewH * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     resize();
     window.addEventListener("resize", resize);
 
     const count = 55;
-    const particles = Array.from({ length: count }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 1.8 + 0.4,
+    const flakes = Array.from({ length: count }, () => ({
+      x: Math.random() * viewW,
+      y: Math.random() * viewH,
+      // Large enough for 6-fold arms to read; still a light overlay
+      r: Math.random() * 4.2 + 2.4,
       speed: Math.random() * 0.35 + 0.1,
       opacity: Math.random() * 0.4 + 0.1,
-      drift: (Math.random() - 0.5) * 0.3,
+      drift: (Math.random() - 0.5) * 0.18,
+      sway: Math.random() * 0.35 + 0.15,
+      phase: Math.random() * Math.PI * 2,
+      spin: Math.random() * Math.PI * 2,
+      spinSpeed: (Math.random() - 0.5) * 0.012,
     }));
 
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach((p) => {
+    const drawSnowflake = (
+      x: number,
+      y: number,
+      size: number,
+      rotation: number,
+      opacity: number,
+    ) => {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rotation);
+      ctx.strokeStyle = `rgba(147, 197, 253, ${opacity})`;
+      ctx.fillStyle = `rgba(147, 197, 253, ${opacity})`;
+      ctx.lineWidth = Math.max(0.7, size * 0.14);
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+
+      const step = Math.PI / 3;
+      for (let i = 0; i < 6; i++) {
+        ctx.save();
+        ctx.rotate(i * step);
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(147, 197, 253, ${p.opacity})`;
-        ctx.fill();
-        p.y -= p.speed;
-        p.x += p.drift;
-        if (p.y < -5) {
-          p.y = canvas.height + 5;
-          p.x = Math.random() * canvas.width;
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, -size);
+        // Side prongs so it reads as a flake, not a plus sign
+        const mid = -size * 0.52;
+        const prong = size * 0.38;
+        ctx.moveTo(0, mid);
+        ctx.lineTo(-prong, mid - prong * 0.55);
+        ctx.moveTo(0, mid);
+        ctx.lineTo(prong, mid - prong * 0.55);
+        if (size > 4.4) {
+          const inner = -size * 0.28;
+          const innerLen = size * 0.2;
+          ctx.moveTo(0, inner);
+          ctx.lineTo(-innerLen, inner - innerLen * 0.45);
+          ctx.moveTo(0, inner);
+          ctx.lineTo(innerLen, inner - innerLen * 0.45);
         }
-        if (p.x < 0) p.x = canvas.width;
-        if (p.x > canvas.width) p.x = 0;
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      ctx.beginPath();
+      ctx.arc(0, 0, Math.max(0.5, size * 0.1), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, viewW, viewH);
+      flakes.forEach((p) => {
+        drawSnowflake(p.x, p.y, p.r, p.spin, p.opacity);
+        p.y += p.speed;
+        p.phase += 0.012;
+        p.x += p.drift + Math.sin(p.phase) * p.sway * 0.35;
+        p.spin += p.spinSpeed;
+        if (p.y > viewH + 10) {
+          p.y = -10;
+          p.x = Math.random() * viewW;
+        }
+        if (p.x < -10) p.x = viewW + 10;
+        if (p.x > viewW + 10) p.x = -10;
       });
       animId = requestAnimationFrame(draw);
     };
@@ -114,7 +173,7 @@ export default function Hero() {
       {/* Aurora layer */}
       <div className="aurora" />
 
-      {/* Particles */}
+      {/* Snowflakes */}
       <canvas ref={canvasRef} id="particle-canvas" />
 
       {/* Floating orbs */}
