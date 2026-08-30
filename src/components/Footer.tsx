@@ -8,9 +8,9 @@ const links = {
     { label: "Maintenance", href: "#services" },
   ],
   Company: [
-    { label: "About Us", href: "#about" },
+    { label: "About Us", href: "#about-us" },
     { label: "Projects", href: "#projects" },
-    { label: "Contact", href: "#contact" },
+    { label: "Contact", href: "#contact-us" },
   ],
 };
 

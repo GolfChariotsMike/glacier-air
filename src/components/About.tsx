@@ -13,8 +13,8 @@ export default function About() {
   const sectionRef = useRevealOnScroll();
 
   return (
-    <section id="about" className="py-24 bg-[#060c1a]" ref={sectionRef}>
-      <div className="max-w-7xl mx-auto px-6">
+    <section id="about-us" className="py-24 bg-[#060c1a] scroll-mt-24" ref={sectionRef}>
+      <div id="about" className="max-w-7xl mx-auto px-6 scroll-mt-24">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left — images */}
           <div className="relative reveal">

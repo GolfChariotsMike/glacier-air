@@ -23,13 +23,42 @@ const featured = [
 ];
 
 const moreProjects = [
-  { title: "Daiwa Foods Cold Storage", image: "/images/projects/daiwa-foods.jpg" },
-  { title: "Henley Park Wines chiller upgrade", image: "/images/projects/henley-park.jpg" },
-  { title: "New West Foods Cold Storage", image: "/images/projects/new-west-foods.jpg" },
-  { title: "Primero HVAC installation, Pilbara", image: "/images/projects/primero.jpg" },
-  { title: "Shelf Subsea Dive Chiller Overhaul", image: "/images/projects/shelf-subsea.jpg" },
-  { title: "West Cape Howe winery chiller upgrade", image: "/images/projects/west-cape-howe.jpg" },
-  { title: "Windsor Cinema AC upgrade", image: "/images/projects/windsor-cinema.jpg" },
+  {
+    title: "Daiwa Foods Cold Storage",
+    images: ["/images/projects/daiwa-foods.jpg", "/images/projects/daiwa-2.jpg"],
+  },
+  {
+    title: "Henley Park Wines chiller upgrade",
+    images: [
+      "/images/projects/henley-park.jpg",
+      "/images/projects/henley-2.jpg",
+      "/images/projects/henley-3.jpg",
+    ],
+  },
+  {
+    title: "New West Foods Cold Storage",
+    images: [
+      "/images/projects/new-west-foods.jpg",
+      "/images/projects/new-west-2.jpg",
+      "/images/projects/new-west-3.jpg",
+    ],
+  },
+  {
+    title: "Primero HVAC installation, Pilbara",
+    images: ["/images/projects/primero.jpg", "/images/projects/primero-2.jpg"],
+  },
+  {
+    title: "Shelf Subsea Dive Chiller Overhaul",
+    images: ["/images/projects/shelf-subsea.jpg", "/images/projects/shelf-2.jpg"],
+  },
+  {
+    title: "West Cape Howe winery chiller upgrade",
+    images: ["/images/projects/west-cape-howe.jpg", "/images/projects/west-cape-2.jpg"],
+  },
+  {
+    title: "Windsor Cinema AC upgrade",
+    images: ["/images/projects/windsor-cinema.jpg"],
+  },
 ];
 
 export default function Projects() {
@@ -92,9 +121,13 @@ export default function Projects() {
                 key={p.title}
                 className="rounded-2xl overflow-hidden ring-1 ring-white/5 bg-white/[0.02]"
               >
-                <div className="h-36 overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={p.image} alt="" className="w-full h-full object-cover" />
+                <div className={`grid ${p.images.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
+                  {p.images.slice(0, 2).map((img) => (
+                    <div key={img} className="h-36 overflow-hidden">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={img} alt="" className="w-full h-full object-cover" />
+                    </div>
+                  ))}
                 </div>
                 <p className="px-4 py-3 text-sm font-medium text-slate-200">{p.title}</p>
               </div>
