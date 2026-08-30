@@ -10,24 +10,6 @@ const typewriterWords = [
   "HVAC Design",
 ];
 
-const serviceTiles = [
-  {
-    title: "Air Conditioning",
-    href: "#air-conditioning",
-    image: "/images/tile-air-conditioning.jpg",
-  },
-  {
-    title: "Refrigeration",
-    href: "#refrigeration",
-    image: "/images/tile-refrigeration.jpg",
-  },
-  {
-    title: "Mechanical Services",
-    href: "#mechanical-services",
-    image: "/images/tile-mechanical.jpg",
-  },
-];
-
 function usePrefersReducedMotion() {
   return useSyncExternalStore(
     (onChange) => {
@@ -81,10 +63,7 @@ export default function Hero() {
   const { text: typedText, showCursor } = useTypewriter(typewriterWords);
 
   return (
-    <section
-      id="home"
-      className="relative min-h-screen flex flex-col"
-    >
+    <section id="home" className="relative min-h-screen overflow-hidden">
       <div className="absolute inset-0 overflow-hidden">
         <div
           className="hero-kenburns absolute inset-0 bg-cover bg-no-repeat bg-[position:54%_center]"
@@ -94,7 +73,7 @@ export default function Hero() {
       <div className="absolute inset-0 bg-gradient-to-r from-[#050a18]/80 via-[#050a18]/50 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-t from-[#050a18]/80 via-transparent to-transparent" />
 
-      <div className="relative z-10 flex-1 flex items-center max-w-7xl mx-auto w-full px-6 pt-24 pb-8">
+      <div className="relative z-10 flex min-h-screen items-center max-w-7xl mx-auto w-full px-6 pt-24 pb-16">
         <div className="max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full badge-shimmer border border-blue-500/25 text-blue-300 text-sm font-medium mb-6">
             <span className="w-2 h-2 rounded-full bg-[#E01F26] animate-pulse motion-reduce:animate-none" />
@@ -154,32 +133,6 @@ export default function Hero() {
               </div>
             ))}
           </div>
-        </div>
-      </div>
-
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 pb-8 md:-mb-12">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-stretch">
-          {serviceTiles.map((tile) => (
-            <a
-              key={tile.title}
-              href={tile.href}
-              className="group relative min-w-0 h-44 md:h-48 overflow-hidden rounded-2xl ring-1 ring-white/15"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={tile.image}
-                alt=""
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#050a18]/90 via-[#050a18]/35 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-5">
-                <p className="text-white font-semibold text-lg leading-tight">{tile.title}</p>
-                <span className="mt-1 inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-widest text-blue-300">
-                  Learn more <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
-                </span>
-              </div>
-            </a>
-          ))}
         </div>
       </div>
     </section>
