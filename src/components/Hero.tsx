@@ -75,7 +75,7 @@ export default function Hero() {
       return {
         x: Math.random() * viewW,
         y: Math.random() * viewH,
-        r: near ? Math.random() * 6 + 10 : Math.random() * 3.5 + 5,
+        r: near ? Math.random() * 4.5 + 7 : Math.random() * 2.4 + 3.6,
         speed: Math.random() * 0.35 + 0.1,
         opacity: near ? Math.random() * 0.22 + 0.38 : Math.random() * 0.25 + 0.2,
         drift: (Math.random() - 0.5) * 0.18,
@@ -100,7 +100,7 @@ export default function Hero() {
       ctx.rotate(rotation);
       ctx.strokeStyle = `rgba(147, 197, 253, ${opacity})`;
       ctx.fillStyle = `rgba(147, 197, 253, ${opacity})`;
-      ctx.lineWidth = branched ? Math.max(1.2, size * 0.13) : Math.max(0.9, size * 0.16);
+      ctx.lineWidth = branched ? Math.max(0.9, size * 0.13) : Math.max(0.7, size * 0.16);
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
 
