@@ -27,6 +27,26 @@ body {
   }
 }
 
+/* ── Ken Burns on the hero rooftop photo ── */
+@keyframes ken-burns-mobile {
+  0%   { transform: scale(1.08) translate3d(0, 0, 0); }
+  100% { transform: scale(1.16) translate3d(-3%, -2%, 0); }
+}
+@keyframes ken-burns-desktop {
+  /* Offset keeps the plant to the right of the type; cover-fit has no spare X crop. */
+  0%   { transform: translate3d(22%, 0, 0) scale(1.1); }
+  100% { transform: translate3d(32%, -3%, 0) scale(1.18); }
+}
+.hero-kenburns {
+  animation: ken-burns-mobile 28s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@media (min-width: 768px) {
+  .hero-kenburns {
+    animation-name: ken-burns-desktop;
+  }
+}
+
 /* ── Scroll reveal ── */
 .reveal {
   opacity: 0;
@@ -34,14 +54,14 @@ body {
   transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
               transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.reveal.visible {
+.reveal.inview {
   opacity: 1;
   transform: translateY(0);
 }
-.reveal-delay-1 { transition-delay: 0.1s; }
-.reveal-delay-2 { transition-delay: 0.2s; }
-.reveal-delay-3 { transition-delay: 0.3s; }
-.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal.reveal-delay-1 { transition-delay: 0.12s; }
+.reveal.reveal-delay-2 { transition-delay: 0.24s; }
+.reveal.reveal-delay-3 { transition-delay: 0.36s; }
+.reveal.reveal-delay-4 { transition-delay: 0.48s; }
 
 /* ── Glow card ── */
 .glow-card {
@@ -49,6 +69,15 @@ body {
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.35s ease;
 }
+/* glow-card's shorthand would otherwise wipe .reveal's opacity transition + stagger */
+.reveal.glow-card {
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.35s ease;
+}
+.reveal.glow-card.reveal-delay-1 { transition-delay: 0.12s; }
+.reveal.glow-card.reveal-delay-2 { transition-delay: 0.24s; }
+.reveal.glow-card.reveal-delay-3 { transition-delay: 0.36s; }
 .glow-card::before {
   content: '';
   position: absolute;
@@ -69,6 +98,21 @@ body {
 .glow-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 20px 60px rgba(59, 130, 246, 0.15);
+}
+
+/* ── Typewriter cursor ── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+.cursor {
+  display: inline-block;
+  width: 3px;
+  height: 1em;
+  background: #60a5fa;
+  margin-left: 4px;
+  vertical-align: text-bottom;
+  animation: blink 0.9s step-end infinite;
 }
 
 /* ── Animated counter ── */
@@ -125,4 +169,35 @@ body {
 }
 .img-zoom:hover img {
   transform: scale(1.07);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .hero-kenburns {
+    animation: none;
+    transform: scale(1.08) translate3d(0, 0, 0);
+  }
+  @media (min-width: 768px) {
+    .hero-kenburns {
+      transform: translate3d(28%, 0, 0) scale(1.1);
+    }
+  }
+  .badge-shimmer,
+  .cursor {
+    animation: none;
+  }
+  .reveal,
+  .reveal.inview {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .img-zoom:hover img {
+    transform: none;
+  }
+  .glow-card:hover {
+    transform: none;
+  }
 }

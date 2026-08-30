@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
 import { Award, Users, MapPin, Clock } from "lucide-react";
+import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
 
 const stats = [
   { icon: Award, label: "ARC Licensed", value: "AU18839", isText: true },
@@ -10,28 +10,7 @@ const stats = [
 ];
 
 export default function About() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add("visible");
-            setVisible(true);
-          }
-        });
-      },
-      { threshold: 0.12 }
-    );
-    const els = sectionRef.current?.querySelectorAll(".reveal");
-    els?.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
-  // suppress unused warning — visible used for future counter anim
-  void visible;
+  const sectionRef = useRevealOnScroll();
 
   return (
     <section id="about" className="py-24 bg-[#060c1a]" ref={sectionRef}>

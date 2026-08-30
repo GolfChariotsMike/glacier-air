@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
 
 const projects = [
   {
@@ -31,21 +31,7 @@ const projects = [
 ];
 
 export default function Projects() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) e.target.classList.add("visible");
-        });
-      },
-      { threshold: 0.1 }
-    );
-    const els = sectionRef.current?.querySelectorAll(".reveal");
-    els?.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
+  const sectionRef = useRevealOnScroll();
 
   return (
     <section id="projects" className="py-24 bg-[#0a0f1e]" ref={sectionRef}>
@@ -67,7 +53,7 @@ export default function Projects() {
           {projects.map((project, pi) => (
             <div
               key={project.title}
-              className={`reveal grid lg:grid-cols-2 gap-10 items-center`}
+              className={`reveal reveal-delay-${pi + 1} grid lg:grid-cols-2 gap-10 items-center`}
             >
               {/* Image grid */}
               <div className={`grid grid-cols-2 gap-3 ${pi % 2 === 1 ? "lg:order-2" : ""}`}>

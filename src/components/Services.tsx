@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useRef } from "react";
 import { Wind, Thermometer, Wrench, ChevronRight } from "lucide-react";
+import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
 
 const services = [
   {
@@ -57,21 +57,7 @@ const colorMap: Record<string, { icon: string; accent: string; glow: string }> =
 };
 
 export default function Services() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) e.target.classList.add("visible");
-        });
-      },
-      { threshold: 0.12 }
-    );
-    const els = sectionRef.current?.querySelectorAll(".reveal");
-    els?.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
+  const sectionRef = useRevealOnScroll();
 
   return (
     <section id="services" className="py-24 bg-[#0a0f1e]" ref={sectionRef}>
@@ -98,7 +84,7 @@ export default function Services() {
             return (
               <div
                 key={svc.title}
-                className={`reveal reveal-delay-${i + 1} glow-card group rounded-2xl border border-white/5 overflow-hidden hover:shadow-2xl ${c.glow} transition-all duration-500`}
+                className={`reveal reveal-delay-${i + 1} glow-card group rounded-2xl border border-white/5 overflow-hidden hover:shadow-2xl ${c.glow}`}
                 style={{ backgroundColor: "rgba(255,255,255,0.02)" }}
               >
                 {/* Image */}

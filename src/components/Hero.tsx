@@ -1,37 +1,100 @@
+"use client";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 
 const badges = ["ARC Licence AU18839", "AIRAH Member", "HIA Member", "Family Owned"];
+const typewriterWords = [
+  "Air Conditioning",
+  "Refrigeration",
+  "Mechanical Services",
+  "HVAC Design",
+];
+
+function usePrefersReducedMotion() {
+  return useSyncExternalStore(
+    (onChange) => {
+      const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    },
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    () => false
+  );
+}
+
+function useTypewriter(words: string[]) {
+  const reduceMotion = usePrefersReducedMotion();
+  const [text, setText] = useState(words[0]);
+  const [wordIndex, setWordIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    if (reduceMotion) return;
+
+    const current = words[wordIndex % words.length];
+    let delay = isDeleting ? 40 : 70;
+    if (!isDeleting && text === current) delay = 1800;
+    if (isDeleting && text === "") delay = 280;
+
+    const timeout = setTimeout(() => {
+      if (!isDeleting && text === current) {
+        setIsDeleting(true);
+        return;
+      }
+      if (isDeleting && text === "") {
+        setIsDeleting(false);
+        setWordIndex((i) => (i + 1) % words.length);
+        return;
+      }
+      setText(
+        isDeleting
+          ? current.slice(0, text.length - 1)
+          : current.slice(0, text.length + 1)
+      );
+    }, delay);
+
+    return () => clearTimeout(timeout);
+  }, [text, isDeleting, wordIndex, words, reduceMotion]);
+
+  return { text: reduceMotion ? words[0] : text, showCursor: !reduceMotion };
+}
 
 export default function Hero() {
+  const { text: typedText, showCursor } = useTypewriter(typewriterWords);
+
   return (
     <section
       id="home"
       className="relative min-h-screen flex items-center overflow-hidden"
     >
-      {/* Cover-fit is width-locked on desktop, so translate the plant off the type. */}
       <div className="absolute inset-0 overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-no-repeat bg-[position:65%_center] md:bg-center md:translate-x-[28%]"
+          className="hero-kenburns absolute inset-0 bg-cover bg-no-repeat bg-[position:65%_center] md:bg-center"
           style={{ backgroundImage: "url('/images/hero-bg.webp')" }}
         />
       </div>
-      {/* Left-to-right veil for type; bottom fade into the page */}
       <div className="absolute inset-0 bg-gradient-to-r from-[#050a18]/95 via-[#050a18]/72 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f1e] via-transparent to-transparent" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-20">
         <div className="max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full badge-shimmer border border-blue-500/25 text-blue-300 text-sm font-medium mb-6">
-            <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse motion-reduce:animate-none" />
             Perth, SouthWest & Great Southern WA
           </div>
 
           <h1 className="mb-6">
-            <span className="block text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
-              Experts in
+            <span className="sr-only">
+              Experts in air conditioning, refrigeration, mechanical services and HVAC design
             </span>
-            <span className="block mt-1 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight gradient-text">
-              Air Conditioning &amp; Refrigeration
+            <span aria-hidden="true">
+              <span className="block text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-2">
+                Experts in
+              </span>
+              <span className="block text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold min-h-[1.2em] whitespace-nowrap">
+                <span className="gradient-text">{typedText}</span>
+                {showCursor && <span className="cursor" />}
+              </span>
             </span>
           </h1>
 
@@ -53,13 +116,13 @@ export default function Hero() {
           <div className="flex flex-col sm:flex-row gap-4 mb-12">
             <a
               href="#contact"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-semibold text-lg transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5 active:translate-y-0"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-semibold text-lg transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
             >
               Get a Free Quote <ArrowRight className="w-5 h-5" />
             </a>
             <a
               href="#services"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl border border-white/10 hover:border-white/30 text-white font-semibold text-lg transition-all duration-300 hover:bg-white/5"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl border border-white/10 hover:border-white/30 text-white font-semibold text-lg transition-all duration-300 hover:bg-white/5 motion-reduce:transition-none"
             >
               Our Services
             </a>
@@ -78,7 +141,7 @@ export default function Hero() {
 
       <a
         href="tel:0892423111"
-        className="absolute bottom-8 right-6 hidden lg:flex items-center gap-3 glass-panel rounded-2xl px-5 py-4 hover:border-blue-500/20 transition-all duration-300 group hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-950/40"
+        className="absolute bottom-8 right-6 hidden lg:flex items-center gap-3 glass-panel rounded-2xl px-5 py-4 hover:border-blue-500/20 transition-all duration-300 group hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-950/40 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
       >
         <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
           <span className="text-blue-400 text-lg">📞</span>
