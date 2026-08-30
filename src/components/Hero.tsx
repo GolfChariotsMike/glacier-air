@@ -8,13 +8,15 @@ export default function Hero() {
       id="home"
       className="relative min-h-screen flex items-center overflow-hidden"
     >
-      {/* Background image — nudged right so the plant sits beside the type, not under it */}
-      <div
-        className="absolute inset-0 bg-cover bg-no-repeat bg-[position:72%_center]"
-        style={{ backgroundImage: "url('/images/hero-bg.webp')" }}
-      />
+      {/* Cover-fit is width-locked on desktop, so translate the plant off the type. */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-no-repeat bg-[position:65%_center] md:bg-center md:translate-x-[28%]"
+          style={{ backgroundImage: "url('/images/hero-bg.webp')" }}
+        />
+      </div>
       {/* Left-to-right veil for type; bottom fade into the page */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#050a18]/95 via-[#050a18]/70 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#050a18]/95 via-[#050a18]/72 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f1e] via-transparent to-transparent" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-20">
