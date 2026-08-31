@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import ScrollToSection from "@/components/ScrollToSection";
 import "./globals.css";
 
@@ -45,6 +46,11 @@ export default function RootLayout({
       <body className={inter.className}>
         <ScrollToSection />
         {children}
+        <Script
+          src="https://app.manyhandz.ai/widget.js"
+          data-key="0f840990-0b36-4f50-83aa-4860ee66ac7c"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
