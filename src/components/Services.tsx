@@ -2,6 +2,7 @@
 import { Wind, Thermometer, Wrench, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
+import { firstAlt, firstUrl, SERVICE_FALLBACKS, SERVICE_SLOT, type GalleryState } from "@/lib/gallery";
 
 const specialisms = [
   "Commercial Air Conditioning",
@@ -56,7 +57,7 @@ const services = [
   },
 ];
 
-export default function Services() {
+export default function Services({ gallery }: { gallery: GalleryState }) {
   const sectionRef = useRevealOnScroll();
 
   return (
@@ -85,8 +86,8 @@ export default function Services() {
               >
                 <div className="relative h-48 overflow-hidden img-zoom">
                   <Image
-                    src={svc.image}
-                    alt={svc.title}
+                    src={firstUrl(gallery, SERVICE_SLOT[svc.id], SERVICE_FALLBACKS[svc.id] ?? svc.image)}
+                    alt={firstAlt(gallery, SERVICE_SLOT[svc.id], svc.title)}
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover"

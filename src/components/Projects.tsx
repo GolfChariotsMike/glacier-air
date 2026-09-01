@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
+import { imagesForSlot, type GalleryState } from "@/lib/gallery";
 
 const featured = [
   {
@@ -62,8 +63,9 @@ const moreProjects = [
   },
 ];
 
-export default function Projects() {
+export default function Projects({ gallery }: { gallery: GalleryState }) {
   const sectionRef = useRevealOnScroll();
+  const jobPhotos = imagesForSlot(gallery, "projects");
 
   return (
     <section id="projects" className="py-24 bg-[#0a0f1e]" ref={sectionRef}>
@@ -79,6 +81,25 @@ export default function Projects() {
             Air conditioning and commercial refrigeration projects — residential and commercial.
           </p>
         </div>
+
+        {jobPhotos.length > 0 && (
+          <div className="mb-16 reveal">
+            <h3 className="text-xl font-semibold text-white mb-6">Job photos</h3>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {jobPhotos.map((img) => (
+                <div key={img.id} className="relative h-48 rounded-2xl overflow-hidden ring-1 ring-white/5">
+                  <Image
+                    src={img.url}
+                    alt={img.alt}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="space-y-20">
           {featured.map((project, pi) => (

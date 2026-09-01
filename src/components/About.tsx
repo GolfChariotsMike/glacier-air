@@ -2,6 +2,7 @@
 import { Award, Users, MapPin, Clock } from "lucide-react";
 import Image from "next/image";
 import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
+import { ABOUT_FALLBACKS, firstAlt, firstUrl, type GalleryState } from "@/lib/gallery";
 
 const stats = [
   { icon: Award, label: "ARC Licensed", value: "AU18839", isText: true },
@@ -10,7 +11,7 @@ const stats = [
   { icon: Clock, label: "Fast Response", value: "Times", isText: true },
 ];
 
-export default function About() {
+export default function About({ gallery }: { gallery: GalleryState }) {
   const sectionRef = useRevealOnScroll();
 
   return (
@@ -22,8 +23,8 @@ export default function About() {
             <div className="grid grid-cols-2 gap-4">
               <div className="relative rounded-2xl overflow-hidden h-64 col-span-2 img-zoom ring-1 ring-white/5">
                 <Image
-                  src="/images/fremantle-16.webp"
-                  alt="Glacier Air team at work"
+                  src={firstUrl(gallery, "about-main", ABOUT_FALLBACKS.main.src)}
+                  alt={firstAlt(gallery, "about-main", ABOUT_FALLBACKS.main.alt)}
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover"
@@ -31,8 +32,8 @@ export default function About() {
               </div>
               <div className="relative rounded-2xl overflow-hidden h-44 img-zoom ring-1 ring-white/5">
                 <Image
-                  src="/images/about-1.webp"
-                  alt="Refrigeration installation"
+                  src={firstUrl(gallery, "about-left", ABOUT_FALLBACKS.left.src)}
+                  alt={firstAlt(gallery, "about-left", ABOUT_FALLBACKS.left.alt)}
                   fill
                   sizes="(max-width: 1024px) 50vw, 25vw"
                   className="object-cover"
@@ -40,8 +41,8 @@ export default function About() {
               </div>
               <div className="relative rounded-2xl overflow-hidden h-44 img-zoom ring-1 ring-white/5">
                 <Image
-                  src="/images/about-2.webp"
-                  alt="AC installation"
+                  src={firstUrl(gallery, "about-right", ABOUT_FALLBACKS.right.src)}
+                  alt={firstAlt(gallery, "about-right", ABOUT_FALLBACKS.right.alt)}
                   fill
                   sizes="(max-width: 1024px) 50vw, 25vw"
                   className="object-cover"
