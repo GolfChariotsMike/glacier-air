@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import {
   ADMIN_COOKIE,
-  adminPinConfigured,
   checkPinRateLimit,
   clearPinFailures,
   cookieOptions,
@@ -12,13 +11,6 @@ import {
 } from "@/lib/admin-auth";
 
 export async function POST(request: Request) {
-  if (!adminPinConfigured()) {
-    return NextResponse.json(
-      { ok: false, error: "Set ADMIN_PIN on Vercel before using admin." },
-      { status: 503 }
-    );
-  }
-
   const ip = rateLimitKey(request);
   const limited = checkPinRateLimit(ip);
   if (!limited.ok) {
