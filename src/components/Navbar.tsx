@@ -67,7 +67,7 @@ export default function Navbar() {
             href="#contact-us"
             className="px-5 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-sm font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5"
           >
-            Get a Quote
+            Make Enquiry
           </a>
         </div>
 
@@ -110,7 +110,7 @@ export default function Navbar() {
             className="px-4 py-3 rounded-xl bg-blue-500 text-white text-center font-semibold hover:bg-blue-400 transition-colors"
             onClick={() => setOpen(false)}
           >
-            Get a Quote
+            Make Enquiry
           </a>
         </div>
       </div>

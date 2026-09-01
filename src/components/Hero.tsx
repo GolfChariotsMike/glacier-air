@@ -123,7 +123,7 @@ export default function Hero() {
               href="#contact"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-semibold text-lg transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
             >
-              Get a Free Quote <ArrowRight className="w-5 h-5" />
+              Make Enquiry <ArrowRight className="w-5 h-5" />
             </a>
             <a
               href="#services"

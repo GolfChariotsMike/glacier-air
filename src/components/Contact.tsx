@@ -108,7 +108,7 @@ export default function Contact() {
               Get In Touch
             </p>
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Request a Quote
+              Make Enquiry
             </h2>
             <p className="text-slate-400 text-lg leading-relaxed mb-10">
               Whether you need a new installation, a service call, or want to
