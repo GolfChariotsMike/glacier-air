@@ -140,8 +140,8 @@ export default function AdminApp({ blobConfigured }: Props) {
         )}
         {!blobConfigured && (
           <p className="rounded-xl bg-[#E01F26]/10 border border-[#E01F26]/30 px-4 py-3 text-sm">
-            Uploads need <code className="text-[#c5e4f7]">BLOB_READ_WRITE_TOKEN</code> on the Vercel preview project.
-            The public site will keep its current photos until that is set.
+            Uploads need <code className="text-[#c5e4f7]">BLOB_READ_WRITE_TOKEN</code> on this Vercel
+            project. The public site will keep its current photos until that is set.
           </p>
         )}
 

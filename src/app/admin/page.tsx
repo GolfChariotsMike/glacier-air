@@ -27,11 +27,8 @@ export default async function AdminPage() {
           />
           <h1 className="text-2xl font-bold text-white mb-3">Admin is locked</h1>
           <p className="text-slate-300 leading-relaxed">
-            Set <code className="text-[#c5e4f7]">ADMIN_PIN</code> on this Vercel project
-            (Preview and/or Production to match how this URL is deployed), then reload.
-          </p>
-          <p className="text-slate-400 leading-relaxed mt-3 text-sm">
-            glacierair.com.au is still the old WordPress site until DNS is pointed here.
+            Set <code className="text-[#c5e4f7]">ADMIN_PIN</code> on this Vercel project, then
+            Redeploy, then reload this page.
           </p>
         </div>
       </div>

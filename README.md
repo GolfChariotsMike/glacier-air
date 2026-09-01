@@ -29,7 +29,7 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-Photo admin for Nick is documented in [ADMIN.md](./ADMIN.md) (`/admin`, PIN + Vercel Blob). Preview only — not the live glacierair.com.au site.
+Photo admin for Nick is documented in [ADMIN.md](./ADMIN.md) (`/admin` on this Vercel project, PIN + Vercel Blob).
 
 ## Deploy on Vercel
 
