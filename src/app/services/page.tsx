@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Home from "../page";
 
+export { revalidate } from "../page";
+
 export const metadata: Metadata = {
   title: "Services | Glacier Air",
   description:
