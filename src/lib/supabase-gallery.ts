@@ -95,24 +95,25 @@ export async function writeGallery(state: GalleryState): Promise<GalleryState> {
   const keepIds = new Set(next.images.map((img) => img.id));
   const prevById = new Map(prev.map((row) => [row.id, row]));
   const client = createAnonClient();
+  const removed = prev.filter((row) => !keepIds.has(row.id));
 
-  for (const row of prev) {
-    if (!keepIds.has(row.id)) {
-      await deleteStoredObject(row.storage_path, row.url);
-      const { error } = await client.from(IMAGES_TABLE).delete().eq("id", row.id);
-      if (error) throw new Error(error.message || "Could not remove photo.");
-    }
+  if (removed.length) {
+    await Promise.all(removed.map((row) => deleteStoredObject(row.storage_path, row.url)));
+    const { error } = await client
+      .from(IMAGES_TABLE)
+      .delete()
+      .in("id", removed.map((row) => row.id));
+    if (error) throw new Error(error.message || "Could not remove photo.");
   }
 
-  for (const img of next.images) {
-    const existing = prevById.get(img.id);
-    const { error } = await client.from(IMAGES_TABLE).upsert(
-      rowPayload(img, existing?.storage_path ?? pathFromPublicUrl(img.url))
-    );
-    if (error) throw new Error(error.message || "Could not save photos.");
-  }
+  const { error } = await client.from(IMAGES_TABLE).upsert(
+    next.images.map((img) =>
+      rowPayload(img, prevById.get(img.id)?.storage_path ?? pathFromPublicUrl(img.url))
+    )
+  );
+  if (error) throw new Error(error.message || "Could not save photos.");
 
-  return readGallery();
+  return { images: next.images };
 }
 
 export async function uploadGalleryFile(file: File, slot: string, filename: string) {

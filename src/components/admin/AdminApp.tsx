@@ -68,6 +68,8 @@ export default function AdminApp({ supabaseConfigured }: Props) {
   const clients = imagesForSlot(gallery, "clients");
 
   async function persist(next: GalleryState) {
+    const previous = gallery;
+    setGallery(next);
     setBusy(true);
     setStatus("");
     const res = await fetch("/api/admin/gallery", {
@@ -78,10 +80,11 @@ export default function AdminApp({ supabaseConfigured }: Props) {
     const data = await res.json().catch(() => ({}));
     setBusy(false);
     if (!res.ok) {
+      setGallery(previous);
       setStatus(data.error || "Could not save.");
       return;
     }
-    setGallery(data.gallery);
+    if (data.gallery) setGallery(data.gallery);
     setStatus("Saved.");
   }
 
