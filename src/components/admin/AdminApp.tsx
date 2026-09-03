@@ -1,21 +1,32 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, type DragEvent, type ReactNode } from "react";
 import Image from "next/image";
-import { ChevronDown, ChevronUp, Lock, LogOut, Upload } from "lucide-react";
-import type { GalleryImage, GallerySlot, GalleryState } from "@/lib/gallery";
+import { LogOut, Upload } from "lucide-react";
+import {
+  PROJECT_GROUPS,
+  imagesForProject,
+  imagesForSlot,
+  moveToProject,
+  sendProjectPhotoToUnused,
+  type GalleryImage,
+  type GallerySlot,
+  type GalleryState,
+  type ProjectId,
+} from "@/lib/gallery";
 
-type Props = { blobConfigured: boolean };
+type Props = { supabaseConfigured: boolean };
 
-const PROJECTS_HINT = "Job photos shown on the Projects page";
+const SERVICE_CARDS: { slot: GallerySlot; label: string }[] = [
+  { slot: "services-ac", label: "Air conditioning" },
+  { slot: "services-ref", label: "Refrigeration" },
+  { slot: "services-mech", label: "Mechanical" },
+];
 
-const FIXED_SLOTS: { slot: GallerySlot; label: string }[] = [
-  { slot: "services-ac", label: "Services — Air conditioning" },
-  { slot: "services-ref", label: "Services — Refrigeration" },
-  { slot: "services-mech", label: "Services — Mechanical" },
-  { slot: "about-main", label: "About — main photo" },
-  { slot: "about-left", label: "About — left photo" },
-  { slot: "about-right", label: "About — right photo" },
+const ABOUT_CARDS: { slot: GallerySlot; label: string }[] = [
+  { slot: "about-main", label: "About — main" },
+  { slot: "about-left", label: "About — left" },
+  { slot: "about-right", label: "About — right" },
 ];
 
 async function compressImage(file: File): Promise<File> {
@@ -38,10 +49,11 @@ async function compressImage(file: File): Promise<File> {
   return new File([blob], file.name.replace(/\.\w+$/, ".jpg"), { type: "image/jpeg" });
 }
 
-export default function AdminApp({ blobConfigured }: Props) {
+export default function AdminApp({ supabaseConfigured }: Props) {
   const [gallery, setGallery] = useState<GalleryState>({ images: [] });
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
+  const [overProject, setOverProject] = useState<ProjectId | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/gallery")
@@ -52,11 +64,12 @@ export default function AdminApp({ blobConfigured }: Props) {
       .catch(() => setStatus("Could not load photos."));
   }, []);
 
-  const projects = gallery.images
-    .filter((img) => img.slot === "projects")
-    .sort((a, b) => a.sort - b.sort);
+  const hero = imagesForSlot(gallery, "hero")[0];
+  const clients = imagesForSlot(gallery, "clients");
 
   async function persist(next: GalleryState) {
+    const previous = gallery;
+    setGallery(next);
     setBusy(true);
     setStatus("");
     const res = await fetch("/api/admin/gallery", {
@@ -67,14 +80,15 @@ export default function AdminApp({ blobConfigured }: Props) {
     const data = await res.json().catch(() => ({}));
     setBusy(false);
     if (!res.ok) {
+      setGallery(previous);
       setStatus(data.error || "Could not save.");
       return;
     }
-    setGallery(data.gallery);
+    if (data.gallery) setGallery(data.gallery);
     setStatus("Saved.");
   }
 
-  async function upload(slot: GallerySlot, file: File, replaceId?: string, alt?: string) {
+  async function upload(slot: GallerySlot, file: File, alt?: string, projectId?: ProjectId) {
     setBusy(true);
     setStatus("Uploading…");
     const compressed = await compressImage(file);
@@ -82,7 +96,7 @@ export default function AdminApp({ blobConfigured }: Props) {
     form.set("file", compressed);
     form.set("slot", slot);
     form.set("alt", alt || file.name.replace(/\.\w+$/, "").replace(/[_-]/g, " "));
-    if (replaceId) form.set("replaceId", replaceId);
+    if (projectId) form.set("projectId", projectId);
     const res = await fetch("/api/admin/upload", { method: "POST", body: form });
     const data = await res.json().catch(() => ({}));
     setBusy(false);
@@ -94,21 +108,14 @@ export default function AdminApp({ blobConfigured }: Props) {
     setStatus("Photo updated.");
   }
 
-  function remove(id: string) {
-    void persist({ images: gallery.images.filter((img) => img.id !== id) });
-  }
-
-  function move(id: string, dir: -1 | 1) {
-    const ordered = [...projects];
-    const i = ordered.findIndex((img) => img.id === id);
-    const j = i + dir;
-    if (i < 0 || j < 0 || j >= ordered.length) return;
-    const swap = ordered[i];
-    ordered[i] = ordered[j];
-    ordered[j] = swap;
-    const resorted = ordered.map((img, sort) => ({ ...img, sort }));
-    const others = gallery.images.filter((img) => img.slot !== "projects");
-    void persist({ images: [...others, ...resorted] });
+  function dropOnProject(projectId: ProjectId, event: DragEvent) {
+    event.preventDefault();
+    setOverProject(null);
+    const id = event.dataTransfer.getData("text/plain");
+    if (!id) return;
+    const img = gallery.images.find((item) => item.id === id);
+    if (!img || img.slot !== "projects") return;
+    void persist({ images: moveToProject(gallery.images, id, projectId) });
   }
 
   async function logout() {
@@ -132,221 +139,248 @@ export default function AdminApp({ blobConfigured }: Props) {
         </button>
       </header>
 
-      <main className="max-w-3xl mx-auto px-5 py-8 flex flex-col gap-8">
+      <main className="max-w-4xl mx-auto px-5 py-8 flex flex-col gap-10">
         {status && (
           <p className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-slate-200" role="status">
             {status}
           </p>
         )}
-        {!blobConfigured && (
-          <p className="rounded-xl bg-[#E01F26]/10 border border-[#E01F26]/30 px-4 py-3 text-sm">
-            Uploads need <code className="text-[#c5e4f7]">BLOB_READ_WRITE_TOKEN</code> on this Vercel
-            project. The public site will keep its current photos until that is set.
-          </p>
-        )}
 
         <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <Lock className="w-4 h-4 text-slate-400" />
-            <h2 className="text-lg font-bold">Hero rooftop</h2>
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-400 bg-white/10 rounded-full px-2 py-1">
-              Locked (Mike)
-            </span>
+          <h2 className="text-lg font-bold mb-1">Hero</h2>
+          <p className="text-sm text-slate-400 mb-4">This is the homepage hero.</p>
+          <div className="relative h-56 md:h-72 rounded-xl overflow-hidden ring-1 ring-white/10 bg-black/30">
+            {hero ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={hero.url} alt={hero.alt} className="w-full h-full object-cover object-[54%_center]" />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src="/images/hero-bg.webp" alt="" className="w-full h-full object-cover object-[54%_center]" />
+            )}
           </div>
-          <div className="relative h-36 rounded-xl overflow-hidden ring-1 ring-white/10">
-            <Image src="/images/hero-bg.webp" alt="" fill sizes="100vw" className="object-cover object-[54%_center]" />
-          </div>
-          <p className="text-sm text-slate-400 mt-3">This photo stays on the homepage. Nick cannot replace it here.</p>
-        </section>
-
-        <Section title="Projects" hint={PROJECTS_HINT}>
-          <div className="flex flex-col gap-4">
-            {projects.map((img, i) => (
-              <PhotoCard
-                key={img.id}
-                image={img}
-                busy={busy}
-                onReplace={(file) => void upload("projects", file, img.id, img.alt)}
-                onRemove={() => remove(img.id)}
-                onUp={i > 0 ? () => move(img.id, -1) : undefined}
-                onDown={i < projects.length - 1 ? () => move(img.id, 1) : undefined}
-              />
-            ))}
-            <UploadButton
-              disabled={busy || !blobConfigured}
-              label="Add project photo"
-              onFile={(file) => void upload("projects", file)}
+          <div className="mt-4">
+            <ReplaceButton
+              disabled={busy || !supabaseConfigured}
+              onFile={(file) => void upload("hero", file, "Homepage hero")}
             />
           </div>
-        </Section>
+        </section>
 
-        <Section title="Services" hint="These replace the three service card photos.">
-          <div className="flex flex-col gap-4">
-            {FIXED_SLOTS.filter((s) => s.slot.startsWith("services-")).map((s) => {
-              const image = gallery.images.find((img) => img.slot === s.slot);
+        <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+          <h2 className="text-lg font-bold mb-1">Services</h2>
+          <p className="text-sm text-slate-400 mb-4">These photos sit on the three service cards.</p>
+          <div className="grid md:grid-cols-3 gap-4">
+            {SERVICE_CARDS.map((card) => {
+              const image = imagesForSlot(gallery, card.slot)[0];
               return (
-                <FixedSlot
-                  key={s.slot}
-                  label={s.label}
+                <ReplaceCard
+                  key={card.slot}
+                  title={card.label}
                   image={image}
-                  busy={busy}
-                  disabled={!blobConfigured}
-                  onUpload={(file) => void upload(s.slot, file, image?.id, s.label)}
-                  onRemove={image ? () => remove(image.id) : undefined}
+                  busy={busy || !supabaseConfigured}
+                  onReplace={(file) => void upload(card.slot, file, card.label)}
                 />
               );
             })}
           </div>
-        </Section>
+        </section>
 
-        <Section title="About" hint="These replace the three About photos.">
-          <div className="flex flex-col gap-4">
-            {FIXED_SLOTS.filter((s) => s.slot.startsWith("about-")).map((s) => {
-              const image = gallery.images.find((img) => img.slot === s.slot);
+        <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+          <h2 className="text-lg font-bold mb-1">Projects</h2>
+          <p className="text-sm text-slate-400 mb-6">
+            Drag a photo from one project onto another. Hero and service photos stay put.
+          </p>
+          <div className="flex flex-col gap-6">
+            {PROJECT_GROUPS.map((group) => {
+              const photos = imagesForProject(gallery, group.id);
+              const active = overProject === group.id;
               return (
-                <FixedSlot
-                  key={s.slot}
-                  label={s.label}
+                <div
+                  key={group.id}
+                  data-project={group.id}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = "move";
+                    setOverProject(group.id);
+                  }}
+                  onDragLeave={(e) => {
+                    if (!e.currentTarget.contains(e.relatedTarget as Node)) setOverProject(null);
+                  }}
+                  onDrop={(e) => dropOnProject(group.id, e)}
+                  className={`rounded-xl border p-3 ${
+                    active ? "border-[#2665AA] bg-[#2665AA]/15" : "border-white/10 bg-[#0a0f1e]"
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-3 mb-3">
+                    <h3 className="font-bold">{group.title}</h3>
+                    <AddPhotosButton
+                      disabled={busy || !supabaseConfigured}
+                      onFile={(file) => void upload("projects", file, group.title, group.id)}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 min-h-24">
+                    {photos.map((img) => (
+                      <DraggablePhoto
+                        key={img.id}
+                        image={img}
+                        busy={busy}
+                        onRemove={() =>
+                          void persist({ images: sendProjectPhotoToUnused(gallery.images, img.id) })
+                        }
+                      />
+                    ))}
+                    {photos.length === 0 && (
+                      <p className="col-span-full text-sm text-slate-500 py-6 text-center">
+                        Drop photos here or add new ones.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+          <h2 className="text-lg font-bold mb-1">About</h2>
+          <p className="text-sm text-slate-400 mb-4">The three About photos.</p>
+          <div className="grid md:grid-cols-3 gap-4">
+            {ABOUT_CARDS.map((card) => {
+              const image = imagesForSlot(gallery, card.slot)[0];
+              return (
+                <ReplaceCard
+                  key={card.slot}
+                  title={card.label}
                   image={image}
-                  busy={busy}
-                  disabled={!blobConfigured}
-                  onUpload={(file) => void upload(s.slot, file, image?.id, s.label)}
-                  onRemove={image ? () => remove(image.id) : undefined}
+                  busy={busy || !supabaseConfigured}
+                  onReplace={(file) => void upload(card.slot, file, card.label)}
                 />
               );
             })}
           </div>
-        </Section>
+        </section>
+
+        <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+          <h2 className="text-lg font-bold mb-1">Trusted clients</h2>
+          <p className="text-sm text-slate-400 mb-4">Logos on the homepage strip.</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {clients.map((img) => (
+              <div key={img.id} className="rounded-xl border border-white/10 bg-[#0a0f1e] overflow-hidden">
+                <div className="relative h-24 bg-[#f4f6f8] flex items-center justify-center p-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={img.url} alt={img.alt} className="max-h-16 w-auto max-w-full object-contain" />
+                </div>
+                <p className="px-3 pt-2 text-xs text-slate-400 truncate">{img.alt}</p>
+                <div className="p-2">
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() =>
+                      void persist({ images: gallery.images.filter((item) => item.id !== img.id) })
+                    }
+                    className="min-h-10 w-full rounded-lg border border-[#E01F26]/40 text-[#ffb4b6] text-sm font-semibold"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4">
+            <AddPhotosButton
+              disabled={busy || !supabaseConfigured}
+              label="Add logo"
+              onFile={(file) => void upload("clients", file)}
+            />
+          </div>
+        </section>
       </main>
     </div>
   );
 }
 
-function Section({
+function ReplaceCard({
   title,
-  hint,
-  children,
-}: {
-  title: string;
-  hint: string;
-  children: ReactNode;
-}) {
-  return (
-    <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-      <h2 className="text-lg font-bold mb-1">{title}</h2>
-      <p className="text-sm text-slate-400 mb-4">{hint}</p>
-      {children}
-    </section>
-  );
-}
-
-function PhotoCard({
   image,
   busy,
   onReplace,
+}: {
+  title: string;
+  image?: GalleryImage;
+  busy: boolean;
+  onReplace: (file: File) => void;
+}) {
+  return (
+    <div className="rounded-xl border border-white/10 overflow-hidden bg-[#0a0f1e]">
+      <p className="px-3 pt-3 text-sm font-semibold">{title}</p>
+      <div className="relative h-36 mt-2 bg-black/30">
+        {image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={image.url} alt={image.alt} className="w-full h-full object-cover" />
+        ) : (
+          <p className="px-3 py-10 text-sm text-slate-500 text-center">No photo yet.</p>
+        )}
+      </div>
+      <div className="p-3">
+        <ReplaceButton disabled={busy} onFile={onReplace} />
+      </div>
+    </div>
+  );
+}
+
+function DraggablePhoto({
+  image,
+  busy,
   onRemove,
-  onUp,
-  onDown,
 }: {
   image: GalleryImage;
   busy: boolean;
-  onReplace: (file: File) => void;
   onRemove: () => void;
-  onUp?: () => void;
-  onDown?: () => void;
 }) {
   return (
-    <div className="rounded-xl border border-white/10 overflow-hidden bg-[#0a0f1e]">
-      <div className="relative h-44">
+    <div
+      draggable={!busy}
+      onDragStart={(e) => {
+        e.dataTransfer.setData("text/plain", image.id);
+        e.dataTransfer.effectAllowed = "move";
+      }}
+      className="rounded-xl overflow-hidden border border-white/10 bg-black/20 cursor-grab active:cursor-grabbing"
+    >
+      <div className="relative h-28">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={image.url} alt={image.alt} className="w-full h-full object-cover" />
+        <img src={image.url} alt={image.alt} className="w-full h-full object-cover pointer-events-none" />
       </div>
-      <div className="p-3 flex flex-col gap-2">
-        <p className="text-sm text-slate-300">{image.alt}</p>
-        <div className="flex flex-wrap gap-2">
-          {(onUp || onDown) && (
-            <>
-              <IconBtn disabled={!onUp || busy} onClick={onUp} label="Move up">
-                <ChevronUp className="w-5 h-5" />
-              </IconBtn>
-              <IconBtn disabled={!onDown || busy} onClick={onDown} label="Move down">
-                <ChevronDown className="w-5 h-5" />
-              </IconBtn>
-            </>
-          )}
-          <FileBtn disabled={busy} onFile={onReplace}>
-            Replace
-          </FileBtn>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={onRemove}
-            className="min-h-12 px-4 rounded-xl border border-[#E01F26]/40 text-[#ffb4b6] font-semibold"
-          >
-            Remove
-          </button>
-        </div>
-      </div>
+      <button
+        type="button"
+        disabled={busy}
+        onClick={onRemove}
+        className="min-h-10 w-full text-xs font-semibold text-[#ffb4b6] border-t border-white/10"
+      >
+        Remove
+      </button>
     </div>
   );
 }
 
-function FixedSlot({
-  label,
-  image,
-  busy,
-  disabled,
-  onUpload,
-  onRemove,
-}: {
-  label: string;
-  image?: GalleryImage;
-  busy: boolean;
-  disabled: boolean;
-  onUpload: (file: File) => void;
-  onRemove?: () => void;
-}) {
+function ReplaceButton({ disabled, onFile }: { disabled: boolean; onFile: (file: File) => void }) {
   return (
-    <div className="rounded-xl border border-white/10 overflow-hidden bg-[#0a0f1e]">
-      <p className="px-3 pt-3 text-sm font-semibold">{label}</p>
-      {image ? (
-        <div className="relative h-40 mt-2">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={image.url} alt={image.alt} className="w-full h-full object-cover" />
-        </div>
-      ) : (
-        <p className="px-3 py-6 text-sm text-slate-500">Using the site’s current photo.</p>
-      )}
-      <div className="p-3 flex flex-wrap gap-2">
-        <FileBtn disabled={busy || disabled} onFile={onUpload}>
-          {image ? "Replace" : "Upload"}
-        </FileBtn>
-        {onRemove && (
-          <button
-            type="button"
-            disabled={busy}
-            onClick={onRemove}
-            className="min-h-12 px-4 rounded-xl border border-[#E01F26]/40 text-[#ffb4b6] font-semibold"
-          >
-            Remove
-          </button>
-        )}
-      </div>
-    </div>
+    <FileBtn disabled={disabled} onFile={onFile}>
+      Replace image
+    </FileBtn>
   );
 }
 
-function UploadButton({
-  label,
+function AddPhotosButton({
   disabled,
   onFile,
+  label = "Add photos",
 }: {
-  label: string;
   disabled: boolean;
   onFile: (file: File) => void;
+  label?: string;
 }) {
   return (
-    <FileBtn disabled={disabled} onFile={onFile} wide>
+    <FileBtn disabled={disabled} onFile={onFile}>
       <Upload className="w-4 h-4" /> {label}
     </FileBtn>
   );
@@ -356,18 +390,16 @@ function FileBtn({
   children,
   disabled,
   onFile,
-  wide,
 }: {
   children: ReactNode;
   disabled: boolean;
   onFile: (file: File) => void;
-  wide?: boolean;
 }) {
   return (
     <label
       className={`inline-flex items-center justify-center gap-2 min-h-12 px-4 rounded-xl bg-[#2665AA] font-semibold cursor-pointer ${
-        wide ? "w-full" : ""
-      } ${disabled ? "opacity-50 pointer-events-none" : ""}`}
+        disabled ? "opacity-50 pointer-events-none" : ""
+      }`}
     >
       {children}
       <input
@@ -382,29 +414,5 @@ function FileBtn({
         }}
       />
     </label>
-  );
-}
-
-function IconBtn({
-  children,
-  onClick,
-  disabled,
-  label,
-}: {
-  children: ReactNode;
-  onClick?: () => void;
-  disabled?: boolean;
-  label: string;
-}) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      disabled={disabled}
-      onClick={onClick}
-      className="min-h-12 min-w-12 rounded-xl border border-white/15 inline-flex items-center justify-center disabled:opacity-40"
-    >
-      {children}
-    </button>
   );
 }

@@ -1,19 +1,19 @@
 # Glacier Air photo admin
 
-Open **https://glacier-air.vercel.app/admin**, enter the PIN, and manage job photos.
+Nick uses **https://glacier-air.vercel.app/admin** with the PIN. No GitHub login.
 
-## What Nick can do
+## Layout
 
-- Sign in with a PIN (no Gmail).
-- Upload, replace, remove, and reorder **Projects** photos.
-- Replace or clear the three **Services** card photos and the three **About** photos.
-- The homepage **hero rooftop photo is locked** (Mike). Nick cannot overwrite it.
+1. **Hero** — one large homepage photo. **Replace image** only. Not draggable into projects.
+2. **Services** — Air conditioning, Refrigeration, Mechanical. Each has **Replace image**.
+3. **Projects** — a heading per job. Drag photos between projects. Each project has **Add photos**. Remove sends a photo to Unassigned / other.
+4. **About** and **Trusted clients** sit at the bottom.
 
-If Nick has not uploaded anything yet, the public pages keep the current static photos.
+## Storage
 
-## Uploads
+Photos live in **GolfChariotsMike's Project** on Supabase — public bucket `glacier-air`. Project grouping is stored in `project_id` on `glacier_air_gallery_images`.
 
-Connect Vercel Blob on this project so **`BLOB_READ_WRITE_TOKEN`** is set. Without it, Nick can sign in but cannot save uploads.
+The app already knows the project URL and the public anon JWT. No service role key. No Vercel Blob.
 
 ## Local
 
@@ -23,9 +23,6 @@ npm run dev
 
 Open http://localhost:3000/admin
 
-## Notes
+PIN fallback is `1291` when `ADMIN_PIN` is unset.
 
-- Cookie session is httpOnly, SameSite=lax, Secure on production builds.
-- Failed PIN attempts are rate-limited (about 8 tries / 15 minutes per instance).
-- `/admin` is noindex and disallowed in robots.txt.
-- This PR does not change glacierair.com.au DNS.
+This change does not touch glacierair.com.au or any DNS/domain.

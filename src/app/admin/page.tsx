@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { ADMIN_COOKIE, sessionValid } from "@/lib/admin-auth";
-import { blobConfigured } from "@/lib/blob-gallery";
+import { supabaseConfigured } from "@/lib/supabase-gallery";
 import AdminPinForm from "@/components/admin/AdminPinForm";
 import AdminApp from "@/components/admin/AdminApp";
 
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default async function AdminPage() {
   const jar = await cookies();
   if (sessionValid(jar.get(ADMIN_COOKIE)?.value)) {
-    return <AdminApp blobConfigured={blobConfigured()} />;
+    return <AdminApp supabaseConfigured={supabaseConfigured()} />;
   }
   return <AdminPinForm />;
 }

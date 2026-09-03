@@ -7,7 +7,8 @@ import Clients from "@/components/Clients";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import { JsonLd } from "@/components/JsonLd";
-import { readGallery } from "@/lib/blob-gallery";
+import { firstAlt, firstUrl, HERO_FALLBACK } from "@/lib/gallery";
+import { readGallery } from "@/lib/supabase-gallery";
 
 export const revalidate = 30;
 
@@ -17,11 +18,14 @@ export default async function Home() {
     <>
       <JsonLd />
       <Navbar />
-      <Hero />
+      <Hero
+        imageSrc={firstUrl(gallery, "hero", HERO_FALLBACK)}
+        imageAlt={firstAlt(gallery, "hero", "Rooftop air conditioning")}
+      />
       <Services gallery={gallery} />
       <About gallery={gallery} />
       <Projects gallery={gallery} />
-      <Clients />
+      <Clients gallery={gallery} />
       <Contact />
       <Footer />
     </>
