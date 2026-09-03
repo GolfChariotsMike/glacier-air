@@ -12,21 +12,18 @@ Nick uses **https://glacier-air.vercel.app/admin** with the PIN. No GitHub login
 
 If Nick has not uploaded anything yet, the public pages keep the current static photos from the repo.
 
-## Storage (Mike)
+## Storage
 
 Photos live in **GolfChariotsMike's Project** on Supabase — public bucket `glacier-air`.
 
-On Vercel **Production** for this project, set:
+The app already knows the project URL and the public anon JWT. Vercel Production does not need new env vars for gallery uploads. Optional overrides:
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://obtbmywqrzotvspgmaiq.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<project anon JWT>
-SUPABASE_SERVICE_ROLE_KEY=<service role — server only, never NEXT_PUBLIC_>
 ```
 
-The service role is required for upload, assign, and delete. Do not put it in `NEXT_PUBLIC_` variables. The anon key is already public; the site uses it (or the service role on the server) to read assigned photos.
-
-Without the service role, Nick can still sign in and see the current fallback photos, but uploads stay disconnected.
+Server uploads and deletes use `createClient(url, anonKey)` plus PIN cookie auth. There is no service role key.
 
 ## Local
 
@@ -35,8 +32,6 @@ npm run dev
 ```
 
 Open http://localhost:3000/admin
-
-Optional local env (same names as Production). Do not commit secrets.
 
 ## Notes
 

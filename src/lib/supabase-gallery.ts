@@ -1,6 +1,5 @@
 import {
-  createGalleryReadClient,
-  createServiceClient,
+  createAnonClient,
   GALLERY_BUCKET,
   supabaseConfigured,
   SUPABASE_URL,
@@ -33,9 +32,9 @@ export function isLockedSlot(slot: string): boolean {
 }
 
 export async function readGallery(): Promise<GalleryState> {
-  const client = createGalleryReadClient();
-  if (!client) return EMPTY_GALLERY;
+  if (!supabaseConfigured()) return EMPTY_GALLERY;
   try {
+    const client = createAnonClient();
     const { data, error } = await client
       .from(IMAGES_TABLE)
       .select("id, slot, url, alt, sort, storage_path")
@@ -50,7 +49,7 @@ export async function readGallery(): Promise<GalleryState> {
 }
 
 async function readRows(): Promise<GalleryRow[]> {
-  const client = createServiceClient();
+  const client = createAnonClient();
   const { data, error } = await client
     .from(IMAGES_TABLE)
     .select("id, slot, url, alt, sort, storage_path")
@@ -71,17 +70,16 @@ export async function writeGallery(state: GalleryState): Promise<GalleryState> {
   const prev = await readRows();
   const keepIds = new Set(next.images.map((img) => img.id));
   const prevById = new Map(prev.map((row) => [row.id, row]));
+  const client = createAnonClient();
 
   for (const row of prev) {
     if (!keepIds.has(row.id)) {
       await deleteStoredObject(row.storage_path, row.url);
-      const client = createServiceClient();
       const { error } = await client.from(IMAGES_TABLE).delete().eq("id", row.id);
       if (error) throw new Error(error.message || "Could not remove photo.");
     }
   }
 
-  const client = createServiceClient();
   for (const img of next.images) {
     const existing = prevById.get(img.id);
     const { error } = await client.from(IMAGES_TABLE).upsert({
@@ -106,7 +104,7 @@ export async function uploadGalleryFile(file: File, slot: string, filename: stri
     throw new Error("That slot cannot be changed.");
   }
 
-  const client = createServiceClient();
+  const client = createAnonClient();
   const { data: slotRow } = await client
     .from(SLOTS_TABLE)
     .select("id, locked")
@@ -137,7 +135,7 @@ export async function assignGalleryImage(input: {
   storagePath: string;
   replaceId?: string;
 }): Promise<GalleryState> {
-  const client = createServiceClient();
+  const client = createAnonClient();
   const prev = await readRows();
 
   if (input.replaceId) {
@@ -175,7 +173,7 @@ async function deleteStoredObject(storagePath: string | null | undefined, url: s
   const path = storagePath || pathFromPublicUrl(url);
   if (!path) return;
   try {
-    const client = createServiceClient();
+    const client = createAnonClient();
     await client.storage.from(GALLERY_BUCKET).remove([path]);
   } catch {
     // Keep the table consistent even if the object is already gone.

@@ -3,42 +3,21 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 export const SUPABASE_URL =
   process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || "https://obtbmywqrzotvspgmaiq.supabase.co";
 
+/** Legacy anon JWT for GolfChariotsMike's Project — already public. */
+const DEFAULT_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9idGJteXdxcnpvdHZzcGdtYWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU0NzcwMDYsImV4cCI6MjA1MTA1MzAwNn0.8tenOBgmnxwKlFt6roAT7m8OGKmIHdxnAij6seKojsY";
+
+export const SUPABASE_ANON_KEY =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() || DEFAULT_ANON_KEY;
+
 export const GALLERY_BUCKET = "glacier-air";
 
 export function supabaseConfigured(): boolean {
-  return Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY?.trim());
+  return Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 }
 
-function anonKey(): string | undefined {
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
-  return key || undefined;
-}
-
-export function createAnonClient(): SupabaseClient | null {
-  const key = anonKey();
-  if (!key) return null;
-  return createClient(SUPABASE_URL, key, {
+export function createAnonClient(): SupabaseClient {
+  return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
-}
-
-export function createServiceClient(): SupabaseClient {
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
-  if (!key) {
-    throw new Error("Photo storage is not connected.");
-  }
-  return createClient(SUPABASE_URL, key, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-}
-
-/** Public reads can use the anon key; writes always need the service role. */
-export function createGalleryReadClient(): SupabaseClient | null {
-  const service = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
-  if (service) {
-    return createClient(SUPABASE_URL, service, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
-  }
-  return createAnonClient();
 }
