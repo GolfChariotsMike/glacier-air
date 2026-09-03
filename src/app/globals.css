@@ -175,7 +175,7 @@ body {
 .client-marquee-track {
   display: flex;
   width: max-content;
-  animation: client-marquee 42s linear infinite;
+  animation: client-marquee 70s linear infinite;
 }
 .client-marquee:hover .client-marquee-track {
   animation-play-state: paused;

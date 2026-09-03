@@ -1,36 +1,60 @@
 import Image from "next/image";
 
 const clients = [
-  { name: "Home Base Perth", src: "/images/clients/home-base-perth.png" },
-  { name: "Forest Hill Vineyard", src: "/images/clients/forest-hill-vineyard.png" },
-  { name: "Cancer Council WA", src: "/images/clients/cancer-council-wa.png" },
-  { name: "Bower / Wanslea", src: "/images/clients/bower-wanslea.png" },
-  { name: "Accolade Wines", src: "/images/clients/accolade-wines.png" },
-  { name: "West Cape Howe", src: "/images/clients/west-cape-howe.png" },
-  { name: "Primero", src: "/images/clients/primero.png" },
-  { name: "Luna Palace Cinemas", src: "/images/clients/luna-palace-cinemas.png" },
-  { name: "Smile Time Orthodontics", src: "/images/clients/smile-time-orthodontics.png" },
+  { name: "Alzheimer’s WA", src: "/clients/alzheimers-wa.png" },
+  { name: "Cancer Council", src: "/clients/cancer-council.png" },
+  { name: "Sandalford Wines", src: "/clients/sandalford-wines.png" },
+  { name: "Pirate Life Perth", src: "/clients/pirate-life.png" },
+  { name: "Altegra Property Group", src: "/clients/altegra.png" },
+  { name: "New West Foods", src: "/clients/new-west-foods.png" },
+  { name: "THE MONTAU LIGHTING", src: "/clients/montau-lighting.png" },
+  { name: "West Cape Howe Wines", src: "/clients/west-cape-howe.png" },
+  { name: "Oakover Wines", src: "/clients/oakover-wines.png" },
+  { name: "Luna Palace Cinemas", src: "/clients/luna-palace.png" },
+  { name: "Benara Nurseries", src: "/clients/benara-nurseries.png" },
+  { name: "foodfolk AUSTRALIA", src: "/clients/foodfolk.png" },
+  { name: "sagewood Early Learning", src: "/clients/sagewood.png" },
+  { name: "Uplyft", src: "/clients/uplyft.png" },
+  { name: "Ross Scarfone Real Estate", src: "/clients/ross-scarfone.png" },
+  { name: "Island Market Trigg", src: "/clients/island-market.png" },
+  { name: "TSOKOS", src: "/clients/tsokos.png" },
+  { name: "Forest Hill Vineyard", src: "/clients/forest-hill.png" },
+  { name: "Raine & Horne Commercial", src: "/clients/raine-horne.png" },
+  { name: "Margaret River Vintners", src: "/clients/margaret-river-vintners.png" },
+  { name: "HOME BASE", src: "/clients/home-base.png" },
+  { name: "Cherubino wines", src: "/clients/cherubino.png" },
 ];
+
+function LogoCard({
+  name,
+  src,
+  decorative = false,
+}: {
+  name: string;
+  src: string;
+  decorative?: boolean;
+}) {
+  return (
+    <div className="flex h-24 w-44 shrink-0 items-center justify-center rounded-xl bg-[#f4f6f8] px-3 ring-1 ring-black/5">
+      <Image
+        src={src}
+        alt={decorative ? "" : name}
+        width={160}
+        height={72}
+        className="max-h-16 w-auto max-w-full object-contain"
+      />
+    </div>
+  );
+}
 
 function LogoRow({ duplicate = false }: { duplicate?: boolean }) {
   return (
     <div
-      className={duplicate ? "client-marquee-dup flex" : "flex"}
+      className={duplicate ? "client-marquee-dup flex gap-3 pr-3" : "flex gap-3 pr-3"}
       aria-hidden={duplicate || undefined}
     >
       {clients.map((c) => (
-        <div
-          key={`${c.name}${duplicate ? "-dup" : ""}`}
-          className="relative flex h-16 w-44 shrink-0 items-center justify-center px-6"
-        >
-          <Image
-            src={c.src}
-            alt={duplicate ? "" : c.name}
-            width={176}
-            height={48}
-            className="max-h-12 w-auto max-w-full object-contain invert opacity-80"
-          />
-        </div>
+        <LogoCard key={`${c.src}${duplicate ? "-dup" : ""}`} {...c} decorative={duplicate} />
       ))}
     </div>
   );
@@ -41,7 +65,7 @@ export default function Clients() {
     <section className="py-16 bg-[#060c1a] border-t border-white/5 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 mb-10 text-center">
         <p className="text-blue-400 text-sm font-semibold uppercase tracking-widest mb-3">
-          Trusted By
+          Trusted clients
         </p>
         <h2 className="text-3xl md:text-4xl font-bold text-white">Our valued clients</h2>
       </div>
