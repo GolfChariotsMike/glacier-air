@@ -10,32 +10,40 @@ const clients = [
   { name: "THE MONTAU LIGHTING", src: "/clients/montau-lighting.png" },
   { name: "West Cape Howe Wines", src: "/clients/west-cape-howe.png" },
   { name: "Oakover Wines", src: "/clients/oakover-wines.png" },
-  { name: "Luna Palace Cinemas", src: "/clients/luna-palace.png" },
+  { name: "Luna Palace Cinemas", src: "/clients/luna-palace.png", tile: "grey" },
   { name: "Benara Nurseries", src: "/clients/benara-nurseries.png" },
   { name: "foodfolk AUSTRALIA", src: "/clients/foodfolk.png" },
   { name: "sagewood Early Learning", src: "/clients/sagewood.png" },
   { name: "Uplyft", src: "/clients/uplyft.png" },
   { name: "Ross Scarfone Real Estate", src: "/clients/ross-scarfone.png" },
   { name: "Island Market Trigg", src: "/clients/island-market.png" },
-  { name: "TSOKOS", src: "/clients/tsokos.png" },
+  { name: "TSOKOS", src: "/clients/tsokos.png", tile: "grey" },
   { name: "Forest Hill Vineyard", src: "/clients/forest-hill.png" },
-  { name: "Raine & Horne Commercial", src: "/clients/raine-horne.png" },
+  { name: "Raine & Horne Commercial", src: "/clients/raine-horne.png", tile: "grey" },
   { name: "Margaret River Vintners", src: "/clients/margaret-river-vintners.png" },
   { name: "HOME BASE", src: "/clients/home-base.png" },
   { name: "Cherubino wines", src: "/clients/cherubino.png" },
-];
+] as const;
 
 function LogoCard({
   name,
   src,
+  tile = "light",
   decorative = false,
 }: {
   name: string;
   src: string;
+  tile?: "light" | "grey";
   decorative?: boolean;
 }) {
   return (
-    <div className="flex h-24 w-44 shrink-0 items-center justify-center rounded-xl bg-[#f4f6f8] px-3 ring-1 ring-black/5">
+    <div
+      className={`flex h-24 w-44 shrink-0 items-center justify-center rounded-xl px-3 ring-1 ${
+        tile === "grey"
+          ? "bg-[#6d7580] ring-white/10"
+          : "bg-[#f4f6f8] ring-black/5"
+      }`}
+    >
       <Image
         src={src}
         alt={decorative ? "" : name}
