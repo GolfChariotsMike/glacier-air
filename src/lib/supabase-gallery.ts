@@ -1,11 +1,14 @@
 import { createAnonClient, GALLERY_BUCKET, supabaseConfigured, SUPABASE_URL } from "@/lib/supabase";
 import { SEED_IMAGES } from "@/lib/gallery-seed";
 import {
+  inferProjectId,
   isGallerySlot,
+  isProjectId,
   MULTI_IMAGE_SLOTS,
   normalizeGallery,
   type GalleryImage,
   type GalleryState,
+  type ProjectId,
 } from "@/lib/gallery";
 
 export { supabaseConfigured };
@@ -19,13 +22,26 @@ type GalleryRow = {
   alt: string;
   sort: number;
   storage_path: string | null;
+  project_id: string | null;
 };
+
+function rowPayload(img: GalleryImage, storagePath: string | null) {
+  return {
+    id: img.id,
+    slot: img.slot,
+    url: img.url,
+    alt: img.alt,
+    sort: img.sort,
+    storage_path: storagePath,
+    project_id: img.slot === "projects" ? (img.projectId ?? inferProjectId(img.url, img.id)) : null,
+  };
+}
 
 async function fetchRows(): Promise<GalleryRow[]> {
   const client = createAnonClient();
   const { data, error } = await client
     .from(IMAGES_TABLE)
-    .select("id, slot, url, alt, sort, storage_path")
+    .select("id, slot, url, alt, sort, storage_path, project_id")
     .order("sort", { ascending: true });
   if (error) throw new Error(error.message || "Could not load photos.");
   return (data ?? []).filter((row) => isGallerySlot(row.slot));
@@ -48,19 +64,20 @@ export async function readGallery(): Promise<GalleryState> {
 export async function ensureSeeded(): Promise<GalleryState> {
   if (!supabaseConfigured()) return normalizeGallery({ images: SEED_IMAGES });
   const rows = await fetchRows();
-  if (rows.length) return normalizeGallery({ images: rows });
+  if (rows.length) {
+    const client = createAnonClient();
+    const missing = rows.filter((row) => row.slot === "projects" && !isProjectId(row.project_id));
+    for (const row of missing) {
+      await client
+        .from(IMAGES_TABLE)
+        .update({ project_id: inferProjectId(row.url, row.id) })
+        .eq("id", row.id);
+    }
+    return fromRows(missing.length ? await fetchRows() : rows);
+  }
 
   const client = createAnonClient();
-  const { error } = await client.from(IMAGES_TABLE).upsert(
-    SEED_IMAGES.map((img) => ({
-      id: img.id,
-      slot: img.slot,
-      url: img.url,
-      alt: img.alt,
-      sort: img.sort,
-      storage_path: null,
-    }))
-  );
+  const { error } = await client.from(IMAGES_TABLE).upsert(SEED_IMAGES.map((img) => rowPayload(img, null)));
   if (error) return normalizeGallery({ images: SEED_IMAGES });
   return normalizeGallery({ images: SEED_IMAGES });
 }
@@ -89,14 +106,9 @@ export async function writeGallery(state: GalleryState): Promise<GalleryState> {
 
   for (const img of next.images) {
     const existing = prevById.get(img.id);
-    const { error } = await client.from(IMAGES_TABLE).upsert({
-      id: img.id,
-      slot: img.slot,
-      url: img.url,
-      alt: img.alt,
-      sort: img.sort,
-      storage_path: existing?.storage_path ?? pathFromPublicUrl(img.url),
-    });
+    const { error } = await client.from(IMAGES_TABLE).upsert(
+      rowPayload(img, existing?.storage_path ?? pathFromPublicUrl(img.url))
+    );
     if (error) throw new Error(error.message || "Could not save photos.");
   }
 
@@ -131,34 +143,30 @@ export async function assignGalleryImage(input: {
   alt: string;
   sort: number;
   storagePath: string;
+  projectId?: ProjectId | null;
 }): Promise<GalleryState> {
   await ensureSeeded();
   const client = createAnonClient();
   const prev = await fetchRows();
-  const working: GalleryImage[] = (prev.length ? prev : SEED_IMAGES).map((row) => ({
-    id: row.id,
-    slot: row.slot as GalleryImage["slot"],
-    url: row.url,
-    alt: row.alt,
-    sort: row.sort,
-  }));
+  const working = normalizeGallery({ images: prev.length ? prev : SEED_IMAGES }).images;
 
   if (!MULTI_IMAGE_SLOTS.has(input.slot)) {
     for (const row of working.filter((img) => img.slot === input.slot && img.id !== input.id)) {
-      const { error } = await client
-        .from(IMAGES_TABLE)
-        .upsert({
-          id: row.id,
-          slot: "library",
-          url: row.url,
-          alt: row.alt,
-          sort: row.sort,
-          storage_path: prev.find((p) => p.id === row.id)?.storage_path ?? null,
-        });
+      const { error } = await client.from(IMAGES_TABLE).upsert({
+        id: row.id,
+        slot: "library",
+        url: row.url,
+        alt: row.alt,
+        sort: row.sort,
+        storage_path: prev.find((p) => p.id === row.id)?.storage_path ?? null,
+        project_id: null,
+      });
       if (error) throw new Error(error.message || "Could not move the previous photo to the library.");
     }
   }
 
+  const projectId =
+    input.slot === "projects" ? (input.projectId ?? inferProjectId(input.url, input.id)) : null;
   const { error } = await client.from(IMAGES_TABLE).upsert({
     id: input.id,
     slot: input.slot,
@@ -166,6 +174,7 @@ export async function assignGalleryImage(input: {
     alt: input.alt,
     sort: input.sort,
     storage_path: input.storagePath,
+    project_id: projectId,
   });
   if (error) throw new Error(error.message || "Could not save photo.");
 

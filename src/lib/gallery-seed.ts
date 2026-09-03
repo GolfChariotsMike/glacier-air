@@ -1,7 +1,14 @@
-import type { GalleryImage, GallerySlot } from "@/lib/gallery";
+import type { GalleryImage, GallerySlot, ProjectId } from "@/lib/gallery";
 
-function seed(id: string, slot: GallerySlot, url: string, alt: string, sort: number): GalleryImage {
-  return { id: `seed-${id}`, slot, url, alt, sort };
+function seed(
+  id: string,
+  slot: GallerySlot,
+  url: string,
+  alt: string,
+  sort: number,
+  projectId?: ProjectId | null
+): GalleryImage {
+  return { id: `seed-${id}`, slot, url, alt, sort, projectId: projectId ?? null };
 }
 
 export const SEED_IMAGES: GalleryImage[] = [
@@ -15,30 +22,30 @@ export const SEED_IMAGES: GalleryImage[] = [
   seed("services-ref", "services-ref", "/images/tile-refrigeration.webp", "Refrigeration", 0),
   seed("services-mech", "services-mech", "/images/tile-mechanical.webp", "Mechanical services", 0),
 
-  seed("fremantle-7", "projects", "/images/fremantle-7.webp", "Fremantle office fitout", 0),
-  seed("fremantle-13", "projects", "/images/fremantle-13.webp", "Fremantle office fitout", 1),
-  seed("fremantle-19", "projects", "/images/fremantle-19.webp", "Fremantle office fitout", 2),
-  seed("nikola-estate", "projects", "/images/nikola-estate.webp", "Nikola Estate", 3),
-  seed("refrigeration", "projects", "/images/refrigeration.webp", "Refrigeration project", 4),
-  seed("daiwa-foods", "projects", "/images/projects/daiwa-foods.webp", "Daiwa Foods cold storage", 5),
-  seed("daiwa-2", "projects", "/images/projects/daiwa-2.webp", "Daiwa Foods cold storage", 6),
-  seed("henley-park", "projects", "/images/projects/henley-park.webp", "Henley Park Wines chiller upgrade", 7),
-  seed("henley-2", "projects", "/images/projects/henley-2.webp", "Henley Park Wines chiller upgrade", 8),
-  seed("henley-3", "projects", "/images/projects/henley-3.webp", "Henley Park Wines chiller upgrade", 9),
-  seed("new-west-foods", "projects", "/images/projects/new-west-foods.webp", "New West Foods cold storage", 10),
-  seed("new-west-2", "projects", "/images/projects/new-west-2.webp", "New West Foods cold storage", 11),
-  seed("new-west-3", "projects", "/images/projects/new-west-3.webp", "New West Foods cold storage", 12),
-  seed("nikola-1", "projects", "/images/projects/nikola-1.webp", "Nikola Estate barn AC", 13),
-  seed("nikola-2", "projects", "/images/projects/nikola-2.webp", "Nikola Estate barn AC", 14),
-  seed("nikola-3", "projects", "/images/projects/nikola-3.webp", "Nikola Estate barn AC", 15),
-  seed("nikola-4", "projects", "/images/projects/nikola-4.webp", "Nikola Estate barn AC", 16),
-  seed("primero", "projects", "/images/projects/primero.webp", "Primero HVAC installation, Pilbara", 17),
-  seed("primero-2", "projects", "/images/projects/primero-2.webp", "Primero HVAC installation, Pilbara", 18),
-  seed("shelf-subsea", "projects", "/images/projects/shelf-subsea.webp", "Shelf Subsea dive chiller overhaul", 19),
-  seed("shelf-2", "projects", "/images/projects/shelf-2.webp", "Shelf Subsea dive chiller overhaul", 20),
-  seed("west-cape-howe", "projects", "/images/projects/west-cape-howe.webp", "West Cape Howe winery chiller upgrade", 21),
-  seed("west-cape-2", "projects", "/images/projects/west-cape-2.webp", "West Cape Howe winery chiller upgrade", 22),
-  seed("windsor-cinema", "projects", "/images/projects/windsor-cinema.webp", "Windsor Cinema AC upgrade", 23),
+  seed("fremantle-7", "projects", "/images/fremantle-7.webp", "Fremantle office fitout", 0, "unassigned"),
+  seed("fremantle-13", "projects", "/images/fremantle-13.webp", "Fremantle office fitout", 1, "unassigned"),
+  seed("fremantle-19", "projects", "/images/fremantle-19.webp", "Fremantle office fitout", 2, "unassigned"),
+  seed("refrigeration", "projects", "/images/refrigeration.webp", "Refrigeration project", 3, "unassigned"),
+  seed("nikola-estate", "projects", "/images/nikola-estate.webp", "Nikola Estate", 0, "nikola"),
+  seed("daiwa-foods", "projects", "/images/projects/daiwa-foods.webp", "Daiwa Foods cold storage", 0, "daiwa"),
+  seed("daiwa-2", "projects", "/images/projects/daiwa-2.webp", "Daiwa Foods cold storage", 1, "daiwa"),
+  seed("henley-park", "projects", "/images/projects/henley-park.webp", "Henley Park Wines chiller upgrade", 0, "henley"),
+  seed("henley-2", "projects", "/images/projects/henley-2.webp", "Henley Park Wines chiller upgrade", 1, "henley"),
+  seed("henley-3", "projects", "/images/projects/henley-3.webp", "Henley Park Wines chiller upgrade", 2, "henley"),
+  seed("new-west-foods", "projects", "/images/projects/new-west-foods.webp", "New West Foods cold storage", 0, "new-west"),
+  seed("new-west-2", "projects", "/images/projects/new-west-2.webp", "New West Foods cold storage", 1, "new-west"),
+  seed("new-west-3", "projects", "/images/projects/new-west-3.webp", "New West Foods cold storage", 2, "new-west"),
+  seed("nikola-1", "projects", "/images/projects/nikola-1.webp", "Nikola Estate barn AC", 1, "nikola"),
+  seed("nikola-2", "projects", "/images/projects/nikola-2.webp", "Nikola Estate barn AC", 2, "nikola"),
+  seed("nikola-3", "projects", "/images/projects/nikola-3.webp", "Nikola Estate barn AC", 3, "nikola"),
+  seed("nikola-4", "projects", "/images/projects/nikola-4.webp", "Nikola Estate barn AC", 4, "nikola"),
+  seed("primero", "projects", "/images/projects/primero.webp", "Primero HVAC installation, Pilbara", 0, "primero"),
+  seed("primero-2", "projects", "/images/projects/primero-2.webp", "Primero HVAC installation, Pilbara", 1, "primero"),
+  seed("shelf-subsea", "projects", "/images/projects/shelf-subsea.webp", "Shelf Subsea dive chiller overhaul", 0, "shelf"),
+  seed("shelf-2", "projects", "/images/projects/shelf-2.webp", "Shelf Subsea dive chiller overhaul", 1, "shelf"),
+  seed("west-cape-howe", "projects", "/images/projects/west-cape-howe.webp", "West Cape Howe winery chiller upgrade", 0, "west-cape"),
+  seed("west-cape-2", "projects", "/images/projects/west-cape-2.webp", "West Cape Howe winery chiller upgrade", 1, "west-cape"),
+  seed("windsor-cinema", "projects", "/images/projects/windsor-cinema.webp", "Windsor Cinema AC upgrade", 0, "windsor"),
 
   seed("client-alzheimers-wa", "clients", "/clients/alzheimers-wa.png", "Alzheimer’s WA", 0),
   seed("client-cancer-council", "clients", "/clients/cancer-council.png", "Cancer Council", 1),

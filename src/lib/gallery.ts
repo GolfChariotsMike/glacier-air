@@ -38,12 +38,39 @@ export const SLOT_LABELS: Record<GallerySlot, string> = {
   library: "Unused library",
 };
 
+export const PROJECT_IDS = [
+  "daiwa",
+  "henley",
+  "new-west",
+  "nikola",
+  "primero",
+  "shelf",
+  "west-cape",
+  "windsor",
+  "unassigned",
+] as const;
+
+export type ProjectId = (typeof PROJECT_IDS)[number];
+
+export const PROJECT_GROUPS: { id: ProjectId; title: string; publicTitle: string }[] = [
+  { id: "daiwa", title: "Daiwa Foods", publicTitle: "Daiwa Foods Cold Storage" },
+  { id: "henley", title: "Henley Park Wines", publicTitle: "Henley Park Wines chiller upgrade" },
+  { id: "new-west", title: "New West Foods", publicTitle: "New West Foods Cold Storage" },
+  { id: "nikola", title: "Nikola Estate", publicTitle: "Nikola Estate Barn AC" },
+  { id: "primero", title: "Primero", publicTitle: "Primero HVAC installation, Pilbara" },
+  { id: "shelf", title: "Shelf Subsea", publicTitle: "Shelf Subsea Dive Chiller Overhaul" },
+  { id: "west-cape", title: "West Cape Howe", publicTitle: "West Cape Howe winery chiller upgrade" },
+  { id: "windsor", title: "Windsor Cinema", publicTitle: "Windsor Cinema AC upgrade" },
+  { id: "unassigned", title: "Unassigned / other", publicTitle: "Other work" },
+];
+
 export type GalleryImage = {
   id: string;
   slot: GallerySlot;
   url: string;
   alt: string;
   sort: number;
+  projectId?: ProjectId | null;
 };
 
 export type GalleryState = {
@@ -78,10 +105,33 @@ export const CLIENT_GREY_TILES = new Set([
   "/clients/raine-horne.png",
 ]);
 
+export function isProjectId(value: string | null | undefined): value is ProjectId {
+  return Boolean(value && (PROJECT_IDS as readonly string[]).includes(value));
+}
+
 export function imagesForSlot(state: GalleryState, slot: GallerySlot): GalleryImage[] {
   return state.images
     .filter((img) => img.slot === slot)
     .sort((a, b) => a.sort - b.sort);
+}
+
+export function imagesForProject(state: GalleryState, projectId: ProjectId): GalleryImage[] {
+  return imagesForSlot(state, "projects")
+    .filter((img) => (img.projectId ?? "unassigned") === projectId)
+    .sort((a, b) => a.sort - b.sort);
+}
+
+export function inferProjectId(url: string, id?: string): ProjectId {
+  const hay = `${id ?? ""} ${url}`.toLowerCase();
+  if (hay.includes("daiwa")) return "daiwa";
+  if (hay.includes("henley")) return "henley";
+  if (hay.includes("new-west")) return "new-west";
+  if (hay.includes("nikola")) return "nikola";
+  if (hay.includes("primero")) return "primero";
+  if (hay.includes("shelf")) return "shelf";
+  if (hay.includes("west-cape")) return "west-cape";
+  if (hay.includes("windsor")) return "windsor";
+  return "unassigned";
 }
 
 export function firstUrl(state: GalleryState, slot: GallerySlot, fallback: string): string {
@@ -120,13 +170,27 @@ export function normalizeGallery(input: unknown): GalleryState {
           typeof img.url === "string" &&
           isDisplayableUrl(img.url)
       )
-      .map((img, i) => ({
-        id: img.id,
-        slot: img.slot,
-        url: img.url,
-        alt: typeof img.alt === "string" && img.alt.trim() ? img.alt.trim() : "Job photo",
-        sort: Number.isFinite(img.sort) ? img.sort : i,
-      })),
+      .map((img, i) => {
+        const rawProject =
+          typeof (img as GalleryImage).projectId === "string"
+            ? (img as GalleryImage).projectId
+            : typeof (img as { project_id?: string }).project_id === "string"
+              ? (img as { project_id?: string }).project_id
+              : null;
+        return {
+          id: img.id,
+          slot: img.slot,
+          url: img.url,
+          alt: typeof img.alt === "string" && img.alt.trim() ? img.alt.trim() : "Job photo",
+          sort: Number.isFinite(img.sort) ? img.sort : i,
+          projectId:
+            img.slot === "projects"
+              ? isProjectId(rawProject)
+                ? rawProject
+                : inferProjectId(img.url, img.id)
+              : null,
+        };
+      }),
   };
 }
 
@@ -146,12 +210,18 @@ export function displaceToLibrary(images: GalleryImage[], slot: GallerySlot, kee
   });
 }
 
-export function reassignImage(images: GalleryImage[], id: string, nextSlot: GallerySlot): GalleryImage[] {
+export function moveToProject(images: GalleryImage[], id: string, projectId: ProjectId): GalleryImage[] {
   const current = images.find((img) => img.id === id);
-  if (!current || current.slot === nextSlot) return images;
-  const max = images.filter((img) => img.slot === nextSlot).reduce((n, img) => Math.max(n, img.sort), -1);
-  const next = images.map((img) =>
-    img.id === id ? { ...img, slot: nextSlot, sort: max + 1 } : img
+  if (!current || current.slot !== "projects") return images;
+  const siblings = images.filter(
+    (img) => img.slot === "projects" && (img.projectId ?? "unassigned") === projectId && img.id !== id
   );
-  return displaceToLibrary(next, nextSlot, id);
+  const max = siblings.reduce((n, img) => Math.max(n, img.sort), -1);
+  return images.map((img) =>
+    img.id === id ? { ...img, slot: "projects" as const, projectId, sort: max + 1 } : img
+  );
+}
+
+export function sendProjectPhotoToUnused(images: GalleryImage[], id: string): GalleryImage[] {
+  return moveToProject(images, id, "unassigned");
 }

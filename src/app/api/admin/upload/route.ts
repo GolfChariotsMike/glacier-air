@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { ADMIN_COOKIE, sessionValid } from "@/lib/admin-auth";
-import { isGallerySlot, MULTI_IMAGE_SLOTS } from "@/lib/gallery";
+import { isGallerySlot, isProjectId, MULTI_IMAGE_SLOTS } from "@/lib/gallery";
 import {
   assignGalleryImage,
   readGallery,
@@ -27,6 +27,8 @@ export async function POST(request: Request) {
   const file = form.get("file");
   const slot = String(form.get("slot") ?? "");
   const alt = String(form.get("alt") ?? "").trim() || "Job photo";
+  const projectRaw = String(form.get("projectId") ?? "").trim();
+  const projectId = isProjectId(projectRaw) ? projectRaw : undefined;
 
   if (!(file instanceof File)) {
     return NextResponse.json({ ok: false, error: "Choose a photo." }, { status: 400 });
@@ -50,7 +52,9 @@ export async function POST(request: Request) {
     const uploaded = await uploadGalleryFile(file, slot, safeFilename(slot, ext));
     const gallery = await readGallery();
     const sort = MULTI_IMAGE_SLOTS.has(slot)
-      ? gallery.images.filter((img) => img.slot === slot).reduce((n, img) => Math.max(n, img.sort), -1) + 1
+      ? gallery.images
+          .filter((img) => img.slot === slot && (slot !== "projects" || img.projectId === (projectId ?? "unassigned")))
+          .reduce((n, img) => Math.max(n, img.sort), -1) + 1
       : 0;
 
     const image = {
@@ -59,6 +63,7 @@ export async function POST(request: Request) {
       url: uploaded.url,
       alt,
       sort,
+      projectId: slot === "projects" ? (projectId ?? "unassigned") : null,
     };
 
     const next = await assignGalleryImage({
@@ -68,6 +73,7 @@ export async function POST(request: Request) {
       alt: image.alt,
       sort: image.sort,
       storagePath: uploaded.storagePath,
+      projectId: image.projectId,
     });
     return NextResponse.json({ ok: true, image, gallery: next });
   } catch (err) {
