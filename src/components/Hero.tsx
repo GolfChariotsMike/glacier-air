@@ -60,7 +60,13 @@ function useTypewriter(words: string[]) {
   return { text: reduceMotion ? words[0] : text, showCursor: !reduceMotion };
 }
 
-export default function Hero() {
+export default function Hero({
+  imageSrc = "/images/hero-bg.webp",
+  imageAlt = "Rooftop air conditioning",
+}: {
+  imageSrc?: string;
+  imageAlt?: string;
+}) {
   const { text: typedText, showCursor } = useTypewriter(typewriterWords);
 
   return (
@@ -68,8 +74,8 @@ export default function Hero() {
       <div className="absolute inset-0 overflow-hidden">
         <div className="hero-kenburns absolute inset-0">
           <Image
-            src="/images/hero-bg.webp"
-            alt=""
+            src={imageSrc}
+            alt={imageAlt}
             fill
             sizes="100vw"
             quality={75}

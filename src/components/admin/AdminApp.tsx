@@ -2,20 +2,26 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import Image from "next/image";
-import { ChevronDown, ChevronUp, Lock, LogOut, Upload } from "lucide-react";
-import type { GalleryImage, GallerySlot, GalleryState } from "@/lib/gallery";
+import { ChevronDown, ChevronUp, LogOut, Upload } from "lucide-react";
+import {
+  GALLERY_SLOTS,
+  MULTI_IMAGE_SLOTS,
+  SLOT_LABELS,
+  reassignImage,
+  type GalleryImage,
+  type GallerySlot,
+  type GalleryState,
+} from "@/lib/gallery";
 
 type Props = { supabaseConfigured: boolean };
 
-const PROJECTS_HINT = "Job photos shown on the Projects page";
-
-const FIXED_SLOTS: { slot: GallerySlot; label: string }[] = [
-  { slot: "services-ac", label: "Services — Air conditioning" },
-  { slot: "services-ref", label: "Services — Refrigeration" },
-  { slot: "services-mech", label: "Services — Mechanical" },
-  { slot: "about-main", label: "About — main photo" },
-  { slot: "about-left", label: "About — left photo" },
-  { slot: "about-right", label: "About — right photo" },
+const SLOT_SECTIONS: { title: string; hint: string; slots: GallerySlot[] }[] = [
+  { title: "Hero", hint: "Homepage rooftop photo. Replacing it keeps the old photo in the unused library.", slots: ["hero"] },
+  { title: "Projects", hint: "Job photos on the Projects page. Reorder or move any of them to another section.", slots: ["projects"] },
+  { title: "Services", hint: "The three service card photos.", slots: ["services-ac", "services-ref", "services-mech"] },
+  { title: "About", hint: "The three About photos.", slots: ["about-main", "about-left", "about-right"] },
+  { title: "Trusted clients", hint: "Logos on the homepage strip.", slots: ["clients"] },
+  { title: "Unused library", hint: "Photos not currently on a page. Move one onto a section to use it.", slots: ["library"] },
 ];
 
 async function compressImage(file: File): Promise<File> {
@@ -52,13 +58,6 @@ export default function AdminApp({ supabaseConfigured }: Props) {
       .catch(() => setStatus("Could not load photos."));
   }, []);
 
-  const projects = gallery.images
-    .filter((img) => img.slot === "projects")
-    .sort((a, b) => a.sort - b.sort);
-  const clientLogos = gallery.images
-    .filter((img) => img.slot === "clients")
-    .sort((a, b) => a.sort - b.sort);
-
   async function persist(next: GalleryState) {
     setBusy(true);
     setStatus("");
@@ -77,7 +76,7 @@ export default function AdminApp({ supabaseConfigured }: Props) {
     setStatus("Saved.");
   }
 
-  async function upload(slot: GallerySlot, file: File, replaceId?: string, alt?: string) {
+  async function upload(slot: GallerySlot, file: File, alt?: string) {
     setBusy(true);
     setStatus("Uploading…");
     const compressed = await compressImage(file);
@@ -85,7 +84,6 @@ export default function AdminApp({ supabaseConfigured }: Props) {
     form.set("file", compressed);
     form.set("slot", slot);
     form.set("alt", alt || file.name.replace(/\.\w+$/, "").replace(/[_-]/g, " "));
-    if (replaceId) form.set("replaceId", replaceId);
     const res = await fetch("/api/admin/upload", { method: "POST", body: form });
     const data = await res.json().catch(() => ({}));
     setBusy(false);
@@ -97,11 +95,15 @@ export default function AdminApp({ supabaseConfigured }: Props) {
     setStatus("Photo updated.");
   }
 
-  function remove(id: string) {
+  function toLibrary(id: string) {
+    void persist({ images: reassignImage(gallery.images, id, "library") });
+  }
+
+  function removeFromLibrary(id: string) {
     void persist({ images: gallery.images.filter((img) => img.id !== id) });
   }
 
-  function move(slot: GallerySlot, id: string, dir: -1 | 1) {
+  function moveWithin(slot: GallerySlot, id: string, dir: -1 | 1) {
     const ordered = gallery.images
       .filter((img) => img.slot === slot)
       .sort((a, b) => a.sort - b.sort);
@@ -114,6 +116,10 @@ export default function AdminApp({ supabaseConfigured }: Props) {
     const resorted = ordered.map((img, sort) => ({ ...img, sort }));
     const others = gallery.images.filter((img) => img.slot !== slot);
     void persist({ images: [...others, ...resorted] });
+  }
+
+  function moveToSlot(id: string, slot: GallerySlot) {
+    void persist({ images: reassignImage(gallery.images, id, slot) });
   }
 
   async function logout() {
@@ -145,104 +151,62 @@ export default function AdminApp({ supabaseConfigured }: Props) {
         )}
         {!supabaseConfigured && (
           <p className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-slate-300">
-            Photo storage is not connected on this server. You can still sign in and review the
-            current site photos; uploads will work once Mike connects storage.
+            Photo storage is not connected on this server.
           </p>
         )}
 
-        <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <Lock className="w-4 h-4 text-slate-400" />
-            <h2 className="text-lg font-bold">Hero rooftop</h2>
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-400 bg-white/10 rounded-full px-2 py-1">
-              Locked (Mike)
-            </span>
-          </div>
-          <div className="relative h-36 rounded-xl overflow-hidden ring-1 ring-white/10">
-            <Image src="/images/hero-bg.webp" alt="" fill sizes="100vw" className="object-cover object-[54%_center]" />
-          </div>
-          <p className="text-sm text-slate-400 mt-3">This photo stays on the homepage. Nick cannot replace it here.</p>
-        </section>
-
-        <Section title="Projects" hint={PROJECTS_HINT}>
-          <div className="flex flex-col gap-4">
-            {projects.map((img, i) => (
-              <PhotoCard
-                key={img.id}
-                image={img}
-                busy={busy}
-                onReplace={(file) => void upload("projects", file, img.id, img.alt)}
-                onRemove={() => remove(img.id)}
-                onUp={i > 0 ? () => move("projects", img.id, -1) : undefined}
-                onDown={i < projects.length - 1 ? () => move("projects", img.id, 1) : undefined}
-              />
-            ))}
-            <UploadButton
-              disabled={busy || !supabaseConfigured}
-              label="Add project photo"
-              onFile={(file) => void upload("projects", file)}
-            />
-          </div>
-        </Section>
-
-        <Section title="Services" hint="These replace the three service card photos.">
-          <div className="flex flex-col gap-4">
-            {FIXED_SLOTS.filter((s) => s.slot.startsWith("services-")).map((s) => {
-              const image = gallery.images.find((img) => img.slot === s.slot);
-              return (
-                <FixedSlot
-                  key={s.slot}
-                  label={s.label}
-                  image={image}
-                  busy={busy}
-                  disabled={!supabaseConfigured}
-                  onUpload={(file) => void upload(s.slot, file, image?.id, s.label)}
-                  onRemove={image ? () => remove(image.id) : undefined}
-                />
-              );
-            })}
-          </div>
-        </Section>
-
-        <Section title="Trusted clients" hint="Logos on the homepage strip. Empty keeps the current logos.">
-          <div className="flex flex-col gap-4">
-            {clientLogos.map((img, i) => (
-              <PhotoCard
-                key={img.id}
-                image={img}
-                busy={busy}
-                onReplace={(file) => void upload("clients", file, img.id, img.alt)}
-                onRemove={() => remove(img.id)}
-                onUp={i > 0 ? () => move("clients", img.id, -1) : undefined}
-                onDown={i < clientLogos.length - 1 ? () => move("clients", img.id, 1) : undefined}
-              />
-            ))}
-            <UploadButton
-              disabled={busy || !supabaseConfigured}
-              label="Add client logo"
-              onFile={(file) => void upload("clients", file)}
-            />
-          </div>
-        </Section>
-
-        <Section title="About" hint="These replace the three About photos.">
-          <div className="flex flex-col gap-4">
-            {FIXED_SLOTS.filter((s) => s.slot.startsWith("about-")).map((s) => {
-              const image = gallery.images.find((img) => img.slot === s.slot);
-              return (
-                <FixedSlot
-                  key={s.slot}
-                  label={s.label}
-                  image={image}
-                  busy={busy}
-                  disabled={!supabaseConfigured}
-                  onUpload={(file) => void upload(s.slot, file, image?.id, s.label)}
-                  onRemove={image ? () => remove(image.id) : undefined}
-                />
-              );
-            })}
-          </div>
-        </Section>
+        {SLOT_SECTIONS.map((section) => (
+          <Section key={section.title} title={section.title} hint={section.hint}>
+            <div className="flex flex-col gap-4">
+              {section.slots.map((slot) => {
+                const images = gallery.images
+                  .filter((img) => img.slot === slot)
+                  .sort((a, b) => a.sort - b.sort);
+                return (
+                  <div key={slot} className="flex flex-col gap-3">
+                    {section.slots.length > 1 && (
+                      <p className="text-sm font-semibold text-slate-200">{SLOT_LABELS[slot]}</p>
+                    )}
+                    {images.map((img, i) => (
+                      <PhotoCard
+                        key={img.id}
+                        image={img}
+                        busy={busy}
+                        onReplace={(file) => void upload(slot, file, img.alt)}
+                        onRemove={() =>
+                          slot === "library" ? removeFromLibrary(img.id) : toLibrary(img.id)
+                        }
+                        onMoveTo={(next) => moveToSlot(img.id, next)}
+                        onUp={
+                          MULTI_IMAGE_SLOTS.has(slot) && i > 0
+                            ? () => moveWithin(slot, img.id, -1)
+                            : undefined
+                        }
+                        onDown={
+                          MULTI_IMAGE_SLOTS.has(slot) && i < images.length - 1
+                            ? () => moveWithin(slot, img.id, 1)
+                            : undefined
+                        }
+                        removeLabel={slot === "library" ? "Remove" : "Send to library"}
+                      />
+                    ))}
+                    <UploadButton
+                      disabled={busy || !supabaseConfigured}
+                      label={
+                        MULTI_IMAGE_SLOTS.has(slot)
+                          ? `Add ${SLOT_LABELS[slot].toLowerCase()} photo`
+                          : images.length
+                            ? "Upload replacement"
+                            : `Upload ${SLOT_LABELS[slot].toLowerCase()}`
+                      }
+                      onFile={(file) => void upload(slot, file)}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </Section>
+        ))}
       </main>
     </div>
   );
@@ -271,24 +235,43 @@ function PhotoCard({
   busy,
   onReplace,
   onRemove,
+  onMoveTo,
   onUp,
   onDown,
+  removeLabel,
 }: {
   image: GalleryImage;
   busy: boolean;
   onReplace: (file: File) => void;
   onRemove: () => void;
+  onMoveTo: (slot: GallerySlot) => void;
   onUp?: () => void;
   onDown?: () => void;
+  removeLabel: string;
 }) {
   return (
     <div className="rounded-xl border border-white/10 overflow-hidden bg-[#0a0f1e]">
-      <div className="relative h-44">
+      <div className="relative h-44 bg-black/30">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={image.url} alt={image.alt} className="w-full h-full object-cover" />
       </div>
       <div className="p-3 flex flex-col gap-2">
         <p className="text-sm text-slate-300">{image.alt}</p>
+        <label className="text-xs uppercase tracking-wide text-slate-400">
+          Move to
+          <select
+            disabled={busy}
+            value={image.slot}
+            onChange={(e) => onMoveTo(e.target.value as GallerySlot)}
+            className="mt-1 min-h-12 w-full px-3 rounded-xl bg-white/5 border border-white/15 text-white text-sm"
+          >
+            {GALLERY_SLOTS.map((slot) => (
+              <option key={slot} value={slot}>
+                {SLOT_LABELS[slot]}
+              </option>
+            ))}
+          </select>
+        </label>
         <div className="flex flex-wrap gap-2">
           {(onUp || onDown) && (
             <>
@@ -309,54 +292,9 @@ function PhotoCard({
             onClick={onRemove}
             className="min-h-12 px-4 rounded-xl border border-[#E01F26]/40 text-[#ffb4b6] font-semibold"
           >
-            Remove
+            {removeLabel}
           </button>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function FixedSlot({
-  label,
-  image,
-  busy,
-  disabled,
-  onUpload,
-  onRemove,
-}: {
-  label: string;
-  image?: GalleryImage;
-  busy: boolean;
-  disabled: boolean;
-  onUpload: (file: File) => void;
-  onRemove?: () => void;
-}) {
-  return (
-    <div className="rounded-xl border border-white/10 overflow-hidden bg-[#0a0f1e]">
-      <p className="px-3 pt-3 text-sm font-semibold">{label}</p>
-      {image ? (
-        <div className="relative h-40 mt-2">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={image.url} alt={image.alt} className="w-full h-full object-cover" />
-        </div>
-      ) : (
-        <p className="px-3 py-6 text-sm text-slate-500">Using the site’s current photo.</p>
-      )}
-      <div className="p-3 flex flex-wrap gap-2">
-        <FileBtn disabled={busy || disabled} onFile={onUpload}>
-          {image ? "Replace" : "Upload"}
-        </FileBtn>
-        {onRemove && (
-          <button
-            type="button"
-            disabled={busy}
-            onClick={onRemove}
-            className="min-h-12 px-4 rounded-xl border border-[#E01F26]/40 text-[#ffb4b6] font-semibold"
-          >
-            Remove
-          </button>
-        )}
       </div>
     </div>
   );

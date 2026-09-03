@@ -4,7 +4,6 @@ import { ADMIN_COOKIE, sessionValid } from "@/lib/admin-auth";
 import { isGallerySlot, MULTI_IMAGE_SLOTS } from "@/lib/gallery";
 import {
   assignGalleryImage,
-  isLockedSlot,
   readGallery,
   supabaseConfigured,
   uploadGalleryFile,
@@ -23,21 +22,20 @@ export async function POST(request: Request) {
   if (!sessionValid(jar.get(ADMIN_COOKIE)?.value)) {
     return NextResponse.json({ ok: false, error: "Not signed in." }, { status: 401 });
   }
-  if (!supabaseConfigured()) {
-    return NextResponse.json({ ok: false, error: "Photo storage is not connected." }, { status: 503 });
-  }
 
   const form = await request.formData();
   const file = form.get("file");
   const slot = String(form.get("slot") ?? "");
   const alt = String(form.get("alt") ?? "").trim() || "Job photo";
-  const replaceId = String(form.get("replaceId") ?? "").trim();
 
   if (!(file instanceof File)) {
     return NextResponse.json({ ok: false, error: "Choose a photo." }, { status: 400 });
   }
-  if (!isGallerySlot(slot) || isLockedSlot(slot)) {
+  if (!isGallerySlot(slot)) {
     return NextResponse.json({ ok: false, error: "That slot cannot be changed." }, { status: 400 });
+  }
+  if (!supabaseConfigured()) {
+    return NextResponse.json({ ok: false, error: "Photo storage is not connected." }, { status: 503 });
   }
   if (!ALLOWED.has(file.type)) {
     return NextResponse.json({ ok: false, error: "Use a JPG, PNG or WebP." }, { status: 400 });
@@ -51,24 +49,17 @@ export async function POST(request: Request) {
   try {
     const uploaded = await uploadGalleryFile(file, slot, safeFilename(slot, ext));
     const gallery = await readGallery();
+    const sort = MULTI_IMAGE_SLOTS.has(slot)
+      ? gallery.images.filter((img) => img.slot === slot).reduce((n, img) => Math.max(n, img.sort), -1) + 1
+      : 0;
 
     const image = {
-      id: replaceId || crypto.randomUUID(),
+      id: crypto.randomUUID(),
       slot,
       url: uploaded.url,
       alt,
-      sort: 0,
+      sort,
     };
-
-    if (replaceId) {
-      const existing = gallery.images.find((img) => img.id === replaceId);
-      image.sort = existing?.sort ?? 0;
-    } else if (MULTI_IMAGE_SLOTS.has(slot)) {
-      const max = gallery.images
-        .filter((img) => img.slot === slot)
-        .reduce((n, img) => Math.max(n, img.sort), -1);
-      image.sort = max + 1;
-    }
 
     const next = await assignGalleryImage({
       id: image.id,
@@ -77,7 +68,6 @@ export async function POST(request: Request) {
       alt: image.alt,
       sort: image.sort,
       storagePath: uploaded.storagePath,
-      replaceId: replaceId || undefined,
     });
     return NextResponse.json({ ok: true, image, gallery: next });
   } catch (err) {

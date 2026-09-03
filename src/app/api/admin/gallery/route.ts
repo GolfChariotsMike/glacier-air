@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { ADMIN_COOKIE, sessionValid } from "@/lib/admin-auth";
 import { isGallerySlot, normalizeGallery, type GalleryImage } from "@/lib/gallery";
-import { isLockedSlot, readGallery, supabaseConfigured, writeGallery } from "@/lib/supabase-gallery";
+import { ensureSeeded, supabaseConfigured, writeGallery } from "@/lib/supabase-gallery";
 
 async function requireAdmin() {
   const jar = await cookies();
@@ -13,7 +13,7 @@ export async function GET() {
   if (!(await requireAdmin())) {
     return NextResponse.json({ ok: false, error: "Not signed in." }, { status: 401 });
   }
-  const gallery = await readGallery();
+  const gallery = await ensureSeeded();
   return NextResponse.json({
     ok: true,
     gallery,
@@ -37,7 +37,7 @@ export async function PATCH(request: Request) {
   }
 
   const next = normalizeGallery({ images: body.images ?? [] });
-  if (next.images.some((img) => !isGallerySlot(img.slot) || isLockedSlot(img.slot))) {
+  if (next.images.some((img) => !isGallerySlot(img.slot))) {
     return NextResponse.json({ ok: false, error: "Invalid slot." }, { status: 400 });
   }
 

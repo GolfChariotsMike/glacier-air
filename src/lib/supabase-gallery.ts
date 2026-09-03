@@ -1,11 +1,6 @@
+import { createAnonClient, GALLERY_BUCKET, supabaseConfigured, SUPABASE_URL } from "@/lib/supabase";
+import { SEED_IMAGES } from "@/lib/gallery-seed";
 import {
-  createAnonClient,
-  GALLERY_BUCKET,
-  supabaseConfigured,
-  SUPABASE_URL,
-} from "@/lib/supabase";
-import {
-  EMPTY_GALLERY,
   isGallerySlot,
   MULTI_IMAGE_SLOTS,
   normalizeGallery,
@@ -16,7 +11,6 @@ import {
 export { supabaseConfigured };
 
 const IMAGES_TABLE = "glacier_air_gallery_images";
-const SLOTS_TABLE = "glacier_air_image_slots";
 
 type GalleryRow = {
   id: string;
@@ -27,28 +21,7 @@ type GalleryRow = {
   storage_path: string | null;
 };
 
-export function isLockedSlot(slot: string): boolean {
-  return slot === "hero" || slot.startsWith("hero");
-}
-
-export async function readGallery(): Promise<GalleryState> {
-  if (!supabaseConfigured()) return EMPTY_GALLERY;
-  try {
-    const client = createAnonClient();
-    const { data, error } = await client
-      .from(IMAGES_TABLE)
-      .select("id, slot, url, alt, sort, storage_path")
-      .order("sort", { ascending: true });
-    if (error || !data) return EMPTY_GALLERY;
-    return normalizeGallery({
-      images: data.filter((row) => !isLockedSlot(row.slot)),
-    });
-  } catch {
-    return EMPTY_GALLERY;
-  }
-}
-
-async function readRows(): Promise<GalleryRow[]> {
+async function fetchRows(): Promise<GalleryRow[]> {
   const client = createAnonClient();
   const { data, error } = await client
     .from(IMAGES_TABLE)
@@ -58,16 +31,50 @@ async function readRows(): Promise<GalleryRow[]> {
   return (data ?? []).filter((row) => isGallerySlot(row.slot));
 }
 
+function fromRows(rows: GalleryRow[]): GalleryState {
+  if (!rows.length) return normalizeGallery({ images: SEED_IMAGES });
+  return normalizeGallery({ images: rows });
+}
+
+export async function readGallery(): Promise<GalleryState> {
+  if (!supabaseConfigured()) return normalizeGallery({ images: SEED_IMAGES });
+  try {
+    return fromRows(await fetchRows());
+  } catch {
+    return normalizeGallery({ images: SEED_IMAGES });
+  }
+}
+
+export async function ensureSeeded(): Promise<GalleryState> {
+  if (!supabaseConfigured()) return normalizeGallery({ images: SEED_IMAGES });
+  const rows = await fetchRows();
+  if (rows.length) return normalizeGallery({ images: rows });
+
+  const client = createAnonClient();
+  const { error } = await client.from(IMAGES_TABLE).upsert(
+    SEED_IMAGES.map((img) => ({
+      id: img.id,
+      slot: img.slot,
+      url: img.url,
+      alt: img.alt,
+      sort: img.sort,
+      storage_path: null,
+    }))
+  );
+  if (error) return normalizeGallery({ images: SEED_IMAGES });
+  return normalizeGallery({ images: SEED_IMAGES });
+}
+
 export async function writeGallery(state: GalleryState): Promise<GalleryState> {
   if (!supabaseConfigured()) {
     throw new Error("Photo storage is not connected.");
   }
   const next = normalizeGallery(state);
-  if (next.images.some((img) => isLockedSlot(img.slot) || !isGallerySlot(img.slot))) {
+  if (next.images.some((img) => !isGallerySlot(img.slot))) {
     throw new Error("That slot cannot be changed.");
   }
 
-  const prev = await readRows();
+  const prev = await fetchRows();
   const keepIds = new Set(next.images.map((img) => img.id));
   const prevById = new Map(prev.map((row) => [row.id, row]));
   const client = createAnonClient();
@@ -100,20 +107,11 @@ export async function uploadGalleryFile(file: File, slot: string, filename: stri
   if (!supabaseConfigured()) {
     throw new Error("Photo storage is not connected.");
   }
-  if (isLockedSlot(slot) || !isGallerySlot(slot)) {
+  if (!isGallerySlot(slot)) {
     throw new Error("That slot cannot be changed.");
   }
 
   const client = createAnonClient();
-  const { data: slotRow } = await client
-    .from(SLOTS_TABLE)
-    .select("id, locked")
-    .eq("id", slot)
-    .maybeSingle();
-  if (slotRow?.locked) {
-    throw new Error("That slot cannot be changed.");
-  }
-
   const path = `glacier-air/${slot}/${filename}`;
   const buffer = Buffer.from(await file.arrayBuffer());
   const { error } = await client.storage.from(GALLERY_BUCKET).upload(path, buffer, {
@@ -133,21 +131,31 @@ export async function assignGalleryImage(input: {
   alt: string;
   sort: number;
   storagePath: string;
-  replaceId?: string;
 }): Promise<GalleryState> {
+  await ensureSeeded();
   const client = createAnonClient();
-  const prev = await readRows();
+  const prev = await fetchRows();
+  const working: GalleryImage[] = (prev.length ? prev : SEED_IMAGES).map((row) => ({
+    id: row.id,
+    slot: row.slot as GalleryImage["slot"],
+    url: row.url,
+    alt: row.alt,
+    sort: row.sort,
+  }));
 
-  if (input.replaceId) {
-    const existing = prev.find((row) => row.id === input.replaceId);
-    if (existing?.storage_path && existing.storage_path !== input.storagePath) {
-      await deleteStoredObject(existing.storage_path, existing.url);
-    }
-  } else if (!MULTI_IMAGE_SLOTS.has(input.slot)) {
-    for (const row of prev.filter((img) => img.slot === input.slot)) {
-      await deleteStoredObject(row.storage_path, row.url);
-      const { error } = await client.from(IMAGES_TABLE).delete().eq("id", row.id);
-      if (error) throw new Error(error.message || "Could not replace photo.");
+  if (!MULTI_IMAGE_SLOTS.has(input.slot)) {
+    for (const row of working.filter((img) => img.slot === input.slot && img.id !== input.id)) {
+      const { error } = await client
+        .from(IMAGES_TABLE)
+        .upsert({
+          id: row.id,
+          slot: "library",
+          url: row.url,
+          alt: row.alt,
+          sort: row.sort,
+          storage_path: prev.find((p) => p.id === row.id)?.storage_path ?? null,
+        });
+      if (error) throw new Error(error.message || "Could not move the previous photo to the library.");
     }
   }
 
@@ -164,11 +172,6 @@ export async function assignGalleryImage(input: {
   return readGallery();
 }
 
-export async function deleteGalleryFile(url: string, storagePath?: string | null) {
-  if (!supabaseConfigured()) return;
-  await deleteStoredObject(storagePath, url);
-}
-
 async function deleteStoredObject(storagePath: string | null | undefined, url: string) {
   const path = storagePath || pathFromPublicUrl(url);
   if (!path) return;
@@ -181,6 +184,7 @@ async function deleteStoredObject(storagePath: string | null | undefined, url: s
 }
 
 export function pathFromPublicUrl(url: string): string | null {
+  if (!url.startsWith("http")) return null;
   const marker = `/storage/v1/object/public/${GALLERY_BUCKET}/`;
   const i = url.indexOf(marker);
   if (i === -1) return null;

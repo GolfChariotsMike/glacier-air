@@ -5,12 +5,12 @@ Nick uses **https://glacier-air.vercel.app/admin** with the PIN. No GitHub login
 ## What Nick can do
 
 - Sign in with a PIN (no Gmail, no GitHub).
-- Upload, replace, remove, and reorder **Projects** photos.
-- Replace or clear the three **Services** card photos and the three **About** photos.
-- Upload, replace, remove, and reorder **Trusted clients** logos.
-- The homepage **hero rooftop photo is locked** (`/images/hero-bg.webp`). Nick cannot overwrite it.
+- Change the homepage **hero**, **Services**, **About**, **Projects**, and **Trusted clients** photos.
+- See the current site photos in every slot (not empty cards).
+- Move an existing photo to another slot without re-uploading. Replacing a single-image slot (hero / about / services) sends the old photo to the unused library.
+- Upload new files. Reorder Projects and client logos.
 
-If Nick has not uploaded anything yet, the public pages keep the current static photos from the repo.
+If Nick has not saved anything yet, admin and the public pages use the photos already in the repo.
 
 ## Storage
 

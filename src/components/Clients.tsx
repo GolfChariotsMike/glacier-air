@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { imagesForSlot, type GalleryState } from "@/lib/gallery";
+import { CLIENT_GREY_TILES, imagesForSlot, type GalleryState } from "@/lib/gallery";
 
 const clients = [
   { name: "Alzheimer’s WA", src: "/clients/alzheimers-wa.png" },
@@ -79,7 +79,11 @@ export default function Clients({ gallery }: { gallery: GalleryState }) {
   const assigned = imagesForSlot(gallery, "clients");
   const logos =
     assigned.length > 0
-      ? assigned.map((img) => ({ name: img.alt, src: img.url, tile: "light" as const }))
+      ? assigned.map((img) => ({
+          name: img.alt,
+          src: img.url,
+          tile: CLIENT_GREY_TILES.has(img.url) ? ("grey" as const) : ("light" as const),
+        }))
       : clients;
   return (
     <section className="py-16 bg-[#060c1a] border-t border-white/5 overflow-hidden">
