@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { imagesForSlot, type GalleryState } from "@/lib/gallery";
 
 const clients = [
   { name: "Alzheimer’s WA", src: "/clients/alzheimers-wa.png" },
@@ -55,20 +56,31 @@ function LogoCard({
   );
 }
 
-function LogoRow({ duplicate = false }: { duplicate?: boolean }) {
+function LogoRow({
+  logos,
+  duplicate = false,
+}: {
+  logos: readonly { name: string; src: string; tile?: "light" | "grey" }[];
+  duplicate?: boolean;
+}) {
   return (
     <div
       className={duplicate ? "client-marquee-dup flex gap-3 pr-3" : "flex gap-3 pr-3"}
       aria-hidden={duplicate || undefined}
     >
-      {clients.map((c) => (
+      {logos.map((c) => (
         <LogoCard key={`${c.src}${duplicate ? "-dup" : ""}`} {...c} decorative={duplicate} />
       ))}
     </div>
   );
 }
 
-export default function Clients() {
+export default function Clients({ gallery }: { gallery: GalleryState }) {
+  const assigned = imagesForSlot(gallery, "clients");
+  const logos =
+    assigned.length > 0
+      ? assigned.map((img) => ({ name: img.alt, src: img.url, tile: "light" as const }))
+      : clients;
   return (
     <section className="py-16 bg-[#060c1a] border-t border-white/5 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 mb-10 text-center">
@@ -79,8 +91,8 @@ export default function Clients() {
       </div>
       <div className="client-marquee">
         <div className="client-marquee-track">
-          <LogoRow />
-          <LogoRow duplicate />
+          <LogoRow logos={logos} />
+          <LogoRow logos={logos} duplicate />
         </div>
       </div>
     </section>

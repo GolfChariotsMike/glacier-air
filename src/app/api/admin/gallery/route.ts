@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { ADMIN_COOKIE, sessionValid } from "@/lib/admin-auth";
-import { blobConfigured, deleteGalleryFile, readGallery, writeGallery } from "@/lib/blob-gallery";
 import { isGallerySlot, normalizeGallery, type GalleryImage } from "@/lib/gallery";
+import { isLockedSlot, readGallery, supabaseConfigured, writeGallery } from "@/lib/supabase-gallery";
 
 async function requireAdmin() {
   const jar = await cookies();
@@ -17,7 +17,7 @@ export async function GET() {
   return NextResponse.json({
     ok: true,
     gallery,
-    blobConfigured: blobConfigured(),
+    supabaseConfigured: supabaseConfigured(),
   });
 }
 
@@ -25,11 +25,8 @@ export async function PATCH(request: Request) {
   if (!(await requireAdmin())) {
     return NextResponse.json({ ok: false, error: "Not signed in." }, { status: 401 });
   }
-  if (!blobConfigured()) {
-    return NextResponse.json(
-      { ok: false, error: "Set BLOB_READ_WRITE_TOKEN on Vercel to save photos." },
-      { status: 503 }
-    );
+  if (!supabaseConfigured()) {
+    return NextResponse.json({ ok: false, error: "Photo storage is not connected." }, { status: 503 });
   }
 
   let body: { images?: GalleryImage[] };
@@ -40,16 +37,15 @@ export async function PATCH(request: Request) {
   }
 
   const next = normalizeGallery({ images: body.images ?? [] });
-  if (next.images.some((img) => !isGallerySlot(img.slot))) {
+  if (next.images.some((img) => !isGallerySlot(img.slot) || isLockedSlot(img.slot))) {
     return NextResponse.json({ ok: false, error: "Invalid slot." }, { status: 400 });
   }
 
-  const prev = await readGallery();
-  const keep = new Set(next.images.map((img) => img.url));
-  for (const img of prev.images) {
-    if (!keep.has(img.url)) await deleteGalleryFile(img.url);
+  try {
+    const gallery = await writeGallery(next);
+    return NextResponse.json({ ok: true, gallery });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Could not save photos.";
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
-
-  await writeGallery(next);
-  return NextResponse.json({ ok: true, gallery: next });
 }

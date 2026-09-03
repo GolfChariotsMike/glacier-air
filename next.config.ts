@@ -10,11 +10,8 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "*.public.blob.vercel-storage.com",
-      },
-      {
-        protocol: "https",
-        hostname: "*.blob.vercel-storage.com",
+        hostname: "obtbmywqrzotvspgmaiq.supabase.co",
+        pathname: "/storage/v1/object/public/glacier-air/**",
       },
     ],
   },

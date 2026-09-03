@@ -5,7 +5,7 @@ import Image from "next/image";
 import { ChevronDown, ChevronUp, Lock, LogOut, Upload } from "lucide-react";
 import type { GalleryImage, GallerySlot, GalleryState } from "@/lib/gallery";
 
-type Props = { blobConfigured: boolean };
+type Props = { supabaseConfigured: boolean };
 
 const PROJECTS_HINT = "Job photos shown on the Projects page";
 
@@ -38,7 +38,7 @@ async function compressImage(file: File): Promise<File> {
   return new File([blob], file.name.replace(/\.\w+$/, ".jpg"), { type: "image/jpeg" });
 }
 
-export default function AdminApp({ blobConfigured }: Props) {
+export default function AdminApp({ supabaseConfigured }: Props) {
   const [gallery, setGallery] = useState<GalleryState>({ images: [] });
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
@@ -54,6 +54,9 @@ export default function AdminApp({ blobConfigured }: Props) {
 
   const projects = gallery.images
     .filter((img) => img.slot === "projects")
+    .sort((a, b) => a.sort - b.sort);
+  const clientLogos = gallery.images
+    .filter((img) => img.slot === "clients")
     .sort((a, b) => a.sort - b.sort);
 
   async function persist(next: GalleryState) {
@@ -98,8 +101,10 @@ export default function AdminApp({ blobConfigured }: Props) {
     void persist({ images: gallery.images.filter((img) => img.id !== id) });
   }
 
-  function move(id: string, dir: -1 | 1) {
-    const ordered = [...projects];
+  function move(slot: GallerySlot, id: string, dir: -1 | 1) {
+    const ordered = gallery.images
+      .filter((img) => img.slot === slot)
+      .sort((a, b) => a.sort - b.sort);
     const i = ordered.findIndex((img) => img.id === id);
     const j = i + dir;
     if (i < 0 || j < 0 || j >= ordered.length) return;
@@ -107,7 +112,7 @@ export default function AdminApp({ blobConfigured }: Props) {
     ordered[i] = ordered[j];
     ordered[j] = swap;
     const resorted = ordered.map((img, sort) => ({ ...img, sort }));
-    const others = gallery.images.filter((img) => img.slot !== "projects");
+    const others = gallery.images.filter((img) => img.slot !== slot);
     void persist({ images: [...others, ...resorted] });
   }
 
@@ -138,10 +143,10 @@ export default function AdminApp({ blobConfigured }: Props) {
             {status}
           </p>
         )}
-        {!blobConfigured && (
-          <p className="rounded-xl bg-[#E01F26]/10 border border-[#E01F26]/30 px-4 py-3 text-sm">
-            Uploads need <code className="text-[#c5e4f7]">BLOB_READ_WRITE_TOKEN</code> on this Vercel
-            project. The public site will keep its current photos until that is set.
+        {!supabaseConfigured && (
+          <p className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-slate-300">
+            Photo storage is not connected on this server. You can still sign in and review the
+            current site photos; uploads will work once Mike connects storage.
           </p>
         )}
 
@@ -168,12 +173,12 @@ export default function AdminApp({ blobConfigured }: Props) {
                 busy={busy}
                 onReplace={(file) => void upload("projects", file, img.id, img.alt)}
                 onRemove={() => remove(img.id)}
-                onUp={i > 0 ? () => move(img.id, -1) : undefined}
-                onDown={i < projects.length - 1 ? () => move(img.id, 1) : undefined}
+                onUp={i > 0 ? () => move("projects", img.id, -1) : undefined}
+                onDown={i < projects.length - 1 ? () => move("projects", img.id, 1) : undefined}
               />
             ))}
             <UploadButton
-              disabled={busy || !blobConfigured}
+              disabled={busy || !supabaseConfigured}
               label="Add project photo"
               onFile={(file) => void upload("projects", file)}
             />
@@ -190,12 +195,33 @@ export default function AdminApp({ blobConfigured }: Props) {
                   label={s.label}
                   image={image}
                   busy={busy}
-                  disabled={!blobConfigured}
+                  disabled={!supabaseConfigured}
                   onUpload={(file) => void upload(s.slot, file, image?.id, s.label)}
                   onRemove={image ? () => remove(image.id) : undefined}
                 />
               );
             })}
+          </div>
+        </Section>
+
+        <Section title="Trusted clients" hint="Logos on the homepage strip. Empty keeps the current logos.">
+          <div className="flex flex-col gap-4">
+            {clientLogos.map((img, i) => (
+              <PhotoCard
+                key={img.id}
+                image={img}
+                busy={busy}
+                onReplace={(file) => void upload("clients", file, img.id, img.alt)}
+                onRemove={() => remove(img.id)}
+                onUp={i > 0 ? () => move("clients", img.id, -1) : undefined}
+                onDown={i < clientLogos.length - 1 ? () => move("clients", img.id, 1) : undefined}
+              />
+            ))}
+            <UploadButton
+              disabled={busy || !supabaseConfigured}
+              label="Add client logo"
+              onFile={(file) => void upload("clients", file)}
+            />
           </div>
         </Section>
 
@@ -209,7 +235,7 @@ export default function AdminApp({ blobConfigured }: Props) {
                   label={s.label}
                   image={image}
                   busy={busy}
-                  disabled={!blobConfigured}
+                  disabled={!supabaseConfigured}
                   onUpload={(file) => void upload(s.slot, file, image?.id, s.label)}
                   onRemove={image ? () => remove(image.id) : undefined}
                 />

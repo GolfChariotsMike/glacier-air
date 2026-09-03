@@ -6,9 +6,12 @@ export const GALLERY_SLOTS = [
   "about-main",
   "about-left",
   "about-right",
+  "clients",
 ] as const;
 
 export type GallerySlot = (typeof GALLERY_SLOTS)[number];
+
+export const MULTI_IMAGE_SLOTS = new Set<GallerySlot>(["projects", "clients"]);
 
 export type GalleryImage = {
   id: string;
