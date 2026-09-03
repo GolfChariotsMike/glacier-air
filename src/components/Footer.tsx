@@ -1,8 +1,17 @@
 import Image from "next/image";
 
 const links = {
-  Services: ["Air Conditioning", "Refrigeration", "Mechanical Services", "Maintenance"],
-  Company: ["About Us", "Projects", "Contact"],
+  Services: [
+    { label: "Air Conditioning", href: "#air-conditioning" },
+    { label: "Refrigeration", href: "#refrigeration" },
+    { label: "Mechanical Services", href: "#mechanical-services" },
+    { label: "Maintenance", href: "#services" },
+  ],
+  Company: [
+    { label: "About Us", href: "#about-us" },
+    { label: "Projects", href: "#projects" },
+    { label: "Contact", href: "#contact-us" },
+  ],
 };
 
 export default function Footer() {
@@ -10,7 +19,6 @@ export default function Footer() {
     <footer className="bg-[#050a18] border-t border-white/5 py-16">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid md:grid-cols-4 gap-10 mb-12">
-          {/* Brand */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
               <Image
@@ -25,9 +33,32 @@ export default function Footer() {
               Family-owned air conditioning, refrigeration and mechanical
               services across Perth, SouthWest and Great Southern WA.
             </p>
-            <p className="text-slate-500 text-xs">
+            <p className="text-slate-500 text-xs mb-4">
               ARC Licence AU18839 · AIRAH Member · HIA Member
             </p>
+            <div className="flex items-center gap-3">
+              <Image
+                src="/images/badges/airah.jpg"
+                alt="AIRAH"
+                width={48}
+                height={48}
+                className="h-12 w-12 rounded object-contain bg-white p-0.5"
+              />
+              <Image
+                src="/images/badges/arc.jpg"
+                alt="ARC"
+                width={48}
+                height={48}
+                className="h-12 w-12 rounded object-contain bg-white p-0.5"
+              />
+              <Image
+                src="/images/badges/hia.jpg"
+                alt="HIA"
+                width={48}
+                height={48}
+                className="h-12 w-12 rounded object-contain bg-white p-0.5"
+              />
+            </div>
           </div>
 
           {Object.entries(links).map(([cat, items]) => (
@@ -35,12 +66,12 @@ export default function Footer() {
               <p className="text-white font-semibold text-sm mb-4">{cat}</p>
               <ul className="space-y-2">
                 {items.map((item) => (
-                  <li key={item}>
+                  <li key={item.label}>
                     <a
-                      href="#"
+                      href={item.href}
                       className="text-slate-400 hover:text-white text-sm transition-colors"
                     >
-                      {item}
+                      {item.label}
                     </a>
                   </li>
                 ))}

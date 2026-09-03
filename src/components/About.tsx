@@ -1,6 +1,8 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
 import { Award, Users, MapPin, Clock } from "lucide-react";
+import Image from "next/image";
+import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
+import { ABOUT_FALLBACKS, firstAlt, firstUrl, type GalleryState } from "@/lib/gallery";
 
 const stats = [
   { icon: Award, label: "ARC Licensed", value: "AU18839", isText: true },
@@ -9,59 +11,41 @@ const stats = [
   { icon: Clock, label: "Fast Response", value: "Times", isText: true },
 ];
 
-export default function About() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add("visible");
-            setVisible(true);
-          }
-        });
-      },
-      { threshold: 0.12 }
-    );
-    const els = sectionRef.current?.querySelectorAll(".reveal");
-    els?.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
-  // suppress unused warning — visible used for future counter anim
-  void visible;
+export default function About({ gallery }: { gallery: GalleryState }) {
+  const sectionRef = useRevealOnScroll();
 
   return (
-    <section id="about" className="py-24 bg-[#060c1a]" ref={sectionRef}>
-      <div className="max-w-7xl mx-auto px-6">
+    <section id="about-us" className="py-24 bg-[#060c1a] scroll-mt-24" ref={sectionRef}>
+      <div id="about" className="max-w-7xl mx-auto px-6 scroll-mt-24">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left — images */}
           <div className="relative reveal">
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-2xl overflow-hidden h-64 col-span-2 img-zoom ring-1 ring-white/5">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/images/fremantle-16.webp"
-                  alt="Glacier Air team at work"
-                  className="w-full h-full object-cover"
+              <div className="relative rounded-2xl overflow-hidden h-64 col-span-2 img-zoom ring-1 ring-white/5">
+                <Image
+                  src={firstUrl(gallery, "about-main", ABOUT_FALLBACKS.main.src)}
+                  alt={firstAlt(gallery, "about-main", ABOUT_FALLBACKS.main.alt)}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover"
                 />
               </div>
-              <div className="rounded-2xl overflow-hidden h-44 img-zoom ring-1 ring-white/5">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/images/about-1.webp"
-                  alt="Refrigeration installation"
-                  className="w-full h-full object-cover"
+              <div className="relative rounded-2xl overflow-hidden h-44 img-zoom ring-1 ring-white/5">
+                <Image
+                  src={firstUrl(gallery, "about-left", ABOUT_FALLBACKS.left.src)}
+                  alt={firstAlt(gallery, "about-left", ABOUT_FALLBACKS.left.alt)}
+                  fill
+                  sizes="(max-width: 1024px) 50vw, 25vw"
+                  className="object-cover"
                 />
               </div>
-              <div className="rounded-2xl overflow-hidden h-44 img-zoom ring-1 ring-white/5">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/images/about-2.webp"
-                  alt="AC installation"
-                  className="w-full h-full object-cover"
+              <div className="relative rounded-2xl overflow-hidden h-44 img-zoom ring-1 ring-white/5">
+                <Image
+                  src={firstUrl(gallery, "about-right", ABOUT_FALLBACKS.right.src)}
+                  alt={firstAlt(gallery, "about-right", ABOUT_FALLBACKS.right.alt)}
+                  fill
+                  sizes="(max-width: 1024px) 50vw, 25vw"
+                  className="object-cover"
                 />
               </div>
             </div>
@@ -116,6 +100,30 @@ export default function About() {
                   </div>
                 );
               })}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-6 mb-8">
+              <Image
+                src="/images/badges/airah.jpg"
+                alt="AIRAH member"
+                width={56}
+                height={56}
+                className="h-14 w-14 rounded-lg object-contain bg-white p-1"
+              />
+              <Image
+                src="/images/badges/arc.jpg"
+                alt="ARC licence AU18839"
+                width={56}
+                height={56}
+                className="h-14 w-14 rounded-lg object-contain bg-white p-1"
+              />
+              <Image
+                src="/images/badges/hia.jpg"
+                alt="HIA member"
+                width={56}
+                height={56}
+                className="h-14 w-14 rounded-lg object-contain bg-white p-1"
+              />
             </div>
 
             <a

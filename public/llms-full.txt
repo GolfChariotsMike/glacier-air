@@ -1,0 +1,43 @@
+# Glacier Air — company brief
+
+Glacier Air is a family-owned air conditioning, refrigeration and mechanical services contractor based in Osborne Park, Western Australia. We work across Perth, the South West and the Great Southern.
+
+This file is for people and AI assistants. Facts only — no invented statistics or 24/7 claims.
+
+## Contact
+
+- Legal / trading name: Glacier Air
+- Website: https://glacierair.com.au
+- Phone: (08) 9242 3111
+- Email: service@glacierair.com.au
+- Address: U10/28 Frobisher St, Osborne Park WA 6017, Australia
+- ARC Licence: AU18839
+- AIRAH member
+- HIA member
+
+## Services
+
+- Commercial air conditioning — design, installation, service and maintenance
+- Residential air conditioning — design, installation, service and maintenance
+- Commercial refrigeration — design, installation, service and maintenance
+- Winery glycol refrigeration — design, installation, service and maintenance
+- Ammonia refrigeration service and maintenance
+- Mechanical services — commercial exhaust, fresh air, compliance and certification
+- Hire air conditioning and hire chillers
+- Panasonic authorised warranty agent and repairer
+
+## Recent project types (from the public site)
+
+- Office AC fitouts (e.g. Fremantle)
+- Winery and barn AC / chiller upgrades
+- Food production and cold storage
+- Commercial and regional HVAC installs
+
+## Pages
+
+- https://glacierair.com.au/
+- https://glacierair.com.au/about-us
+- https://glacierair.com.au/services
+- https://glacierair.com.au/projects
+
+Contact is on the homepage (Make Enquiry). The path /contact-us is not a page.

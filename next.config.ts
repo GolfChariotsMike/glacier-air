@@ -8,6 +8,14 @@ const nextConfig: NextConfig = {
         hostname: "glacierair.com.au",
         pathname: "/wp-content/uploads/**",
       },
+      {
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.blob.vercel-storage.com",
+      },
     ],
   },
 };

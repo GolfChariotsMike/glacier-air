@@ -1,131 +1,111 @@
 "use client";
-import { useEffect, useRef } from "react";
 import { Wind, Thermometer, Wrench, ChevronRight } from "lucide-react";
+import Image from "next/image";
+import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
+import { firstAlt, firstUrl, SERVICE_FALLBACKS, SERVICE_SLOT, type GalleryState } from "@/lib/gallery";
+
+const specialisms = [
+  "Commercial Air Conditioning",
+  "Residential Air Conditioning",
+  "Commercial Refrigeration",
+  "Mechanical Services",
+  "Winery Refrigeration",
+  "Panasonic Warranty Repairs",
+];
 
 const services = [
   {
+    id: "air-conditioning",
     icon: Wind,
     title: "Air Conditioning",
-    color: "blue",
     description:
-      "Residential and commercial air conditioning solutions across Perth and WA. Split systems, ducted, multi-head — we do it all.",
+      "Residential and commercial air conditioning as distinct jobs — design, install, service and maintain for homes and workplaces separately.",
     features: [
-      "Split system supply & install",
-      "Ducted AC systems",
-      "Multi-head/VRF systems",
-      "Preventive maintenance",
-      "Service & repairs",
+      "Residential air conditioning — design, installation, service and maintenance",
+      "Commercial air conditioning — design, installation, service and maintenance",
+      "Panasonic authorised warranty agent and repairer",
+      "Hire air conditioning solutions",
     ],
-    image: "/images/fremantle-7.webp",
+    image: "/images/tile-air-conditioning.webp",
   },
   {
+    id: "refrigeration",
     icon: Thermometer,
     title: "Refrigeration",
-    color: "cyan",
     description:
-      "Commercial and industrial refrigeration including winery systems. Temperature-critical environments done right.",
+      "Commercial refrigeration and winery glycol systems — from cold rooms to ammonia plant — plus hire chillers.",
     features: [
-      "Commercial cool rooms",
-      "Winery refrigeration systems",
-      "Industrial freezer rooms",
-      "Display cabinet installs",
-      "Emergency breakdown response",
+      "Commercial refrigeration — design, installation, service and maintenance",
+      "Winery glycol refrigeration — design, installation, service and maintenance",
+      "Ammonia refrigeration service and maintenance",
+      "Hire chillers",
     ],
-    image: "/images/refrigeration.webp",
+    image: "/images/tile-refrigeration.webp",
   },
   {
+    id: "mechanical-services",
     icon: Wrench,
     title: "Mechanical Services",
-    color: "indigo",
     description:
-      "End-to-end mechanical services for commercial and light industrial buildings. Design through to ongoing maintenance.",
+      "Ventilation and compliance work for commercial and light industrial buildings across Perth and regional WA.",
     features: [
-      "HVAC design & consulting",
-      "Mechanical system installation",
-      "Scheduled maintenance contracts",
-      "Compliance & inspections",
-      "Energy efficiency audits",
+      "Commercial exhaust — design, installation, service and maintenance",
+      "Fresh air — design, installation, service and maintenance",
+      "Compliance and certification",
     ],
-    image: "/images/fremantle-13.webp",
+    image: "/images/tile-mechanical.webp",
   },
 ];
 
-const colorMap: Record<string, { icon: string; accent: string; glow: string }> = {
-  blue:   { icon: "bg-blue-500/10 text-blue-400 border-blue-500/20",   accent: "text-blue-400",   glow: "hover:shadow-blue-500/10" },
-  cyan:   { icon: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",   accent: "text-cyan-400",   glow: "hover:shadow-cyan-500/10" },
-  indigo: { icon: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20", accent: "text-indigo-400", glow: "hover:shadow-indigo-500/10" },
-};
-
-export default function Services() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) e.target.classList.add("visible");
-        });
-      },
-      { threshold: 0.12 }
-    );
-    const els = sectionRef.current?.querySelectorAll(".reveal");
-    els?.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
+export default function Services({ gallery }: { gallery: GalleryState }) {
+  const sectionRef = useRevealOnScroll();
 
   return (
-    <section id="services" className="py-24 bg-[#0a0f1e]" ref={sectionRef}>
+    <section id="services" className="py-24 bg-[#2665AA]" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-6">
-        {/* Header */}
         <div className="text-center mb-16 reveal">
-          <p className="text-blue-400 text-sm font-semibold uppercase tracking-widest mb-3">
-            What We Do
+          <p className="text-white/80 text-sm font-semibold uppercase tracking-widest mb-3">
+            We specialise in
           </p>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Our Services
           </h2>
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            From design to installation to long-term maintenance — we cover the
-            full lifecycle of your air and refrigeration systems.
+          <p className="text-slate-100 text-sm md:text-base max-w-4xl mx-auto leading-relaxed uppercase tracking-wide">
+            {specialisms.join(" – ")}
           </p>
         </div>
 
-        {/* Service cards */}
         <div className="grid md:grid-cols-3 gap-6">
           {services.map((svc, i) => {
             const Icon = svc.icon;
-            const c = colorMap[svc.color];
             return (
               <div
                 key={svc.title}
-                className={`reveal reveal-delay-${i + 1} glow-card group rounded-2xl border border-white/5 overflow-hidden hover:shadow-2xl ${c.glow} transition-all duration-500`}
-                style={{ backgroundColor: "rgba(255,255,255,0.02)" }}
+                id={svc.id}
+                className={`reveal reveal-delay-${i + 1} group rounded-2xl border border-white/20 overflow-hidden scroll-mt-28 bg-[#1a4a82]/85 shadow-lg shadow-black/20 hover:border-white/35 hover:shadow-xl hover:shadow-black/30 transition-shadow`}
               >
-                {/* Image */}
-                <div className="h-48 overflow-hidden img-zoom">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={svc.image}
-                    alt={svc.title}
-                    className="w-full h-full object-cover"
+                <div className="relative h-48 overflow-hidden img-zoom">
+                  <Image
+                    src={firstUrl(gallery, SERVICE_SLOT[svc.id], SERVICE_FALLBACKS[svc.id] ?? svc.image)}
+                    alt={firstAlt(gallery, SERVICE_SLOT[svc.id], svc.title)}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover"
                   />
                 </div>
 
                 <div className="p-6">
-                  {/* Icon */}
-                  <div
-                    className={`w-12 h-12 rounded-xl border flex items-center justify-center mb-4 transition-all duration-300 ${c.icon}`}
-                  >
+                  <div className="w-12 h-12 rounded-xl border border-white/25 bg-black/20 flex items-center justify-center mb-4 text-white">
                     <Icon className="w-6 h-6" />
                   </div>
 
                   <h3 className="text-xl font-bold text-white mb-3">{svc.title}</h3>
-                  <p className="text-slate-400 text-sm mb-5 leading-relaxed">{svc.description}</p>
+                  <p className="text-slate-100 text-sm mb-5 leading-relaxed">{svc.description}</p>
 
                   <ul className="space-y-2 mb-6">
                     {svc.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2 text-sm text-slate-300">
-                        <ChevronRight className={`w-4 h-4 mt-0.5 shrink-0 ${c.accent}`} />
+                      <li key={f} className="flex items-start gap-2 text-sm text-white/90">
+                        <ChevronRight className="w-4 h-4 mt-0.5 shrink-0 text-[#E01F26]" />
                         {f}
                       </li>
                     ))}
@@ -133,15 +113,81 @@ export default function Services() {
 
                   <a
                     href="#contact"
-                    className={`text-sm font-semibold ${c.accent} hover:underline flex items-center gap-1 group/link`}
+                    className="text-sm font-semibold text-[#c5e4f7] hover:text-white hover:underline flex items-center gap-1 group/link"
                   >
-                    Get a quote{" "}
+                    Enquire about this service{" "}
                     <ChevronRight className="w-4 h-4 transition-transform group-hover/link:translate-x-1" />
                   </a>
                 </div>
               </div>
             );
           })}
+        </div>
+
+        <div className="reveal mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-4 rounded-2xl border border-white/20 bg-black/20 px-6 py-5">
+          <Image
+            src="/images/panasonic-logo.svg"
+            alt="Panasonic"
+            width={160}
+            height={32}
+            unoptimized
+            className="h-7 sm:h-8 w-auto shrink-0 brightness-0 invert opacity-95"
+          />
+          <div className="flex-1">
+            <p className="text-white font-semibold">Panasonic authorised warranty agent and repairer</p>
+            <p className="text-slate-100 text-sm mt-1">
+              Warranty repairs and service on Panasonic air conditioning we install — residential and commercial.
+            </p>
+          </div>
+          <a
+            href="#contact"
+            className="shrink-0 text-sm font-semibold text-[#c5e4f7] hover:text-white transition-colors"
+          >
+            Warranty enquiry →
+          </a>
+        </div>
+
+        <div className="mt-16 grid lg:grid-cols-2 gap-10 reveal">
+          <div>
+            <h3 className="text-2xl font-bold text-white mb-4">Commercial air conditioning</h3>
+            <p className="text-slate-100 leading-relaxed">
+              Commercial air conditioning is widely used in industrial and commercial spaces.
+              A suitable working environment improves comfort in both winter and summer.
+              We find a solution for the space — office, warehouse or retail.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-2xl font-bold text-white mb-4">Commercial refrigeration</h3>
+            <p className="text-slate-100 leading-relaxed mb-6">
+              Commercial refrigeration — cold rooms — is used in hospitality: restaurants, bars
+              and wineries. We design, install, maintain and repair systems for different sizes
+              and needs.
+            </p>
+            <div className="space-y-4 text-sm">
+              <div>
+                <p className="text-white font-semibold mb-1">Design</p>
+                <p className="text-slate-100 leading-relaxed">
+                  Room size, insulation, stored goods (fruit, vegetables, dairy, meat) and daily
+                  loading all feed the design. Thermal insulation of walls and ceiling determines
+                  how the cool room performs.
+                </p>
+              </div>
+              <div>
+                <p className="text-white font-semibold mb-1">Installation</p>
+                <p className="text-slate-100 leading-relaxed">
+                  Walk-in fridge, wine cooler or commercial freezer — we install for restaurants,
+                  bars and similar sites.
+                </p>
+              </div>
+              <div>
+                <p className="text-white font-semibold mb-1">Maintenance and repairs</p>
+                <p className="text-slate-100 leading-relaxed">
+                  Electrical or gas issues, filters and drains, ice build-up — plus advice on
+                  keeping commercial refrigeration in good condition.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

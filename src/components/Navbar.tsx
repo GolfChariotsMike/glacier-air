@@ -5,10 +5,10 @@ import Image from "next/image";
 
 const navLinks = [
   { label: "Home", href: "#home" },
-  { label: "About", href: "#about" },
+  { label: "About", href: "#about-us" },
   { label: "Services", href: "#services" },
   { label: "Projects", href: "#projects" },
-  { label: "Contact", href: "#contact" },
+  { label: "Contact", href: "#contact-us" },
 ];
 
 export default function Navbar() {
@@ -58,16 +58,16 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-4">
           <a
             href="tel:0892423111"
-            className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors"
+            className="flex items-center gap-2 text-sm text-slate-200 hover:text-white font-medium transition-colors rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E01F26]/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f1e]"
           >
-            <Phone className="w-4 h-4" />
+            <Phone className="w-4 h-4 text-[#E01F26]" />
             (08) 9242 3111
           </a>
           <a
-            href="#contact"
+            href="#contact-us"
             className="px-5 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-sm font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5"
           >
-            Get a Quote
+            Make Enquiry
           </a>
         </div>
 
@@ -101,16 +101,16 @@ export default function Navbar() {
           <div className="h-px bg-white/5 my-1" />
           <a
             href="tel:0892423111"
-            className="text-blue-400 font-medium flex items-center gap-2"
+            className="text-slate-200 font-medium flex items-center gap-2"
           >
-            <Phone className="w-4 h-4" /> (08) 9242 3111
+            <Phone className="w-4 h-4 text-[#E01F26]" /> (08) 9242 3111
           </a>
           <a
-            href="#contact"
+            href="#contact-us"
             className="px-4 py-3 rounded-xl bg-blue-500 text-white text-center font-semibold hover:bg-blue-400 transition-colors"
             onClick={() => setOpen(false)}
           >
-            Get a Quote
+            Make Enquiry
           </a>
         </div>
       </div>

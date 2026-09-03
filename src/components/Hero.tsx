@@ -1,212 +1,107 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
+import Image from "next/image";
 
 const badges = ["ARC Licence AU18839", "AIRAH Member", "HIA Member", "Family Owned"];
-const typewriterWords = ["Air Conditioning", "Refrigeration", "Mechanical Services", "HVAC Design"];
+const typewriterWords = [
+  "Air Conditioning",
+  "Refrigeration",
+  "Mechanical Services",
+  "HVAC Design",
+];
+
+function usePrefersReducedMotion() {
+  return useSyncExternalStore(
+    (onChange) => {
+      const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    },
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    () => false
+  );
+}
 
 function useTypewriter(words: string[]) {
-  const [text, setText] = useState("");
+  const reduceMotion = usePrefersReducedMotion();
+  const [text, setText] = useState(words[0]);
   const [wordIndex, setWordIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [done, setDone] = useState(false);
 
   useEffect(() => {
-    if (done) return;
+    if (reduceMotion) return;
 
-    const current = words[wordIndex];
-    const speed = isDeleting ? 40 : 70;
+    const current = words[wordIndex % words.length];
+    let delay = isDeleting ? 40 : 70;
+    if (!isDeleting && text === current) delay = 1800;
+    if (isDeleting && text === "") delay = 280;
 
     const timeout = setTimeout(() => {
-      // Finished typing the last word — stop
-      if (!isDeleting && text === current && wordIndex === words.length - 1) {
-        setDone(true);
-        return;
-      }
       if (!isDeleting && text === current) {
-        setTimeout(() => setIsDeleting(true), 800);
+        setIsDeleting(true);
         return;
       }
       if (isDeleting && text === "") {
         setIsDeleting(false);
-        setWordIndex((i) => i + 1);
+        setWordIndex((i) => (i + 1) % words.length);
         return;
       }
-      setText(isDeleting ? current.slice(0, text.length - 1) : current.slice(0, text.length + 1));
-    }, speed);
+      setText(
+        isDeleting
+          ? current.slice(0, text.length - 1)
+          : current.slice(0, text.length + 1)
+      );
+    }, delay);
 
     return () => clearTimeout(timeout);
-  }, [text, isDeleting, wordIndex, words, done]);
+  }, [text, isDeleting, wordIndex, words, reduceMotion]);
 
-  return { text, done };
+  return { text: reduceMotion ? words[0] : text, showCursor: !reduceMotion };
 }
 
 export default function Hero() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { text: typedText, done: typewriterDone } = useTypewriter(typewriterWords);
-
-  // Light snowflake overlay — same density/speed family as the old dots
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let animId: number;
-    let viewW = 0;
-    let viewH = 0;
-
-    const resize = () => {
-      const section = canvas.parentElement;
-      viewW = section ? section.offsetWidth : window.innerWidth;
-      viewH = section ? section.offsetHeight : window.innerHeight;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.round(viewW * dpr);
-      canvas.height = Math.round(viewH * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
-    resize();
-    window.addEventListener("resize", resize);
-
-    const count = 55;
-    const flakes = Array.from({ length: count }, (_, i) => {
-      // A few nearer flakes carry the snowflake silhouette; the rest stay small
-      const near = i < 18;
-      return {
-        x: Math.random() * viewW,
-        y: Math.random() * viewH,
-        r: near ? Math.random() * 4.5 + 7 : Math.random() * 2.4 + 3.6,
-        speed: Math.random() * 0.35 + 0.1,
-        opacity: near ? Math.random() * 0.22 + 0.38 : Math.random() * 0.25 + 0.2,
-        drift: (Math.random() - 0.5) * 0.18,
-        sway: Math.random() * 0.35 + 0.15,
-        phase: Math.random() * Math.PI * 2,
-        spin: Math.random() * Math.PI * 2,
-        spinSpeed: (Math.random() - 0.5) * 0.012,
-        branched: near,
-      };
-    });
-
-    const drawSnowflake = (
-      x: number,
-      y: number,
-      size: number,
-      rotation: number,
-      opacity: number,
-      branched: boolean,
-    ) => {
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(rotation);
-      ctx.strokeStyle = `rgba(147, 197, 253, ${opacity})`;
-      ctx.fillStyle = `rgba(147, 197, 253, ${opacity})`;
-      ctx.lineWidth = branched ? Math.max(0.9, size * 0.13) : Math.max(0.7, size * 0.16);
-      ctx.lineCap = "round";
-      ctx.lineJoin = "round";
-
-      const step = Math.PI / 3;
-      for (let i = 0; i < 6; i++) {
-        ctx.save();
-        ctx.rotate(i * step);
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(0, -size);
-        if (branched) {
-          // Classic dendrite: V-prongs at two stations along each arm
-          const stations = [
-            { y: -size * 0.42, len: size * 0.34 },
-            { y: -size * 0.7, len: size * 0.26 },
-          ];
-          for (const s of stations) {
-            ctx.moveTo(0, s.y);
-            ctx.lineTo(-s.len, s.y - s.len * 0.55);
-            ctx.moveTo(0, s.y);
-            ctx.lineTo(s.len, s.y - s.len * 0.55);
-          }
-        } else {
-          const mid = -size * 0.58;
-          const prong = size * 0.32;
-          ctx.moveTo(0, mid);
-          ctx.lineTo(-prong, mid - prong * 0.5);
-          ctx.moveTo(0, mid);
-          ctx.lineTo(prong, mid - prong * 0.5);
-        }
-        ctx.stroke();
-        ctx.restore();
-      }
-
-      ctx.beginPath();
-      ctx.arc(0, 0, Math.max(0.7, size * 0.12), 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    };
-
-    const draw = () => {
-      ctx.clearRect(0, 0, viewW, viewH);
-      flakes.forEach((p) => {
-        drawSnowflake(p.x, p.y, p.r, p.spin, p.opacity, p.branched);
-        p.y += p.speed;
-        p.phase += 0.012;
-        p.x += p.drift + Math.sin(p.phase) * p.sway * 0.35;
-        p.spin += p.spinSpeed;
-        if (p.y > viewH + 10) {
-          p.y = -10;
-          p.x = Math.random() * viewW;
-        }
-        if (p.x < -10) p.x = viewW + 10;
-        if (p.x > viewW + 10) p.x = -10;
-      });
-      animId = requestAnimationFrame(draw);
-    };
-    draw();
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
+  const { text: typedText, showCursor } = useTypewriter(typewriterWords);
 
   return (
-    <section
-      id="home"
-      className="relative min-h-screen flex items-center overflow-hidden"
-    >
-      {/* Background image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/images/hero-bg.webp')" }}
-      />
-      {/* Gradient overlays */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#050a18]/95 via-[#050a18]/75 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f1e] via-transparent to-transparent" />
+    <section id="home" className="relative min-h-screen overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="hero-kenburns absolute inset-0">
+          <Image
+            src="/images/hero-bg.webp"
+            alt=""
+            fill
+            sizes="100vw"
+            quality={75}
+            preload
+            className="object-cover object-[54%_center]"
+          />
+        </div>
+      </div>
+      <div className="absolute inset-0 bg-gradient-to-r from-[#050a18]/80 via-[#050a18]/50 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#050a18]/80 via-transparent to-transparent" />
 
-      {/* Aurora layer */}
-      <div className="aurora" />
-
-      {/* Snowflakes */}
-      <canvas ref={canvasRef} id="particle-canvas" />
-
-      {/* Floating orbs */}
-      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-blue-500/8 rounded-full blur-3xl pointer-events-none animate-pulse" style={{ animationDuration: "6s" }} />
-      <div className="absolute bottom-1/3 right-1/3 w-64 h-64 bg-cyan-500/6 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-20">
+      <div className="relative z-10 flex min-h-screen items-center max-w-7xl mx-auto w-full px-6 pt-24 pb-16">
         <div className="max-w-2xl">
-          {/* Animated pill badge */}
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full badge-shimmer border border-blue-500/25 text-blue-300 text-sm font-medium mb-6">
-            <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-[#E01F26] animate-pulse motion-reduce:animate-none" />
             Perth, SouthWest & Great Southern WA
           </div>
 
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-4">
-            Experts in
+          <h1 className="mb-6">
+            <span className="sr-only">
+              Experts in air conditioning, refrigeration, mechanical services and HVAC design
+            </span>
+            <span aria-hidden="true">
+              <span className="block text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-2">
+                Experts in
+              </span>
+              <span className="block text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold min-h-[1.2em] whitespace-nowrap">
+                <span className="gradient-text">{typedText}</span>
+                {showCursor && <span className="cursor" />}
+              </span>
+            </span>
           </h1>
-
-          {/* Typewriter line — nowrap prevents layout shift on long words */}
-          <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 min-h-[1.2em] whitespace-nowrap">
-            <span className="gradient-text">{typedText}</span>
-            {!typewriterDone && <span className="cursor" />}
-          </div>
 
           <p className="text-lg md:text-xl text-slate-300 mb-8 leading-relaxed max-w-xl">
             Family-owned specialists in air conditioning, refrigeration and
@@ -214,7 +109,6 @@ export default function Hero() {
             keep your space comfortable — residential to commercial.
           </p>
 
-          {/* Design · Install · Maintain */}
           <div className="flex items-center gap-4 mb-10">
             {["Design", "Install", "Maintain"].map((t, i) => (
               <span key={t} className="flex items-center gap-3 text-sm font-semibold text-slate-300 uppercase tracking-widest">
@@ -224,22 +118,21 @@ export default function Hero() {
             ))}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 mb-12">
+          <div className="flex flex-col sm:flex-row gap-4 mb-8">
             <a
               href="#contact"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-semibold text-lg transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5 active:translate-y-0"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-semibold text-lg transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
             >
-              Get a Free Quote <ArrowRight className="w-5 h-5" />
+              Make Enquiry <ArrowRight className="w-5 h-5" />
             </a>
             <a
               href="#services"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl border border-white/10 hover:border-white/30 text-white font-semibold text-lg transition-all duration-300 hover:bg-white/5"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl border border-white/10 hover:border-white/30 text-white font-semibold text-lg transition-all duration-300 hover:bg-white/5 motion-reduce:transition-none"
             >
               Our Services
             </a>
           </div>
 
-          {/* Trust badges */}
           <div className="flex flex-wrap gap-5">
             {badges.map((b) => (
               <div key={b} className="flex items-center gap-1.5 text-xs text-slate-400">
@@ -250,22 +143,6 @@ export default function Hero() {
           </div>
         </div>
       </div>
-
-      {/* Phone floating card */}
-      <a
-        href="tel:0892423111"
-        className="absolute bottom-8 right-6 hidden lg:flex items-center gap-3 glass-panel rounded-2xl px-5 py-4 hover:border-blue-500/20 transition-all duration-300 group hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-950/40"
-      >
-        <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-          <span className="text-blue-400 text-lg">📞</span>
-        </div>
-        <div>
-          <p className="text-xs text-slate-400 mb-0.5">Call us today</p>
-          <p className="text-white font-semibold group-hover:text-blue-400 transition-colors">
-            (08) 9242 3111
-          </p>
-        </div>
-      </a>
     </section>
   );
 }

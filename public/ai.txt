@@ -1,0 +1,5 @@
+# Glacier Air
+
+For crawlers and assistants, use https://glacierair.com.au/llms.txt
+Full brief: https://glacierair.com.au/llms-full.txt
+Canonical site: https://glacierair.com.au

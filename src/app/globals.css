@@ -3,6 +3,7 @@
 :root {
   --background: #0a0f1e;
   --foreground: #f0f4ff;
+  --brand-red: #e01f26;
 }
 
 html {
@@ -27,39 +28,15 @@ body {
   }
 }
 
-/* ── Aurora background ── */
-@keyframes aurora-shift {
-  0%   { background-position: 0% 50%;   transform: scale(1)    rotate(0deg); }
-  33%  { background-position: 100% 50%; transform: scale(1.04) rotate(1deg); }
-  66%  { background-position: 50% 100%; transform: scale(1.02) rotate(-1deg); }
-  100% { background-position: 0% 50%;   transform: scale(1)    rotate(0deg); }
+/* ── Ken Burns on the hero rooftop photo (scale only — no X slide) ── */
+@keyframes ken-burns {
+  0%   { transform: scale(1); }
+  100% { transform: scale(1.08); }
 }
-
-.aurora {
-  position: absolute;
-  inset: -60%;
-  background: repeating-linear-gradient(
-    100deg,
-    rgba(59, 130, 246, 0.12)  0%,
-    rgba(147, 197, 253, 0.06) 10%,
-    rgba(96, 165, 250, 0.10)  20%,
-    rgba(165, 243, 252, 0.08) 30%,
-    rgba(30, 64, 175, 0.12)   40%,
-    transparent               50%
-  );
-  background-size: 300% 300%;
-  filter: blur(60px);
-  animation: aurora-shift 20s ease-in-out infinite alternate;
-  pointer-events: none;
-}
-
-/* ── Hero snowflake overlay ── */
-#particle-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+.hero-kenburns {
+  transform-origin: center center;
+  animation: ken-burns 22s ease-in-out infinite alternate;
+  will-change: transform;
 }
 
 /* ── Scroll reveal ── */
@@ -69,14 +46,14 @@ body {
   transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
               transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.reveal.visible {
+.reveal.inview {
   opacity: 1;
   transform: translateY(0);
 }
-.reveal-delay-1 { transition-delay: 0.1s; }
-.reveal-delay-2 { transition-delay: 0.2s; }
-.reveal-delay-3 { transition-delay: 0.3s; }
-.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal.reveal-delay-1 { transition-delay: 0.12s; }
+.reveal.reveal-delay-2 { transition-delay: 0.24s; }
+.reveal.reveal-delay-3 { transition-delay: 0.36s; }
+.reveal.reveal-delay-4 { transition-delay: 0.48s; }
 
 /* ── Glow card ── */
 .glow-card {
@@ -84,6 +61,15 @@ body {
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.35s ease;
 }
+/* glow-card's shorthand would otherwise wipe .reveal's opacity transition + stagger */
+.reveal.glow-card {
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.35s ease;
+}
+.reveal.glow-card.reveal-delay-1 { transition-delay: 0.12s; }
+.reveal.glow-card.reveal-delay-2 { transition-delay: 0.24s; }
+.reveal.glow-card.reveal-delay-3 { transition-delay: 0.36s; }
 .glow-card::before {
   content: '';
   position: absolute;
@@ -175,4 +161,69 @@ body {
 }
 .img-zoom:hover img {
   transform: scale(1.07);
+}
+
+/* ── Client logo marquee ── */
+@keyframes client-marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.client-marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+.client-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: client-marquee 70s linear infinite;
+}
+.client-marquee:hover .client-marquee-track {
+  animation-play-state: paused;
+}
+.client-marquee-dup {
+  display: flex;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .hero-kenburns {
+    animation: none;
+    transform: none;
+  }
+  .client-marquee-track {
+    animation: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    row-gap: 1.5rem;
+  }
+  .client-marquee-track > .flex {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
+  .client-marquee-dup {
+    display: none;
+  }
+  .client-marquee {
+    mask-image: none;
+  }
+  .badge-shimmer,
+  .cursor {
+    animation: none;
+  }
+  .reveal,
+  .reveal.inview {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .img-zoom:hover img {
+    transform: none;
+  }
+  .glow-card:hover {
+    transform: none;
+  }
 }
