@@ -3,7 +3,13 @@
 import { useState } from "react";
 import Image from "next/image";
 
-export default function AdminPinForm() {
+export default function AdminPinForm({
+  title = "Admin photos",
+  description = "Enter the PIN Mike set for you.",
+}: {
+  title?: string;
+  description?: string;
+}) {
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -36,8 +42,8 @@ export default function AdminPinForm() {
           height={40}
           className="h-10 w-auto mx-auto"
         />
-        <h1 className="text-2xl font-bold text-white text-center">Admin photos</h1>
-        <p className="text-slate-400 text-sm text-center">Enter the PIN Mike set for you.</p>
+        <h1 className="text-2xl font-bold text-white text-center">{title}</h1>
+        <p className="text-slate-400 text-sm text-center">{description}</p>
         <label className="text-xs uppercase tracking-wide text-slate-400" htmlFor="admin-pin">
           PIN
         </label>
