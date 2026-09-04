@@ -10,7 +10,7 @@ const specialisms = [
   "Commercial Refrigeration",
   "Mechanical Services",
   "Winery Refrigeration",
-  "Panasonic Warranty Repairs",
+  "Panasonic Specialist Support",
 ];
 
 const services = [
@@ -23,7 +23,7 @@ const services = [
     features: [
       "Residential air conditioning — design, installation, service and maintenance",
       "Commercial air conditioning — design, installation, service and maintenance",
-      "Panasonic authorised warranty agent and repairer",
+      "Panasonic ASC warranty agent and repairs. Panasonic Specialist Air Network dealer.",
       "Hire air conditioning solutions",
     ],
     image: "/images/tile-air-conditioning.webp",
@@ -134,9 +134,12 @@ export default function Services({ gallery }: { gallery: GalleryState }) {
             className="h-7 sm:h-8 w-auto shrink-0 brightness-0 invert opacity-95"
           />
           <div className="flex-1">
-            <p className="text-white font-semibold">Panasonic authorised warranty agent and repairer</p>
+            <p className="text-white font-semibold">Panasonic ASC warranty agent and repairs. Panasonic Specialist Air Network dealer.</p>
             <p className="text-slate-100 text-sm mt-1">
               Warranty repairs and service on Panasonic air conditioning we install — residential and commercial.
+            </p>
+            <p className="text-slate-100 text-sm mt-1">
+              We also offer design, installation, spare parts support and maintenance on all Panasonic HVAC equipment.
             </p>
           </div>
           <a
@@ -151,9 +154,9 @@ export default function Services({ gallery }: { gallery: GalleryState }) {
           <div>
             <h3 className="text-2xl font-bold text-white mb-4">Commercial air conditioning</h3>
             <p className="text-slate-100 leading-relaxed">
-              Commercial air conditioning is widely used in industrial and commercial spaces.
-              A suitable working environment improves comfort in both winter and summer.
-              We find a solution for the space — office, warehouse or retail.
+              Commercial air conditioning provides a suitable working environment and
+              improves comfort in both winter and summer. We find a solution for the
+              space — office, warehouse or retail.
             </p>
           </div>
           <div>

@@ -112,7 +112,8 @@ export default function Hero({
           <p className="text-lg md:text-xl text-slate-300 mb-8 leading-relaxed max-w-xl">
             Family-owned specialists in air conditioning, refrigeration and
             mechanical services. We design, install and maintain systems that
-            keep your space comfortable — residential to commercial.
+            create reliable, climate-controlled environments for residential,
+            commercial and industrial spaces.
           </p>
 
           <div className="flex items-center gap-4 mb-10">
