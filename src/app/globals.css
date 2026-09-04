@@ -184,6 +184,54 @@ body {
   display: flex;
 }
 
+/* ── Copy review overlay ── */
+html[data-review-toolbar] {
+  scroll-padding-top: 7.5rem;
+}
+html[data-review-toolbar] nav.fixed {
+  top: 3.25rem;
+}
+.review-toolbar,
+.review-inbox {
+  font-family: inherit;
+}
+.h-13 {
+  height: 3.25rem;
+}
+.top-13 {
+  top: 3.25rem;
+}
+body.review-add-note {
+  cursor: crosshair;
+}
+[data-review-open] {
+  outline: 2px solid #facc15;
+  outline-offset: 3px;
+  background-color: rgba(250, 204, 21, 0.16);
+  border-radius: 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+[data-review-hover] {
+  outline: 2px dashed #facc15;
+  outline-offset: 3px;
+  background-color: rgba(250, 204, 21, 0.1);
+  border-radius: 2px;
+}
+.review-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  background: #facc15;
+  color: #1a1400;
+  font-size: 0.7rem;
+  font-weight: 700;
+  box-shadow: 0 0 0 2px #060c1a;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

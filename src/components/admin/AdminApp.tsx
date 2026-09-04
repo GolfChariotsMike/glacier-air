@@ -189,13 +189,21 @@ export default function AdminApp({ supabaseConfigured }: Props) {
           <Image src="/glacier-air-logo.png" alt="Glacier Air" width={140} height={28} className="h-7 w-auto" />
           <p className="text-sm text-slate-400 truncate">Photo admin</p>
         </div>
-        <button
-          type="button"
-          onClick={() => void logout()}
-          className="inline-flex items-center justify-center gap-2 min-h-12 px-4 rounded-xl border border-white/15 text-sm font-semibold"
-        >
-          <LogOut className="w-4 h-4" /> Log out
-        </button>
+        <div className="flex items-center gap-2 shrink-0">
+          <a
+            href="/review"
+            className="inline-flex items-center justify-center min-h-12 px-4 rounded-xl border border-white/15 text-sm font-semibold"
+          >
+            Copy review
+          </a>
+          <button
+            type="button"
+            onClick={() => void logout()}
+            className="inline-flex items-center justify-center gap-2 min-h-12 px-4 rounded-xl border border-white/15 text-sm font-semibold"
+          >
+            <LogOut className="w-4 h-4" /> Log out
+          </button>
+        </div>
       </header>
 
       <main className="max-w-4xl mx-auto px-5 py-8 flex flex-col gap-10">
