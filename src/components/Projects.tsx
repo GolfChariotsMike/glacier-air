@@ -1,15 +1,33 @@
 "use client";
 import Image from "next/image";
 import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
-import { PROJECT_GROUPS, imagesForProject, type GalleryState } from "@/lib/gallery";
+import {
+  imagesForProject,
+  namedProjects,
+  UNASSIGNED_ID,
+  type CatalogueProject,
+  type GalleryState,
+} from "@/lib/gallery";
 
-export default function Projects({ gallery }: { gallery: GalleryState }) {
+export default function Projects({
+  gallery,
+  projects,
+}: {
+  gallery: GalleryState;
+  projects: CatalogueProject[];
+}) {
   const sectionRef = useRevealOnScroll();
-  const named = PROJECT_GROUPS.filter((group) => group.id !== "unassigned")
-    .map((group) => ({ ...group, photos: imagesForProject(gallery, group.id) }))
-    .filter((group) => group.photos.length > 0);
-  const featured = named.slice(0, 2);
-  const more = named.slice(2);
+  const named = namedProjects(projects).map((project) => ({
+    ...project,
+    photos: imagesForProject(gallery, project.id),
+  }));
+  const featured = [1, 2]
+    .map((rank) => named.find((project) => project.heroRank === rank))
+    .filter((project): project is (typeof named)[number] => Boolean(project));
+  const featuredIds = new Set(featured.map((project) => project.id));
+  const more = named.filter(
+    (project) => project.id !== UNASSIGNED_ID && !featuredIds.has(project.id) && project.photos.length > 0
+  );
 
   return (
     <section id="projects" className="py-24 bg-[#0a0f1e]" ref={sectionRef}>
@@ -53,10 +71,20 @@ export default function Projects({ gallery }: { gallery: GalleryState }) {
                     />
                   </div>
                 ))}
+                {project.photos.length === 0 && (
+                  <div className="col-span-2 h-56 rounded-2xl ring-1 ring-white/5 bg-white/[0.03] flex items-center justify-center">
+                    <p className="text-sm text-slate-500">Photos coming soon</p>
+                  </div>
+                )}
               </div>
 
               <div className={pi % 2 === 1 ? "lg:order-1" : ""}>
-                <h3 className="text-3xl font-bold text-white mb-6">{project.publicTitle}</h3>
+                <h3 className={`text-3xl font-bold text-white ${project.description ? "mb-4" : "mb-6"}`}>
+                  {project.publicTitle}
+                </h3>
+                {project.description ? (
+                  <p className="text-slate-400 text-lg leading-relaxed mb-6">{project.description}</p>
+                ) : null}
                 <a
                   href="#contact"
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-blue-500/30 text-blue-400 hover:bg-blue-500/10 font-semibold transition-all duration-300 hover:border-blue-400/50 group"

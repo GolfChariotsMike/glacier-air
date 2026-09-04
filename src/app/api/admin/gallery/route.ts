@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { ADMIN_COOKIE, sessionValid } from "@/lib/admin-auth";
 import { isGallerySlot, normalizeGallery, type GalleryImage } from "@/lib/gallery";
 import { ensureSeeded, supabaseConfigured, writeGallery } from "@/lib/supabase-gallery";
+import { ensureProjectsSeeded } from "@/lib/supabase-projects";
 
 async function requireAdmin() {
   const jar = await cookies();
@@ -13,10 +14,11 @@ export async function GET() {
   if (!(await requireAdmin())) {
     return NextResponse.json({ ok: false, error: "Not signed in." }, { status: 401 });
   }
-  const gallery = await ensureSeeded();
+  const [gallery, projects] = await Promise.all([ensureSeeded(), ensureProjectsSeeded()]);
   return NextResponse.json({
     ok: true,
     gallery,
+    projects,
     supabaseConfigured: supabaseConfigured(),
   });
 }

@@ -38,6 +38,8 @@ export const SLOT_LABELS: Record<GallerySlot, string> = {
   library: "Unused library",
 };
 
+export const UNASSIGNED_ID = "unassigned";
+
 export const PROJECT_IDS = [
   "daiwa",
   "henley",
@@ -47,10 +49,22 @@ export const PROJECT_IDS = [
   "shelf",
   "west-cape",
   "windsor",
-  "unassigned",
+  UNASSIGNED_ID,
 ] as const;
 
-export type ProjectId = (typeof PROJECT_IDS)[number];
+/** Kebab slug stored on gallery images and in glacier_air_projects.id */
+export type ProjectId = string;
+
+export const PROJECT_ID_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+export type CatalogueProject = {
+  id: ProjectId;
+  title: string;
+  publicTitle: string;
+  description: string;
+  heroRank: 1 | 2 | null;
+  sortOrder: number;
+};
 
 export const PROJECT_GROUPS: { id: ProjectId; title: string; publicTitle: string }[] = [
   { id: "daiwa", title: "Daiwa Foods", publicTitle: "Daiwa Foods Cold Storage" },
@@ -61,8 +75,19 @@ export const PROJECT_GROUPS: { id: ProjectId; title: string; publicTitle: string
   { id: "shelf", title: "Shelf Subsea", publicTitle: "Shelf Subsea Dive Chiller Overhaul" },
   { id: "west-cape", title: "West Cape Howe", publicTitle: "West Cape Howe winery chiller upgrade" },
   { id: "windsor", title: "Windsor Cinema", publicTitle: "Windsor Cinema AC upgrade" },
-  { id: "unassigned", title: "Unassigned / other", publicTitle: "Other work" },
+  { id: UNASSIGNED_ID, title: "Unassigned / other", publicTitle: "Other work" },
 ];
+
+export function fallbackProjects(): CatalogueProject[] {
+  return PROJECT_GROUPS.map((group, i) => ({
+    id: group.id,
+    title: group.title,
+    publicTitle: group.publicTitle,
+    description: "",
+    heroRank: group.id === "daiwa" ? 1 : group.id === "henley" ? 2 : null,
+    sortOrder: group.id === UNASSIGNED_ID ? 999 : (i + 1) * 10,
+  }));
+}
 
 export type GalleryImage = {
   id: string;
@@ -106,7 +131,23 @@ export const CLIENT_GREY_TILES = new Set([
 ]);
 
 export function isProjectId(value: string | null | undefined): value is ProjectId {
-  return Boolean(value && (PROJECT_IDS as readonly string[]).includes(value));
+  return Boolean(value && value.length <= 80 && PROJECT_ID_RE.test(value));
+}
+
+export function slugifyProjectId(title: string): string {
+  const base = title
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60);
+  return base || "project";
+}
+
+export function namedProjects(projects: CatalogueProject[]): CatalogueProject[] {
+  return projects
+    .filter((project) => project.id !== UNASSIGNED_ID)
+    .sort((a, b) => a.sortOrder - b.sortOrder || a.title.localeCompare(b.title));
 }
 
 export function imagesForSlot(state: GalleryState, slot: GallerySlot): GalleryImage[] {
@@ -117,7 +158,7 @@ export function imagesForSlot(state: GalleryState, slot: GallerySlot): GalleryIm
 
 export function imagesForProject(state: GalleryState, projectId: ProjectId): GalleryImage[] {
   return imagesForSlot(state, "projects")
-    .filter((img) => (img.projectId ?? "unassigned") === projectId)
+    .filter((img) => (img.projectId ?? UNASSIGNED_ID) === projectId)
     .sort((a, b) => a.sort - b.sort);
 }
 
@@ -131,7 +172,7 @@ export function inferProjectId(url: string, id?: string): ProjectId {
   if (hay.includes("shelf")) return "shelf";
   if (hay.includes("west-cape")) return "west-cape";
   if (hay.includes("windsor")) return "windsor";
-  return "unassigned";
+  return UNASSIGNED_ID;
 }
 
 export function firstUrl(state: GalleryState, slot: GallerySlot, fallback: string): string {
@@ -214,7 +255,7 @@ export function moveToProject(images: GalleryImage[], id: string, projectId: Pro
   const current = images.find((img) => img.id === id);
   if (!current || current.slot !== "projects") return images;
   const siblings = images.filter(
-    (img) => img.slot === "projects" && (img.projectId ?? "unassigned") === projectId && img.id !== id
+    (img) => img.slot === "projects" && (img.projectId ?? UNASSIGNED_ID) === projectId && img.id !== id
   );
   const max = siblings.reduce((n, img) => Math.max(n, img.sort), -1);
   return images.map((img) =>
@@ -223,5 +264,5 @@ export function moveToProject(images: GalleryImage[], id: string, projectId: Pro
 }
 
 export function sendProjectPhotoToUnused(images: GalleryImage[], id: string): GalleryImage[] {
-  return moveToProject(images, id, "unassigned");
+  return moveToProject(images, id, UNASSIGNED_ID);
 }
