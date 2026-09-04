@@ -9,11 +9,12 @@ import Footer from "@/components/Footer";
 import { JsonLd } from "@/components/JsonLd";
 import { firstAlt, firstUrl, HERO_FALLBACK } from "@/lib/gallery";
 import { readGallery } from "@/lib/supabase-gallery";
+import { readProjects } from "@/lib/supabase-projects";
 
 export const revalidate = 30;
 
 export default async function Home() {
-  const gallery = await readGallery();
+  const [gallery, projects] = await Promise.all([readGallery(), readProjects()]);
   return (
     <>
       <JsonLd />
@@ -24,7 +25,7 @@ export default async function Home() {
       />
       <Services gallery={gallery} />
       <About gallery={gallery} />
-      <Projects gallery={gallery} />
+      <Projects gallery={gallery} projects={projects} />
       <Clients gallery={gallery} />
       <Contact />
       <Footer />

@@ -4,11 +4,14 @@ import { useEffect, useState, type DragEvent, type ReactNode } from "react";
 import Image from "next/image";
 import { LogOut, Upload } from "lucide-react";
 import {
-  PROJECT_GROUPS,
+  fallbackProjects,
   imagesForProject,
   imagesForSlot,
   moveToProject,
+  namedProjects,
   sendProjectPhotoToUnused,
+  UNASSIGNED_ID,
+  type CatalogueProject,
   type GalleryImage,
   type GallerySlot,
   type GalleryState,
@@ -51,15 +54,21 @@ async function compressImage(file: File): Promise<File> {
 
 export default function AdminApp({ supabaseConfigured }: Props) {
   const [gallery, setGallery] = useState<GalleryState>({ images: [] });
+  const [projects, setProjects] = useState<CatalogueProject[]>(fallbackProjects);
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
   const [overProject, setOverProject] = useState<ProjectId | null>(null);
+  const [newTitle, setNewTitle] = useState("");
+  const [newPublicTitle, setNewPublicTitle] = useState("");
 
   useEffect(() => {
     fetch("/api/admin/gallery")
       .then((r) => r.json())
       .then((data) => {
-        if (data.ok) setGallery(data.gallery);
+        if (data.ok) {
+          setGallery(data.gallery);
+          if (Array.isArray(data.projects)) setProjects(data.projects);
+        }
       })
       .catch(() => setStatus("Could not load photos."));
   }, []);
@@ -106,6 +115,56 @@ export default function AdminApp({ supabaseConfigured }: Props) {
     }
     setGallery(data.gallery);
     setStatus("Photo updated.");
+  }
+
+  async function persistProjects(
+    method: "POST" | "PATCH" | "DELETE",
+    body: Record<string, unknown>,
+    okMessage: string
+  ) {
+    setBusy(true);
+    setStatus("");
+    const res = await fetch("/api/admin/projects", {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json().catch(() => ({}));
+    setBusy(false);
+    if (!res.ok) {
+      setStatus(data.error || "Could not save.");
+      return false;
+    }
+    if (Array.isArray(data.projects)) setProjects(data.projects);
+    if (data.gallery) setGallery(data.gallery);
+    setStatus(okMessage);
+    return true;
+  }
+
+  function setHero(id: ProjectId, rank: 1 | 2) {
+    void persistProjects("PATCH", { id, heroRank: rank }, "Featured projects updated.");
+  }
+
+  function saveDescription(id: ProjectId, description: string) {
+    void persistProjects("PATCH", { id, description }, "Description saved.");
+  }
+
+  async function addProject() {
+    const ok = await persistProjects(
+      "POST",
+      { title: newTitle, publicTitle: newPublicTitle },
+      "Project added."
+    );
+    if (ok) {
+      setNewTitle("");
+      setNewPublicTitle("");
+    }
+  }
+
+  function removeProject(project: CatalogueProject) {
+    if (project.id === UNASSIGNED_ID) return;
+    if (!window.confirm(`Delete “${project.title}”? Photos move to Unassigned / other.`)) return;
+    void persistProjects("DELETE", { id: project.id }, "Project deleted.");
   }
 
   function dropOnProject(projectId: ProjectId, event: DragEvent) {
@@ -188,10 +247,54 @@ export default function AdminApp({ supabaseConfigured }: Props) {
         <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
           <h2 className="text-lg font-bold mb-1">Projects</h2>
           <p className="text-sm text-slate-400 mb-6">
-            Drag a photo from one project onto another. Hero and service photos stay put.
+            Choose the two homepage hero projects, add jobs, then drag photos between groups.
+            Hero and service photos stay put.
           </p>
-          <div className="flex flex-col gap-6">
-            {PROJECT_GROUPS.map((group) => {
+
+          <HeroProjectsPanel
+            projects={projects}
+            busy={busy || !supabaseConfigured}
+            onSetHero={setHero}
+            onSaveDescription={saveDescription}
+          />
+
+          <div className="mt-6 rounded-xl border border-white/10 bg-[#0a0f1e] p-3">
+            <h3 className="font-bold mb-1">Add project</h3>
+            <p className="text-sm text-slate-400 mb-3">
+              Admin name plus the heading shown on the site. A kebab id is created automatically.
+            </p>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <label className="text-xs uppercase tracking-wide text-slate-400">
+                Admin name
+                <input
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  className="mt-1 min-h-12 w-full px-3 rounded-xl bg-white/5 border border-white/15 text-sm text-white font-normal normal-case tracking-normal"
+                  placeholder="e.g. Albany Cold Store"
+                />
+              </label>
+              <label className="text-xs uppercase tracking-wide text-slate-400">
+                Site heading
+                <input
+                  value={newPublicTitle}
+                  onChange={(e) => setNewPublicTitle(e.target.value)}
+                  className="mt-1 min-h-12 w-full px-3 rounded-xl bg-white/5 border border-white/15 text-sm text-white font-normal normal-case tracking-normal"
+                  placeholder="Optional — defaults to admin name"
+                />
+              </label>
+            </div>
+            <button
+              type="button"
+              disabled={busy || !supabaseConfigured || !newTitle.trim()}
+              onClick={() => void addProject()}
+              className="mt-3 min-h-12 px-4 rounded-xl bg-[#2665AA] font-semibold disabled:opacity-50"
+            >
+              Add project
+            </button>
+          </div>
+
+          <div className="mt-6 flex flex-col gap-6">
+            {projects.map((group) => {
               const photos = imagesForProject(gallery, group.id);
               const active = overProject === group.id;
               return (
@@ -212,11 +315,28 @@ export default function AdminApp({ supabaseConfigured }: Props) {
                   }`}
                 >
                   <div className="flex items-center justify-between gap-3 mb-3">
-                    <h3 className="font-bold">{group.title}</h3>
-                    <AddPhotosButton
-                      disabled={busy || !supabaseConfigured}
-                      onFile={(file) => void upload("projects", file, group.title, group.id)}
-                    />
+                    <div className="min-w-0">
+                      <h3 className="font-bold truncate">{group.title}</h3>
+                      {group.heroRank ? (
+                        <p className="text-xs text-[#7eb4e6]">Homepage hero {group.heroRank}</p>
+                      ) : null}
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {group.id !== UNASSIGNED_ID && (
+                        <button
+                          type="button"
+                          disabled={busy}
+                          onClick={() => removeProject(group)}
+                          className="min-h-12 px-3 rounded-xl border border-[#E01F26]/40 text-[#ffb4b6] text-sm font-semibold"
+                        >
+                          Delete
+                        </button>
+                      )}
+                      <AddPhotosButton
+                        disabled={busy || !supabaseConfigured}
+                        onFile={(file) => void upload("projects", file, group.title, group.id)}
+                      />
+                    </div>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 min-h-24">
                     {photos.map((img) => (
@@ -296,6 +416,138 @@ export default function AdminApp({ supabaseConfigured }: Props) {
         </section>
       </main>
     </div>
+  );
+}
+
+function HeroProjectsPanel({
+  projects,
+  busy,
+  onSetHero,
+  onSaveDescription,
+}: {
+  projects: CatalogueProject[];
+  busy: boolean;
+  onSetHero: (id: ProjectId, rank: 1 | 2) => void;
+  onSaveDescription: (id: ProjectId, description: string) => void;
+}) {
+  const named = namedProjects(projects);
+  const hero1 = named.find((project) => project.heroRank === 1);
+  const hero2 = named.find((project) => project.heroRank === 2);
+  const heroes = [hero1, hero2].filter((project): project is CatalogueProject => Boolean(project));
+
+  return (
+    <div className="rounded-xl border border-white/10 bg-[#0a0f1e] p-3">
+      <h3 className="font-bold mb-1">Hero projects (homepage)</h3>
+      <p className="text-sm text-slate-400 mb-3">
+        Exactly two featured jobs when enough exist. Setting hero 1 or 2 replaces that slot.
+      </p>
+      <p className="text-sm text-slate-200 mb-4">
+        Currently featured:{" "}
+        {heroes.length
+          ? heroes.map((project) => `${project.title} (hero ${project.heroRank})`).join(" · ")
+          : "none yet"}
+      </p>
+      <div className="flex flex-col gap-2">
+        {named.map((project) => (
+          <div
+            key={project.id}
+            className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 rounded-lg border border-white/10 px-3 py-2"
+          >
+            <p className="flex-1 min-w-0 text-sm font-medium truncate">{project.title}</p>
+            <div className="flex gap-2">
+              <HeroRankButton
+                label="Hero 1"
+                active={project.heroRank === 1}
+                disabled={busy}
+                onClick={() => onSetHero(project.id, 1)}
+              />
+              <HeroRankButton
+                label="Hero 2"
+                active={project.heroRank === 2}
+                disabled={busy}
+                onClick={() => onSetHero(project.id, 2)}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+      {heroes.length > 0 && (
+        <div className="mt-4 grid md:grid-cols-2 gap-3">
+          {heroes.map((project) => (
+            <HeroDescriptionField
+              key={`${project.id}:${project.description}`}
+              project={project}
+              busy={busy}
+              onSave={onSaveDescription}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function HeroRankButton({
+  label,
+  active,
+  disabled,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      disabled={disabled || active}
+      onClick={onClick}
+      className={`min-h-10 px-3 rounded-lg text-xs font-semibold border ${
+        active
+          ? "border-[#2665AA] bg-[#2665AA]/30 text-white"
+          : "border-white/15 text-slate-200 hover:border-[#2665AA]/70"
+      } disabled:opacity-60`}
+    >
+      {active ? `Featured — ${label}` : `Set as ${label.toLowerCase()}`}
+    </button>
+  );
+}
+
+function HeroDescriptionField({
+  project,
+  busy,
+  onSave,
+}: {
+  project: CatalogueProject;
+  busy: boolean;
+  onSave: (id: ProjectId, description: string) => void;
+}) {
+  const [value, setValue] = useState(project.description);
+
+  return (
+    <label className="text-xs uppercase tracking-wide text-slate-400">
+      Hero {project.heroRank} — {project.title}
+      <textarea
+        value={value}
+        disabled={busy}
+        onChange={(e) => setValue(e.target.value)}
+        onBlur={() => {
+          if (value.trim() !== project.description.trim()) onSave(project.id, value);
+        }}
+        rows={3}
+        className="mt-1 w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-sm text-white font-normal normal-case tracking-normal resize-y"
+        placeholder="Optional short blurb for the homepage"
+      />
+      <button
+        type="button"
+        disabled={busy}
+        onClick={() => onSave(project.id, value)}
+        className="mt-2 min-h-10 px-3 rounded-lg border border-white/15 text-xs font-semibold text-slate-200"
+      >
+        Save description
+      </button>
+    </label>
   );
 }
 

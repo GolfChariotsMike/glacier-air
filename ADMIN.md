@@ -6,7 +6,11 @@ Nick uses **https://glacier-air.vercel.app/admin** with the PIN. No GitHub login
 
 1. **Hero** — one large homepage photo. **Replace image** only. Not draggable into projects.
 2. **Services** — Air conditioning, Refrigeration, Mechanical. Each has **Replace image**.
-3. **Projects** — a heading per job. Drag photos between projects. Each project has **Add photos**. Remove sends a photo to Unassigned / other.
+3. **Projects**
+   - **Hero projects (homepage)** — set exactly which two jobs are featured (hero 1 and hero 2). Optional short description per hero; blank is fine.
+   - **Add project** — admin name + site heading. Creates a kebab slug id and an empty photo group.
+   - Drag photos between projects. Each project has **Add photos**. Remove sends a photo to Unassigned / other.
+   - Delete a project (not Unassigned) and its photos move to Unassigned.
 4. **About** and **Trusted clients** sit at the bottom.
 
 ## Storage
