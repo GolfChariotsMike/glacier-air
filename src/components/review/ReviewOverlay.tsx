@@ -20,13 +20,17 @@ type Draft = {
   y: number;
 };
 
-type Marker = { id: string; n: number; top: number; left: number };
-
 const OPEN_ATTR = "data-review-open";
 const HOVER_ATTR = "data-review-hover";
 
-export default function ReviewOverlay({ children }: { children: ReactNode }) {
-  const [notes, setNotes] = useState<ReviewNote[]>([]);
+export default function ReviewOverlay({
+  children,
+  initialNotes,
+}: {
+  children: ReactNode;
+  initialNotes: ReviewNote[];
+}) {
+  const [notes, setNotes] = useState(initialNotes);
   const [addNote, setAddNote] = useState(false);
   const [inboxOpen, setInboxOpen] = useState(true);
   const [inboxFilter, setInboxFilter] = useState<"open" | "all">("open");
@@ -34,9 +38,9 @@ export default function ReviewOverlay({ children }: { children: ReactNode }) {
   const [draftNote, setDraftNote] = useState("");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
-  const [markers, setMarkers] = useState<Marker[]>([]);
   const hoverEl = useRef<HTMLElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const markerLayerRef = useRef<HTMLDivElement | null>(null);
 
   const openNotes = useMemo(() => notes.filter((note) => note.status === "open"), [notes]);
   const listed = inboxFilter === "open" ? openNotes : notes;
@@ -45,20 +49,6 @@ export default function ReviewOverlay({ children }: { children: ReactNode }) {
     openNotes.forEach((note, i) => map.set(note.id, i + 1));
     return map;
   }, [openNotes]);
-
-  const loadNotes = useCallback(async () => {
-    const res = await fetch("/api/admin/review-notes");
-    const data = (await res.json().catch(() => ({}))) as { notes?: ReviewNote[]; error?: string };
-    if (!res.ok) {
-      setStatus(data.error || "Could not load notes.");
-      return;
-    }
-    setNotes(data.notes ?? []);
-  }, []);
-
-  useEffect(() => {
-    void loadNotes();
-  }, [loadNotes]);
 
   useEffect(() => {
     document.documentElement.dataset.reviewToolbar = "on";
@@ -77,24 +67,28 @@ export default function ReviewOverlay({ children }: { children: ReactNode }) {
       el.removeAttribute(OPEN_ATTR);
     });
 
-    const nextMarkers: Marker[] = [];
+    const layer = markerLayerRef.current;
+    if (layer) layer.replaceChildren();
+
     openNotes.forEach((note, i) => {
       const el = findNotedElement(document, note.selector, note.quote);
       if (!el) return;
       el.setAttribute(OPEN_ATTR, String(i + 1));
+      if (!layer) return;
       const rect = el.getBoundingClientRect();
       if (rect.width < 2 && rect.height < 2) return;
-      nextMarkers.push({
-        id: note.id,
-        n: i + 1,
-        top: Math.max(8, rect.top - 8),
-        left: Math.min(window.innerWidth - 28, Math.max(8, rect.left - 10)),
-      });
+      const marker = document.createElement("span");
+      marker.className = "review-marker fixed z-[70] pointer-events-none";
+      marker.setAttribute("data-review-ui", "");
+      marker.textContent = String(i + 1);
+      marker.style.top = `${Math.max(8, rect.top - 8)}px`;
+      marker.style.left = `${Math.min(window.innerWidth - 28, Math.max(8, rect.left - 10))}px`;
+      layer.appendChild(marker);
     });
-    setMarkers(nextMarkers);
   }, [openNotes]);
 
   useEffect(() => {
+    const layer = markerLayerRef.current;
     paintHighlights();
     const onRefresh = () => paintHighlights();
     window.addEventListener("scroll", onRefresh, true);
@@ -103,6 +97,7 @@ export default function ReviewOverlay({ children }: { children: ReactNode }) {
       window.removeEventListener("scroll", onRefresh, true);
       window.removeEventListener("resize", onRefresh);
       document.querySelectorAll(`[${OPEN_ATTR}]`).forEach((el) => el.removeAttribute(OPEN_ATTR));
+      layer?.replaceChildren();
     };
   }, [paintHighlights]);
 
@@ -301,17 +296,7 @@ export default function ReviewOverlay({ children }: { children: ReactNode }) {
       </header>
 
       <div className="review-site">{children}</div>
-
-      {markers.map((marker) => (
-        <span
-          key={marker.id}
-          data-review-ui
-          className="review-marker fixed z-[70] pointer-events-none"
-          style={{ top: marker.top, left: marker.left }}
-        >
-          {marker.n}
-        </span>
-      ))}
+      <div ref={markerLayerRef} data-review-ui className="contents" />
 
       {draft && (
         <div

@@ -4,6 +4,7 @@ import { ADMIN_COOKIE, sessionValid } from "@/lib/admin-auth";
 import AdminPinForm from "@/components/admin/AdminPinForm";
 import ReviewOverlay from "@/components/review/ReviewOverlay";
 import SiteHome from "@/components/SiteHome";
+import { listReviewNotes, type ReviewNote } from "@/lib/review-notes";
 
 export const dynamic = "force-dynamic";
 
@@ -23,8 +24,15 @@ export default async function ReviewPage() {
     );
   }
 
+  let notes: ReviewNote[] = [];
+  try {
+    notes = await listReviewNotes();
+  } catch {
+    notes = [];
+  }
+
   return (
-    <ReviewOverlay>
+    <ReviewOverlay initialNotes={notes}>
       <SiteHome />
     </ReviewOverlay>
   );

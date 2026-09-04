@@ -69,12 +69,12 @@ export function cssPath(el: Element): string {
       break;
     }
     const tag = node.tagName.toLowerCase();
-    const parent = node.parentElement;
+    const parent: Element | null = node.parentElement;
     if (!parent) {
       parts.unshift(tag);
       break;
     }
-    const same = Array.from(parent.children).filter((child) => child.tagName === node!.tagName);
+    const same = Array.from(parent.children).filter((child: Element) => child.tagName === node!.tagName);
     const nth = same.indexOf(node) + 1;
     parts.unshift(same.length > 1 ? `${tag}:nth-of-type(${nth})` : tag);
     node = parent;
