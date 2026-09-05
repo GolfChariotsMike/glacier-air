@@ -5,6 +5,7 @@ export const ENQUIRY_TYPES = [
   { value: "MECHANICAL SERVICES", label: "MECHANICAL SERVICES" },
   { value: "WINERY REFRIGERATION", label: "WINERY REFRIGERATION" },
   { value: "PANASONIC WARRANTY REPAIRS", label: "PANASONIC WARRANTY REPAIRS" },
+  { value: "EQUIPMENT HIRE", label: "EQUIPMENT HIRE" },
   { value: "OTHER", label: "OTHER" },
 ] as const;
 

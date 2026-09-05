@@ -13,7 +13,16 @@ const specialisms = [
   "Panasonic Specialist Support",
 ];
 
-const services = [
+type ServiceFeature = string | { label: string; href: string };
+
+const services: {
+  id: string;
+  icon: typeof Wind;
+  title: string;
+  description: string;
+  features: ServiceFeature[];
+  image: string;
+}[] = [
   {
     id: "air-conditioning",
     icon: Wind,
@@ -24,7 +33,7 @@ const services = [
       "Residential air conditioning — design, installation, service and maintenance",
       "Commercial air conditioning — design, installation, service and maintenance",
       "Panasonic ASC warranty agent and repairs. Panasonic Specialist Air Network dealer.",
-      "Hire air conditioning solutions",
+      { label: "Hire air conditioning solutions", href: "/hire" },
     ],
     image: "/images/tile-air-conditioning.webp",
   },
@@ -38,7 +47,7 @@ const services = [
       "Commercial refrigeration — design, installation, service and maintenance",
       "Winery glycol refrigeration — design, installation, service and maintenance",
       "Ammonia refrigeration service and maintenance",
-      "Hire chillers",
+      { label: "Hire chillers", href: "/hire" },
     ],
     image: "/images/tile-refrigeration.webp",
   },
@@ -103,12 +112,21 @@ export default function Services({ gallery }: { gallery: GalleryState }) {
                   <p className="text-slate-100 text-sm mb-5 leading-relaxed">{svc.description}</p>
 
                   <ul className="space-y-2 mb-6">
-                    {svc.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2 text-sm text-white/90">
-                        <ChevronRight className="w-4 h-4 mt-0.5 shrink-0 text-[#E01F26]" />
-                        {f}
-                      </li>
-                    ))}
+                    {svc.features.map((f) => {
+                      const label = typeof f === "string" ? f : f.label;
+                      return (
+                        <li key={label} className="flex items-start gap-2 text-sm text-white/90">
+                          <ChevronRight className="w-4 h-4 mt-0.5 shrink-0 text-[#E01F26]" />
+                          {typeof f === "string" ? (
+                            f
+                          ) : (
+                            <a href={f.href} className="text-[#c5e4f7] hover:text-white hover:underline">
+                              {f.label}
+                            </a>
+                          )}
+                        </li>
+                      );
+                    })}
                   </ul>
 
                   <a
