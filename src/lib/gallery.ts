@@ -150,6 +150,10 @@ export function namedProjects(projects: CatalogueProject[]): CatalogueProject[] 
     .sort((a, b) => a.sortOrder - b.sortOrder || a.title.localeCompare(b.title));
 }
 
+export function projectSectionId(projectId: string): string {
+  return `project-${projectId}`;
+}
+
 export function imagesForSlot(state: GalleryState, slot: GallerySlot): GalleryImage[] {
   return state.images
     .filter((img) => img.slot === slot)
