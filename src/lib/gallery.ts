@@ -64,6 +64,7 @@ export type CatalogueProject = {
   description: string;
   heroRank: 1 | 2 | null;
   sortOrder: number;
+  showInNav: boolean;
 };
 
 export const PROJECT_GROUPS: { id: ProjectId; title: string; publicTitle: string }[] = [
@@ -86,6 +87,7 @@ export function fallbackProjects(): CatalogueProject[] {
     description: "",
     heroRank: group.id === "daiwa" ? 1 : group.id === "henley" ? 2 : null,
     sortOrder: group.id === UNASSIGNED_ID ? 999 : (i + 1) * 10,
+    showInNav: group.id === "daiwa" || group.id === "henley",
   }));
 }
 
@@ -148,6 +150,11 @@ export function namedProjects(projects: CatalogueProject[]): CatalogueProject[] 
   return projects
     .filter((project) => project.id !== UNASSIGNED_ID)
     .sort((a, b) => a.sortOrder - b.sortOrder || a.title.localeCompare(b.title));
+}
+
+/** Named projects Nick has flagged for the public Projects dropdown. */
+export function navMenuProjects(projects: CatalogueProject[]): CatalogueProject[] {
+  return namedProjects(projects).filter((project) => project.showInNav);
 }
 
 export function projectSectionId(projectId: string): string {

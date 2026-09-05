@@ -21,6 +21,7 @@ type ProjectRow = {
   description: string | null;
   hero_rank: number | null;
   sort_order: number;
+  show_in_nav: boolean;
 };
 
 function asHeroRank(value: number | null | undefined): 1 | 2 | null {
@@ -35,6 +36,7 @@ export function fromProjectRow(row: ProjectRow): CatalogueProject {
     description: typeof row.description === "string" ? row.description : "",
     heroRank: asHeroRank(row.hero_rank),
     sortOrder: Number.isFinite(row.sort_order) ? row.sort_order : 0,
+    showInNav: Boolean(row.show_in_nav),
   };
 }
 
@@ -46,7 +48,7 @@ async function fetchProjectRows(): Promise<ProjectRow[]> {
   const client = createAnonClient();
   const { data, error } = await client
     .from(PROJECTS_TABLE)
-    .select("id, title, public_title, description, hero_rank, sort_order")
+    .select("id, title, public_title, description, hero_rank, sort_order, show_in_nav")
     .order("sort_order", { ascending: true });
   if (error) throw new Error(error.message || "Could not load projects.");
   return (data ?? []).filter((row) => isProjectId(row.id));
@@ -79,6 +81,7 @@ export async function ensureProjectsSeeded(): Promise<CatalogueProject[]> {
         description: project.description,
         hero_rank: project.heroRank,
         sort_order: project.sortOrder,
+        show_in_nav: project.showInNav,
       }))
     );
     if (error) return seed;
@@ -124,6 +127,7 @@ export async function createProject(input: {
     description: "",
     hero_rank: null,
     sort_order: maxSort + 10,
+    show_in_nav: false,
   });
   if (error) throw new Error(error.message || "Could not add project.");
   return readProjects();
@@ -131,13 +135,18 @@ export async function createProject(input: {
 
 export async function updateProject(
   id: string,
-  patch: { title?: string; publicTitle?: string; description?: string }
+  patch: { title?: string; publicTitle?: string; description?: string; showInNav?: boolean }
 ): Promise<CatalogueProject[]> {
   if (!isProjectId(id)) throw new Error("Unknown project.");
   const rows = await requireRows();
   if (!rows.some((row) => row.id === id)) throw new Error("Project not found.");
 
-  const next: { title?: string; public_title?: string; description?: string } = {};
+  const next: {
+    title?: string;
+    public_title?: string;
+    description?: string;
+    show_in_nav?: boolean;
+  } = {};
   if (typeof patch.title === "string") {
     const title = patch.title.trim();
     if (!title) throw new Error("Enter a project name.");
@@ -150,6 +159,12 @@ export async function updateProject(
   }
   if (typeof patch.description === "string") {
     next.description = patch.description.trim();
+  }
+  if (typeof patch.showInNav === "boolean") {
+    if (id === UNASSIGNED_ID && patch.showInNav) {
+      throw new Error("Unassigned cannot appear in the menu.");
+    }
+    next.show_in_nav = patch.showInNav;
   }
   if (!Object.keys(next).length) return readProjects();
 
