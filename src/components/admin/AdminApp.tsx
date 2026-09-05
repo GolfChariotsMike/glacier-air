@@ -147,6 +147,10 @@ export default function AdminApp({ supabaseConfigured }: Props) {
     void persistProjects("PATCH", { id, heroRank: rank }, "Featured projects updated.");
   }
 
+  function setShowInNav(id: ProjectId, showInNav: boolean) {
+    void persistProjects("PATCH", { id, showInNav }, showInNav ? "Shown in menu." : "Hidden from menu.");
+  }
+
   function saveDescription(id: ProjectId, description: string) {
     void persistProjects("PATCH", { id, description }, "Description saved.");
   }
@@ -259,8 +263,8 @@ export default function AdminApp({ supabaseConfigured }: Props) {
         <section id="admin-projects" className="scroll-mt-16 lg:scroll-mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
           <h2 className="text-lg font-bold mb-1">Projects</h2>
           <p className="text-sm text-slate-400 mb-6">
-            Choose the two homepage hero projects, add jobs, then drag photos between groups.
-            Hero and service photos stay put.
+            Choose the two homepage hero projects, tick Show in menu for the public Projects
+            dropdown, add jobs, then drag photos between groups. Hero and service photos stay put.
           </p>
 
           <HeroProjectsPanel
@@ -268,6 +272,12 @@ export default function AdminApp({ supabaseConfigured }: Props) {
             busy={busy || !supabaseConfigured}
             onSetHero={setHero}
             onSaveDescription={saveDescription}
+          />
+
+          <ProjectsMenuPanel
+            projects={projects}
+            busy={busy || !supabaseConfigured}
+            onToggleNav={setShowInNav}
           />
 
           <div className="mt-6 rounded-xl border border-white/10 bg-[#0a0f1e] p-3">
@@ -331,6 +341,13 @@ export default function AdminApp({ supabaseConfigured }: Props) {
                       <h3 className="font-bold truncate">{group.title}</h3>
                       {group.heroRank ? (
                         <p className="text-xs text-[#7eb4e6]">Homepage hero {group.heroRank}</p>
+                      ) : null}
+                      {group.id !== UNASSIGNED_ID ? (
+                        <ShowInMenuToggle
+                          checked={Boolean(group.showInNav)}
+                          disabled={busy || !supabaseConfigured}
+                          onChange={(showInNav) => setShowInNav(group.id, showInNav)}
+                        />
                       ) : null}
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
@@ -499,6 +516,71 @@ function HeroProjectsPanel({
         </div>
       )}
     </div>
+  );
+}
+
+function ProjectsMenuPanel({
+  projects,
+  busy,
+  onToggleNav,
+}: {
+  projects: CatalogueProject[];
+  busy: boolean;
+  onToggleNav: (id: ProjectId, showInNav: boolean) => void;
+}) {
+  const named = namedProjects(projects);
+  const inMenu = named.filter((project) => project.showInNav);
+
+  return (
+    <div className="mt-6 rounded-xl border border-white/10 bg-[#0a0f1e] p-3">
+      <h3 className="font-bold mb-1">Projects menu</h3>
+      <p className="text-sm text-slate-400 mb-3">
+        Tick <span className="text-slate-200">Show in menu</span> to list a job in the public
+        Projects dropdown. If none are ticked, the menu shows “Recent projects”.
+      </p>
+      <p className="text-sm text-slate-200 mb-4">
+        Currently in menu:{" "}
+        {inMenu.length ? inMenu.map((project) => project.title).join(" · ") : "none — fallback link only"}
+      </p>
+      <div className="flex flex-col gap-2">
+        {named.map((project) => (
+          <div
+            key={project.id}
+            className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 rounded-lg border border-white/10 px-3 py-2"
+          >
+            <p className="flex-1 min-w-0 text-sm font-medium truncate">{project.title}</p>
+            <ShowInMenuToggle
+              checked={Boolean(project.showInNav)}
+              disabled={busy}
+              onChange={(showInNav) => onToggleNav(project.id, showInNav)}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ShowInMenuToggle({
+  checked,
+  disabled,
+  onChange,
+}: {
+  checked: boolean;
+  disabled: boolean;
+  onChange: (showInNav: boolean) => void;
+}) {
+  return (
+    <label className="inline-flex items-center gap-2 min-h-12 text-sm text-slate-200 cursor-pointer select-none">
+      <input
+        type="checkbox"
+        checked={checked}
+        disabled={disabled}
+        onChange={(event) => onChange(event.target.checked)}
+        className="h-4 w-4 accent-[#2665AA]"
+      />
+      Show in menu
+    </label>
   );
 }
 

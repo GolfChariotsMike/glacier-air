@@ -19,6 +19,9 @@ async function requireAdmin() {
 function refreshPublic() {
   revalidatePath("/");
   revalidatePath("/projects");
+  revalidatePath("/about-us");
+  revalidatePath("/services");
+  revalidatePath("/hire");
 }
 
 export async function GET() {
@@ -71,6 +74,7 @@ export async function PATCH(request: Request) {
     publicTitle?: string;
     description?: string;
     heroRank?: 1 | 2 | null;
+    showInNav?: boolean;
   };
   try {
     body = (await request.json()) as typeof body;
@@ -88,12 +92,22 @@ export async function PATCH(request: Request) {
     if (body.heroRank !== undefined) {
       const rank = body.heroRank === 1 || body.heroRank === 2 ? body.heroRank : null;
       projects = await setProjectHeroRank(id, rank);
-    } else {
+    }
+    if (
+      body.title !== undefined ||
+      body.publicTitle !== undefined ||
+      body.description !== undefined ||
+      typeof body.showInNav === "boolean"
+    ) {
       projects = await updateProject(id, {
         title: body.title,
         publicTitle: body.publicTitle,
         description: body.description,
+        showInNav: typeof body.showInNav === "boolean" ? body.showInNav : undefined,
       });
+    }
+    if (!projects) {
+      projects = await updateProject(id, {});
     }
     refreshPublic();
     return NextResponse.json({ ok: true, projects });
