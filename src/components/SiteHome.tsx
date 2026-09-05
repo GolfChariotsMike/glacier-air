@@ -1,4 +1,4 @@
-import Navbar from "@/components/Navbar";
+import SiteNavbar from "@/components/SiteNavbar";
 import Hero from "@/components/Hero";
 import Services from "@/components/Services";
 import About from "@/components/About";
@@ -20,7 +20,7 @@ export default async function SiteHome() {
   return (
     <>
       <JsonLd />
-      <Navbar projects={navProjects} />
+      <SiteNavbar projects={navProjects} />
       <Hero
         imageSrc={firstUrl(gallery, "hero", HERO_FALLBACK)}
         imageAlt={firstAlt(gallery, "hero", "Rooftop air conditioning")}

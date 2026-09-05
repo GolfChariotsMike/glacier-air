@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Navbar from "@/components/Navbar";
+import SiteNavbar from "@/components/SiteNavbar";
 import Footer from "@/components/Footer";
 import HireCatalogue from "@/components/HireCatalogue";
 import { readHireUnits } from "@/lib/supabase-hire";
@@ -23,7 +23,7 @@ export default async function HirePage() {
   const units = await readHireUnits();
   return (
     <>
-      <Navbar />
+      <SiteNavbar />
       <HireCatalogue units={units} />
       <Footer />
     </>
