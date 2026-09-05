@@ -1,21 +1,26 @@
+"use client";
+
 import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { navHref } from "@/lib/section-href";
 
 const links = {
   Services: [
-    { label: "Air Conditioning", href: "/#air-conditioning" },
-    { label: "Refrigeration", href: "/#refrigeration" },
-    { label: "Mechanical Services", href: "/#mechanical-services" },
+    { label: "Air Conditioning", href: "#air-conditioning" },
+    { label: "Refrigeration", href: "#refrigeration" },
+    { label: "Mechanical Services", href: "#mechanical-services" },
     { label: "Equipment Hire", href: "/hire" },
-    { label: "Maintenance", href: "/#services" },
+    { label: "Maintenance", href: "#services" },
   ],
   Company: [
-    { label: "About Us", href: "/#about-us" },
-    { label: "Projects", href: "/#projects" },
-    { label: "Contact", href: "/#contact-us" },
+    { label: "About Us", href: "#about-us" },
+    { label: "Projects", href: "#projects" },
+    { label: "Contact", href: "#contact-us" },
   ],
 };
 
 export default function Footer() {
+  const pathname = usePathname() ?? "/";
   return (
     <footer className="bg-[#050a18] border-t border-white/5 py-16">
       <div className="max-w-7xl mx-auto px-6">
@@ -69,7 +74,7 @@ export default function Footer() {
                 {items.map((item) => (
                   <li key={item.label}>
                     <a
-                      href={item.href}
+                      href={navHref(pathname, item.href)}
                       className="text-slate-400 hover:text-white text-sm transition-colors"
                     >
                       {item.label}

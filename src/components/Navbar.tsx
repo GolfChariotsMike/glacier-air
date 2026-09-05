@@ -10,7 +10,9 @@ import {
 import { ChevronDown, Menu, Phone, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { projectSectionId } from "@/lib/gallery";
+import { navHref } from "@/lib/section-href";
 
 export type NavbarProject = {
   id: string;
@@ -254,10 +256,16 @@ function MobileAccordion({
 }
 
 export default function Navbar({ projects = [] }: { projects?: NavbarProject[] }) {
+  const pathname = usePathname() ?? "/";
+  const hrefFor = (href: string) => navHref(pathname, href);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mobileSection, setMobileSection] = useState<"services" | "projects" | null>(null);
-  const projectNavItems = projectItems(projects);
+  const serviceNavItems = SERVICE_ITEMS.map((item) => ({ ...item, href: hrefFor(item.href) }));
+  const projectNavItems = projectItems(projects).map((item) => ({
+    ...item,
+    href: hrefFor(item.href),
+  }));
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -279,7 +287,7 @@ export default function Navbar({ projects = [] }: { projects?: NavbarProject[] }
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <a href="#home" className="flex items-center gap-3 group">
+        <a href={hrefFor("#home")} className="flex items-center gap-3 group">
           <Image
             src="/glacier-air-logo.png"
             alt="Glacier Air"
@@ -291,21 +299,21 @@ export default function Navbar({ projects = [] }: { projects?: NavbarProject[] }
 
         <div className="hidden md:flex items-center gap-8">
           <a
-            href="#home"
+            href={hrefFor("#home")}
             className="nav-link text-sm text-slate-300 hover:text-white transition-colors duration-200 font-medium py-1"
           >
             Home
           </a>
           <a
-            href="#about-us"
+            href={hrefFor("#about-us")}
             className="nav-link text-sm text-slate-300 hover:text-white transition-colors duration-200 font-medium py-1"
           >
             About
           </a>
-          <DesktopDropdown label="Services" href="#services" items={SERVICE_ITEMS} />
-          <DesktopDropdown label="Projects" href="#projects" items={projectNavItems} />
+          <DesktopDropdown label="Services" href={hrefFor("#services")} items={serviceNavItems} />
+          <DesktopDropdown label="Projects" href={hrefFor("#projects")} items={projectNavItems} />
           <a
-            href="#contact-us"
+            href={hrefFor("#contact-us")}
             className="nav-link text-sm text-slate-300 hover:text-white transition-colors duration-200 font-medium py-1"
           >
             Contact
@@ -321,7 +329,7 @@ export default function Navbar({ projects = [] }: { projects?: NavbarProject[] }
             (08) 9242 3111
           </a>
           <a
-            href="#contact-us"
+            href={hrefFor("#contact-us")}
             className="px-5 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-sm font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5"
           >
             Make Enquiry
@@ -348,14 +356,14 @@ export default function Navbar({ projects = [] }: { projects?: NavbarProject[] }
       >
         <div className="bg-[#0d1428]/95 backdrop-blur-xl border-t border-white/5 px-6 py-4 flex flex-col gap-3">
           <a
-            href="#home"
+            href={hrefFor("#home")}
             className="text-slate-300 hover:text-white font-medium transition-colors py-1"
             onClick={closeMenu}
           >
             Home
           </a>
           <a
-            href="#about-us"
+            href={hrefFor("#about-us")}
             className="text-slate-300 hover:text-white font-medium transition-colors py-1"
             onClick={closeMenu}
           >
@@ -363,22 +371,22 @@ export default function Navbar({ projects = [] }: { projects?: NavbarProject[] }
           </a>
           <MobileAccordion
             label="Services"
-            href="#services"
-            items={SERVICE_ITEMS}
+            href={hrefFor("#services")}
+            items={serviceNavItems}
             expanded={mobileSection === "services"}
             onToggle={() => setMobileSection((current) => (current === "services" ? null : "services"))}
             onNavigate={closeMenu}
           />
           <MobileAccordion
             label="Projects"
-            href="#projects"
+            href={hrefFor("#projects")}
             items={projectNavItems}
             expanded={mobileSection === "projects"}
             onToggle={() => setMobileSection((current) => (current === "projects" ? null : "projects"))}
             onNavigate={closeMenu}
           />
           <a
-            href="#contact-us"
+            href={hrefFor("#contact-us")}
             className="text-slate-300 hover:text-white font-medium transition-colors py-1"
             onClick={closeMenu}
           >
@@ -389,7 +397,7 @@ export default function Navbar({ projects = [] }: { projects?: NavbarProject[] }
             <Phone className="w-4 h-4 text-[#E01F26]" /> (08) 9242 3111
           </a>
           <a
-            href="#contact-us"
+            href={hrefFor("#contact-us")}
             className="px-4 py-3 rounded-xl bg-blue-500 text-white text-center font-semibold hover:bg-blue-400 transition-colors"
             onClick={closeMenu}
           >
