@@ -124,7 +124,10 @@ export default function Services({ gallery }: { gallery: GalleryState }) {
           })}
         </div>
 
-        <div className="reveal mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-4 rounded-2xl border border-white/20 bg-black/20 px-6 py-5">
+        <div
+          id="panasonic-specialist-support"
+          className="reveal mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-4 rounded-2xl border border-white/20 bg-black/20 px-6 py-5 scroll-mt-28"
+        >
           <Image
             src="/images/panasonic-logo.svg"
             alt="Panasonic"

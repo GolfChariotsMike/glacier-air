@@ -4,6 +4,7 @@ import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
 import {
   imagesForProject,
   namedProjects,
+  projectSectionId,
   UNASSIGNED_ID,
   type CatalogueProject,
   type GalleryState,
@@ -44,11 +45,24 @@ export default function Projects({
           </p>
         </div>
 
+        {named
+          .filter((project) => !featuredIds.has(project.id) && project.photos.length === 0)
+          .map((project) => (
+            <div
+              key={`anchor-${project.id}`}
+              id={projectSectionId(project.id)}
+              className="sr-only scroll-mt-28"
+            >
+              {project.publicTitle}
+            </div>
+          ))}
+
         <div className="space-y-20">
           {featured.map((project, pi) => (
             <div
               key={project.id}
-              className={`reveal reveal-delay-${pi + 1} grid lg:grid-cols-2 gap-10 items-center`}
+              id={projectSectionId(project.id)}
+              className={`reveal reveal-delay-${pi + 1} grid lg:grid-cols-2 gap-10 items-center scroll-mt-28`}
             >
               <div className={`grid grid-cols-2 gap-3 ${pi % 2 === 1 ? "lg:order-2" : ""}`}>
                 {project.photos.slice(0, 4).map((img, i) => (
@@ -104,7 +118,8 @@ export default function Projects({
               {more.map((p) => (
                 <div
                   key={p.id}
-                  className="rounded-2xl overflow-hidden ring-1 ring-white/5 bg-white/[0.02]"
+                  id={projectSectionId(p.id)}
+                  className="rounded-2xl overflow-hidden ring-1 ring-white/5 bg-white/[0.02] scroll-mt-28"
                 >
                   <div className={`grid ${p.photos.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
                     {p.photos.slice(0, 2).map((img) => (
