@@ -12,8 +12,10 @@ export const ADMIN_NAV_ITEMS = [
   { id: "admin-clients", label: "Trusted clients" },
 ] as const;
 
+type AdminSectionId = (typeof ADMIN_NAV_ITEMS)[number]["id"];
+
 export default function AdminNav() {
-  const [activeId, setActiveId] = useState<string>(ADMIN_NAV_ITEMS[0].id);
+  const [activeId, setActiveId] = useState<AdminSectionId>(ADMIN_NAV_ITEMS[0].id);
 
   useEffect(() => {
     const nodes = ADMIN_NAV_ITEMS.map((item) => document.getElementById(item.id)).filter(
@@ -27,7 +29,7 @@ export default function AdminNav() {
         for (const entry of entries) {
           ratios.set(entry.target.id, entry.isIntersecting ? entry.intersectionRatio : 0);
         }
-        let next = ADMIN_NAV_ITEMS[0].id;
+        let next: AdminSectionId = ADMIN_NAV_ITEMS[0].id;
         let best = 0;
         for (const item of ADMIN_NAV_ITEMS) {
           const ratio = ratios.get(item.id) ?? 0;
