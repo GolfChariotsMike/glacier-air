@@ -21,7 +21,7 @@ export default function HireCatalogue({ units }: { units: HireUnit[] }) {
             regional WA. Tell us the site and how long you need the plant — we&apos;ll match a unit.
           </p>
           <Link
-            href="/#contact-us"
+            href="#hire-enquire"
             className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25"
           >
             Make Enquiry
@@ -36,7 +36,7 @@ export default function HireCatalogue({ units }: { units: HireUnit[] }) {
               what&apos;s available for your dates.
             </p>
             <Link
-              href="/#contact-us"
+              href="#hire-enquire"
               className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-blue-500/30 text-blue-400 hover:bg-blue-500/10 font-semibold transition-all duration-300 hover:border-blue-400/50"
             >
               Make Enquiry
@@ -88,7 +88,7 @@ export default function HireCatalogue({ units }: { units: HireUnit[] }) {
                     </p>
                   ) : null}
                   <Link
-                    href="/#contact-us"
+                    href={`?unit=${encodeURIComponent(unit.id)}#hire-enquire`}
                     className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-blue-500/30 text-blue-400 hover:bg-blue-500/10 font-semibold transition-all duration-300 hover:border-blue-400/50 group"
                   >
                     Enquire about this unit

@@ -1,13 +1,37 @@
 "use client";
+
 import { useState } from "react";
-import { Phone, Mail, MapPin, Send } from "lucide-react";
-import { ENQUIRY_TYPES } from "@/lib/enquiry-types";
+import { Mail, Phone, Send } from "lucide-react";
 import { forwardViaFormSubmit } from "@/lib/forward-enquiry";
+import {
+  buildHireEnquiryMessage,
+  hireEquipmentLabel,
+  hirePeriodValid,
+  HIRE_ENQUIRY_TYPE,
+  HIRE_NOT_SURE_LABEL,
+  HIRE_NOT_SURE_VALUE,
+} from "@/lib/hire-enquiry";
 
 const fieldClass =
-  "w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-colors text-sm";
+  "w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-colors text-sm [color-scheme:dark]";
 
-export default function Contact() {
+export type HireEnquiryUnit = {
+  id: string;
+  title: string;
+};
+
+export default function HireEnquiryForm({
+  units,
+  initialUnitId,
+}: {
+  units: HireEnquiryUnit[];
+  initialUnitId?: string;
+}) {
+  const knownInitial =
+    initialUnitId && units.some((unit) => unit.id === initialUnitId)
+      ? initialUnitId
+      : HIRE_NOT_SURE_VALUE;
+
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [error, setError] = useState("");
   const [form, setForm] = useState({
@@ -15,15 +39,39 @@ export default function Contact() {
     company: "",
     phone: "",
     email: "",
-    type: "",
+    equipment: knownInitial,
+    startDate: "",
+    endDate: "",
+    longTerm: false,
     message: "",
     website: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatus("sending");
     setError("");
+
+    const periodError = hirePeriodValid({
+      startDate: form.startDate,
+      endDate: form.endDate,
+      longTerm: form.longTerm,
+    });
+    if (periodError) {
+      setStatus("error");
+      setError(periodError);
+      return;
+    }
+
+    setStatus("sending");
+
+    const equipmentTitle = hireEquipmentLabel(form.equipment, units);
+    const message = buildHireEnquiryMessage({
+      equipmentTitle,
+      startDate: form.startDate,
+      endDate: form.endDate,
+      longTerm: form.longTerm,
+      notes: form.message,
+    });
 
     try {
       const res = await fetch("/api/contact", {
@@ -34,8 +82,8 @@ export default function Contact() {
           company: form.company,
           phone: form.phone,
           email: form.email,
-          type: form.type,
-          message: form.message,
+          type: HIRE_ENQUIRY_TYPE,
+          message,
           website: form.website,
         }),
       });
@@ -56,8 +104,8 @@ export default function Contact() {
           company: form.company,
           phone: form.phone,
           email: form.email,
-          type: form.type,
-          message: form.message,
+          type: HIRE_ENQUIRY_TYPE,
+          message,
         });
         if (forwarded) {
           setStatus("sent");
@@ -74,20 +122,17 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact-us" className="py-24 bg-[#060c1a] scroll-mt-24">
-      <div id="contact" className="max-w-7xl mx-auto px-6 scroll-mt-24">
+    <section id="hire-enquire" className="py-24 bg-[#060c1a] scroll-mt-24">
+      <div className="max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16">
           <div>
             <p className="text-blue-400 text-sm font-semibold uppercase tracking-widest mb-3">
-              Get In Touch
+              Equipment hire
             </p>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Make Enquiry
-            </h2>
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Enquire about hire</h2>
             <p className="text-slate-400 text-lg leading-relaxed mb-10">
-              Whether you need a new installation, a service call, or want to
-              discuss a larger commercial project — reach out and we&apos;ll get
-              back to you promptly.
+              Tell us which unit you need and when. Short date range or long-term — we&apos;ll
+              confirm what&apos;s available and get back to you promptly.
             </p>
 
             <div className="space-y-6">
@@ -100,16 +145,11 @@ export default function Contact() {
                 </div>
                 <div>
                   <p className="text-xs text-slate-500 mb-0.5 uppercase tracking-wide">Phone</p>
-                  <p className="text-white font-semibold group-hover:text-white transition-colors">
-                    (08) 9242 3111
-                  </p>
+                  <p className="text-white font-semibold">(08) 9242 3111</p>
                 </div>
               </a>
 
-              <a
-                href="mailto:service@glacierair.com.au"
-                className="flex items-center gap-4 group"
-              >
+              <a href="mailto:service@glacierair.com.au" className="flex items-center gap-4 group">
                 <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
                   <Mail className="w-5 h-5 text-blue-400" />
                 </div>
@@ -120,48 +160,27 @@ export default function Contact() {
                   </p>
                 </div>
               </a>
-
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-                  <MapPin className="w-5 h-5 text-blue-400" />
-                </div>
-                <div>
-                  <p className="text-xs text-slate-500 mb-0.5 uppercase tracking-wide">Address</p>
-                  <p className="text-white font-semibold">
-                    U10/28 Frobisher St, Osborne Park WA 6017
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-10 rounded-2xl overflow-hidden border border-white/5 h-48">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3385.3457890!2d115.8274!3d-31.8893!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2a32a4f45b45d1af%3A0xc8e3e0e3a3e3e3e3!2s28%20Frobisher%20St%2C%20Osborne%20Park%20WA%206017!5e0!3m2!1sen!2sau!4v1622000000000!5m2!1sen!2sau"
-                width="100%"
-                height="100%"
-                style={{ border: 0, filter: "invert(90%) hue-rotate(180deg)" }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/5 p-8" style={{ backgroundColor: "rgba(255,255,255,0.02)" }}>
+          <div
+            className="rounded-2xl border border-white/5 p-8"
+            style={{ backgroundColor: "rgba(255,255,255,0.02)" }}
+          >
             {status === "sent" ? (
               <div className="flex flex-col items-center justify-center h-full text-center py-16">
                 <div className="w-16 h-16 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center mb-4">
                   <span className="text-3xl">✅</span>
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-2">Message Sent!</h3>
-                <p className="text-slate-400">We&apos;ll be in touch shortly.</p>
+                <p className="text-slate-400">We&apos;ll be in touch shortly about your hire.</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5 relative">
                 <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
-                  <label htmlFor="website">Website</label>
+                  <label htmlFor="hire-website">Website</label>
                   <input
-                    id="website"
+                    id="hire-website"
                     name="website"
                     tabIndex={-1}
                     autoComplete="off"
@@ -169,13 +188,17 @@ export default function Contact() {
                     onChange={(e) => setForm({ ...form, website: e.target.value })}
                   />
                 </div>
+
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-xs text-slate-400 uppercase tracking-wide mb-2" htmlFor="contact-name">
+                    <label
+                      className="block text-xs text-slate-400 uppercase tracking-wide mb-2"
+                      htmlFor="hire-name"
+                    >
                       Name
                     </label>
                     <input
-                      id="contact-name"
+                      id="hire-name"
                       type="text"
                       required
                       autoComplete="name"
@@ -186,11 +209,15 @@ export default function Contact() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-slate-400 uppercase tracking-wide mb-2" htmlFor="contact-company">
-                      Company <span className="text-slate-600 normal-case tracking-normal">(optional)</span>
+                    <label
+                      className="block text-xs text-slate-400 uppercase tracking-wide mb-2"
+                      htmlFor="hire-company"
+                    >
+                      Company{" "}
+                      <span className="text-slate-600 normal-case tracking-normal">(optional)</span>
                     </label>
                     <input
-                      id="contact-company"
+                      id="hire-company"
                       type="text"
                       autoComplete="organization"
                       value={form.company}
@@ -200,12 +227,16 @@ export default function Contact() {
                     />
                   </div>
                 </div>
+
                 <div>
-                  <label className="block text-xs text-slate-400 uppercase tracking-wide mb-2" htmlFor="contact-phone">
+                  <label
+                    className="block text-xs text-slate-400 uppercase tracking-wide mb-2"
+                    htmlFor="hire-phone"
+                  >
                     Phone
                   </label>
                   <input
-                    id="contact-phone"
+                    id="hire-phone"
                     type="tel"
                     required
                     autoComplete="tel"
@@ -215,12 +246,16 @@ export default function Contact() {
                     placeholder="0400 000 000"
                   />
                 </div>
+
                 <div>
-                  <label className="block text-xs text-slate-400 uppercase tracking-wide mb-2" htmlFor="contact-email">
+                  <label
+                    className="block text-xs text-slate-400 uppercase tracking-wide mb-2"
+                    htmlFor="hire-email"
+                  >
                     Email
                   </label>
                   <input
-                    id="contact-email"
+                    id="hire-email"
                     type="email"
                     required
                     autoComplete="email"
@@ -230,56 +265,116 @@ export default function Contact() {
                     placeholder="you@email.com"
                   />
                 </div>
+
                 <div>
-                  <label className="block text-xs text-slate-400 uppercase tracking-wide mb-2" htmlFor="contact-type">
-                    Enquiry Type
+                  <label
+                    className="block text-xs text-slate-400 uppercase tracking-wide mb-2"
+                    htmlFor="hire-equipment"
+                  >
+                    Equipment
                   </label>
                   <select
-                    id="contact-type"
+                    id="hire-equipment"
                     required
-                    value={form.type}
-                    onChange={(e) => setForm({ ...form, type: e.target.value })}
+                    value={form.equipment}
+                    onChange={(e) => setForm({ ...form, equipment: e.target.value })}
                     className={fieldClass}
                   >
-                    <option value="" disabled className="bg-[#0d1428]">Select enquiry type</option>
-                    {ENQUIRY_TYPES.map((t) => (
-                      <option key={t.value} value={t.value} className="bg-[#0d1428]">
-                        {t.label}
+                    <option value={HIRE_NOT_SURE_VALUE} className="bg-[#0d1428]">
+                      {HIRE_NOT_SURE_LABEL}
+                    </option>
+                    {units.map((unit) => (
+                      <option key={unit.id} value={unit.id} className="bg-[#0d1428]">
+                        {unit.title}
                       </option>
                     ))}
                   </select>
-                  {form.type === "EQUIPMENT HIRE" ? (
-                    <p className="text-xs text-slate-500 mt-2">
-                      Prefer to pick a unit and dates?{" "}
-                      <a
-                        href="/hire#hire-enquire"
-                        className="text-blue-400 hover:text-blue-300 underline-offset-2 hover:underline"
+                </div>
+
+                <div className={form.longTerm ? "" : "grid sm:grid-cols-2 gap-5"}>
+                  <div>
+                    <label
+                      className="block text-xs text-slate-400 uppercase tracking-wide mb-2"
+                      htmlFor="hire-start"
+                    >
+                      Start date
+                    </label>
+                    <input
+                      id="hire-start"
+                      type="date"
+                      required
+                      value={form.startDate}
+                      onChange={(e) => setForm({ ...form, startDate: e.target.value })}
+                      className={fieldClass}
+                    />
+                  </div>
+                  {!form.longTerm ? (
+                    <div>
+                      <label
+                        className="block text-xs text-slate-400 uppercase tracking-wide mb-2"
+                        htmlFor="hire-end"
                       >
-                        Use the equipment hire form
-                      </a>
-                      .
-                    </p>
+                        End date
+                      </label>
+                      <input
+                        id="hire-end"
+                        type="date"
+                        required
+                        min={form.startDate || undefined}
+                        value={form.endDate}
+                        onChange={(e) => setForm({ ...form, endDate: e.target.value })}
+                        className={fieldClass}
+                      />
+                    </div>
                   ) : null}
                 </div>
+
+                <label
+                  htmlFor="hire-long-term"
+                  className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 cursor-pointer"
+                >
+                  <input
+                    id="hire-long-term"
+                    type="checkbox"
+                    checked={form.longTerm}
+                    onChange={(e) => setForm({ ...form, longTerm: e.target.checked })}
+                    className="mt-1 h-4 w-4 rounded border-white/20 bg-white/5 text-blue-500 focus:ring-blue-500/50 focus:ring-offset-0"
+                  />
+                  <span>
+                    <span className="block text-sm font-semibold text-white">Long-term hire</span>
+                    <span className="block text-xs text-slate-500 mt-0.5">
+                      Pick a start date and leave the finish open — we&apos;ll discuss duration.
+                    </span>
+                  </span>
+                </label>
+
                 <div>
-                  <label className="block text-xs text-slate-400 uppercase tracking-wide mb-2" htmlFor="contact-message">
-                    Message
+                  <label
+                    className="block text-xs text-slate-400 uppercase tracking-wide mb-2"
+                    htmlFor="hire-message"
+                  >
+                    Message{" "}
+                    <span className="text-slate-600 normal-case tracking-normal">(optional)</span>
                   </label>
                   <textarea
-                    id="contact-message"
-                    required
-                    rows={5}
+                    id="hire-message"
+                    rows={4}
                     value={form.message}
                     onChange={(e) => setForm({ ...form, message: e.target.value })}
                     className={`${fieldClass} resize-none`}
-                    placeholder="Tell us about your project or what you need..."
+                    placeholder="Site, access, or anything else we should know..."
                   />
                 </div>
+
                 {status === "error" && (
-                  <p className="text-sm text-red-300 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3" role="alert">
+                  <p
+                    className="text-sm text-red-300 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3"
+                    role="alert"
+                  >
                     {error}
                   </p>
                 )}
+
                 <button
                   type="submit"
                   disabled={status === "sending"}
@@ -289,7 +384,7 @@ export default function Contact() {
                     "Sending..."
                   ) : (
                     <>
-                      Send Message <Send className="w-4 h-4" />
+                      Send hire enquiry <Send className="w-4 h-4" />
                     </>
                   )}
                 </button>
