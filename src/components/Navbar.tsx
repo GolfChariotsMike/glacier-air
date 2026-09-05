@@ -1,7 +1,15 @@
 "use client";
-import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type ComponentProps,
+  type KeyboardEvent,
+} from "react";
 import { ChevronDown, Menu, Phone, X } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { projectSectionId } from "@/lib/gallery";
 
 export type NavbarProject = {
@@ -19,6 +27,7 @@ const SERVICE_ITEMS: NavItem[] = [
   { label: "Refrigeration", href: "#refrigeration" },
   { label: "Mechanical Services", href: "#mechanical-services" },
   { label: "Panasonic Specialist Support", href: "#panasonic-specialist-support" },
+  { label: "Equipment Hire", href: "/hire" },
 ];
 
 function projectItems(projects: NavbarProject[]): NavItem[] {
@@ -29,6 +38,13 @@ function projectItems(projects: NavbarProject[]): NavItem[] {
     label: project.publicTitle,
     href: `#${projectSectionId(project.id)}`,
   }));
+}
+
+function NavLink({ href, ...props }: { href: string } & Omit<ComponentProps<"a">, "href">) {
+  if (href.startsWith("/") && !href.startsWith("/#")) {
+    return <Link href={href} {...props} />;
+  }
+  return <a href={href} {...props} />;
 }
 
 function DesktopDropdown({ label, href, items }: { label: string; href: string; items: NavItem[] }) {
@@ -126,7 +142,7 @@ function DesktopDropdown({ label, href, items }: { label: string; href: string; 
         }
       }}
     >
-      <a
+      <NavLink
         href={href}
         data-nav-trigger
         className="nav-link inline-flex items-center gap-1 text-sm text-slate-300 hover:text-white transition-colors duration-200 font-medium py-1"
@@ -143,7 +159,7 @@ function DesktopDropdown({ label, href, items }: { label: string; href: string; 
           }`}
           aria-hidden
         />
-      </a>
+      </NavLink>
       <div
         id={menuId}
         hidden={!open}
@@ -154,7 +170,7 @@ function DesktopDropdown({ label, href, items }: { label: string; href: string; 
         <ul className="min-w-[17.5rem] rounded-xl border border-white/10 bg-[#0d1428]/95 backdrop-blur-xl py-2 shadow-xl shadow-black/40">
           {items.map((item, index) => (
             <li key={item.href}>
-              <a
+              <NavLink
                 href={item.href}
                 data-nav-item
                 className="block px-4 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-white/[0.06] border-l-2 border-transparent hover:border-[#E01F26] focus-visible:outline-none focus-visible:text-white focus-visible:bg-white/[0.06] focus-visible:border-[#E01F26] transition-colors"
@@ -162,7 +178,7 @@ function DesktopDropdown({ label, href, items }: { label: string; href: string; 
                 onKeyDown={(event) => onItemKeyDown(event, index)}
               >
                 {item.label}
-              </a>
+              </NavLink>
             </li>
           ))}
         </ul>
@@ -192,13 +208,13 @@ function MobileAccordion({
   return (
     <div>
       <div className="flex items-center gap-2">
-        <a
+        <NavLink
           href={href}
           className="flex-1 text-slate-300 hover:text-white font-medium transition-colors py-1"
           onClick={onNavigate}
         >
           {label}
-        </a>
+        </NavLink>
         <button
           type="button"
           id={buttonId}
@@ -223,13 +239,13 @@ function MobileAccordion({
       >
         {items.map((item) => (
           <li key={item.href}>
-            <a
+            <NavLink
               href={item.href}
               className="block py-2 text-sm text-slate-400 hover:text-white transition-colors"
               onClick={onNavigate}
             >
               {item.label}
-            </a>
+            </NavLink>
           </li>
         ))}
       </ul>
