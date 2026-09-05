@@ -3,6 +3,7 @@
 import { useEffect, useState, type DragEvent, type ReactNode } from "react";
 import Image from "next/image";
 import { LogOut, Upload } from "lucide-react";
+import AdminNav from "@/components/admin/AdminNav";
 import HireAdmin from "@/components/admin/HireAdmin";
 import {
   fallbackProjects,
@@ -207,14 +208,16 @@ export default function AdminApp({ supabaseConfigured }: Props) {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-5 py-8 flex flex-col gap-10">
+      <div className="lg:grid lg:grid-cols-[13rem_minmax(0,1fr)] lg:items-start">
+        <AdminNav />
+        <main className="max-w-4xl w-full mx-auto lg:mx-0 px-5 py-8 flex flex-col gap-10">
         {status && (
           <p className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-slate-200" role="status">
             {status}
           </p>
         )}
 
-        <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+        <section id="admin-hero" className="scroll-mt-16 lg:scroll-mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
           <h2 className="text-lg font-bold mb-1">Hero</h2>
           <p className="text-sm text-slate-400 mb-4">This is the homepage hero.</p>
           <div className="relative h-56 md:h-72 rounded-xl overflow-hidden ring-1 ring-white/10 bg-black/30">
@@ -234,7 +237,7 @@ export default function AdminApp({ supabaseConfigured }: Props) {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+        <section id="admin-services" className="scroll-mt-16 lg:scroll-mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
           <h2 className="text-lg font-bold mb-1">Services</h2>
           <p className="text-sm text-slate-400 mb-4">These photos sit on the three service cards.</p>
           <div className="grid md:grid-cols-3 gap-4">
@@ -253,7 +256,7 @@ export default function AdminApp({ supabaseConfigured }: Props) {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+        <section id="admin-projects" className="scroll-mt-16 lg:scroll-mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
           <h2 className="text-lg font-bold mb-1">Projects</h2>
           <p className="text-sm text-slate-400 mb-6">
             Choose the two homepage hero projects, add jobs, then drag photos between groups.
@@ -372,7 +375,7 @@ export default function AdminApp({ supabaseConfigured }: Props) {
 
         <HireAdmin supabaseConfigured={supabaseConfigured} onStatus={setStatus} />
 
-        <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+        <section id="admin-about" className="scroll-mt-16 lg:scroll-mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
           <h2 className="text-lg font-bold mb-1">About</h2>
           <p className="text-sm text-slate-400 mb-4">The three About photos.</p>
           <div className="grid md:grid-cols-3 gap-4">
@@ -391,7 +394,7 @@ export default function AdminApp({ supabaseConfigured }: Props) {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+        <section id="admin-clients" className="scroll-mt-16 lg:scroll-mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
           <h2 className="text-lg font-bold mb-1">Trusted clients</h2>
           <p className="text-sm text-slate-400 mb-4">Logos on the homepage strip.</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -425,7 +428,8 @@ export default function AdminApp({ supabaseConfigured }: Props) {
             />
           </div>
         </section>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }
