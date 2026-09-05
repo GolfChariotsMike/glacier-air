@@ -2,15 +2,16 @@ import Image from "next/image";
 
 const links = {
   Services: [
-    { label: "Air Conditioning", href: "#air-conditioning" },
-    { label: "Refrigeration", href: "#refrigeration" },
-    { label: "Mechanical Services", href: "#mechanical-services" },
-    { label: "Maintenance", href: "#services" },
+    { label: "Air Conditioning", href: "/#air-conditioning" },
+    { label: "Refrigeration", href: "/#refrigeration" },
+    { label: "Mechanical Services", href: "/#mechanical-services" },
+    { label: "Equipment Hire", href: "/hire" },
+    { label: "Maintenance", href: "/#services" },
   ],
   Company: [
-    { label: "About Us", href: "#about-us" },
-    { label: "Projects", href: "#projects" },
-    { label: "Contact", href: "#contact-us" },
+    { label: "About Us", href: "/#about-us" },
+    { label: "Projects", href: "/#projects" },
+    { label: "Contact", href: "/#contact-us" },
   ],
 };
 

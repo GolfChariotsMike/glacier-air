@@ -19,6 +19,7 @@ Design, install and maintain air conditioning, commercial refrigeration and mech
 - About: https://glacierair.com.au/about-us
 - Services: https://glacierair.com.au/services
 - Projects: https://glacierair.com.au/projects
+- Equipment Hire: https://glacierair.com.au/hire
 
 ## Optional
 

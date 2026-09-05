@@ -39,5 +39,6 @@ This file is for people and AI assistants. Facts only — no invented statistics
 - https://glacierair.com.au/about-us
 - https://glacierair.com.au/services
 - https://glacierair.com.au/projects
+- https://glacierair.com.au/hire
 
 Contact is on the homepage (Make Enquiry). The path /contact-us is not a page.
