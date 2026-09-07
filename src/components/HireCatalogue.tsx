@@ -54,7 +54,8 @@ export default function HireCatalogue({ units }: { units: HireUnit[] }) {
                   {unit.images.slice(0, 4).map((img, i) => (
                     <div
                       key={img.id}
-                      className={`relative rounded-2xl overflow-hidden img-zoom ring-1 ring-white/5 ${
+                      tabIndex={0}
+                      className={`group relative rounded-2xl overflow-hidden hire-img-reveal ring-1 ring-white/5 ${
                         i === 0 ? "col-span-2 h-56" : "h-36"
                       }`}
                     >
