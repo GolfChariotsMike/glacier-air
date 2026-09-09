@@ -11,15 +11,12 @@ function HireUnitGallery({ images, title }: { images: HireImage[]; title: string
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!expandedId) return;
-
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setExpandedId(null);
-        const active = document.activeElement;
-        if (active instanceof HTMLElement && galleryRef.current?.contains(active)) {
-          active.blur();
-        }
+      if (event.key !== "Escape") return;
+      setExpandedId(null);
+      const active = document.activeElement;
+      if (active instanceof HTMLElement && galleryRef.current?.contains(active)) {
+        active.blur();
       }
     };
     const onPointerDown = (event: PointerEvent) => {
@@ -34,7 +31,7 @@ function HireUnitGallery({ images, title }: { images: HireImage[]; title: string
       document.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("pointerdown", onPointerDown);
     };
-  }, [expandedId]);
+  }, []);
 
   if (images.length === 0) {
     return (
