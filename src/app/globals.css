@@ -166,10 +166,21 @@ body {
 /* ── Hire tiles: cropped at rest; hover/focus/tap expands a larger full photo ── */
 .hire-gallery {
   isolation: isolate;
+  z-index: 1;
+}
+.hire-gallery:has(.hire-img-tile:hover),
+.hire-gallery:has(.hire-img-tile:focus-visible),
+.hire-gallery:has(.hire-img-tile.is-expanded) {
+  z-index: 40;
 }
 .hire-img-tile {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
   cursor: zoom-in;
-  background: #0c1428;
 }
 .hire-img-tile:focus {
   outline: none;
@@ -177,8 +188,16 @@ body {
 .hire-img-tile:focus-visible {
   outline: 2px solid rgba(96, 165, 250, 0.45);
   outline-offset: 2px;
+  border-radius: 1rem;
 }
-.hire-gallery-preview {
+.hire-img-crop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: #0c1428;
+}
+.hire-img-expand {
   position: absolute;
   z-index: 30;
   top: 50%;
@@ -186,25 +205,29 @@ body {
   width: min(40rem, calc(100% + 4rem));
   max-width: calc(100vw - 2rem);
   height: min(36rem, 80vh);
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(0.96);
   border-radius: 1.25rem;
   background: #0c1428;
   box-shadow:
     0 28px 70px rgba(2, 8, 24, 0.62),
     0 0 0 1px rgba(96, 165, 250, 0.22);
   overflow: hidden;
-  cursor: zoom-out;
-  animation: hire-preview-in 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.22s ease,
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0.22s;
 }
-@keyframes hire-preview-in {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
+.hire-img-tile:hover .hire-img-expand,
+.hire-img-tile:focus-visible .hire-img-expand,
+.hire-img-tile.is-expanded .hire-img-expand {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+  cursor: zoom-out;
 }
 
 /* ── Client logo marquee ── */
@@ -315,8 +338,8 @@ body.review-add-note {
   .img-zoom:hover img {
     transform: none;
   }
-  .hire-gallery-preview {
-    animation: none;
+  .hire-img-expand {
+    transition: none;
   }
   .glow-card:hover {
     transform: none;

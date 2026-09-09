@@ -6,24 +6,25 @@ import { useEffect, useRef, useState } from "react";
 import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
 import type { HireImage, HireUnit } from "@/lib/supabase-hire";
 
-function canHoverFinePointer() {
-  return window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-}
-
 function HireUnitGallery({ images, title }: { images: HireImage[]; title: string }) {
   const galleryRef = useRef<HTMLDivElement>(null);
-  const [previewId, setPreviewId] = useState<string | null>(null);
-  const preview = images.find((image) => image.id === previewId) ?? null;
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!previewId) return;
+    if (!expandedId) return;
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setPreviewId(null);
+      if (event.key === "Escape") {
+        setExpandedId(null);
+        const active = document.activeElement;
+        if (active instanceof HTMLElement && galleryRef.current?.contains(active)) {
+          active.blur();
+        }
+      }
     };
     const onPointerDown = (event: PointerEvent) => {
       if (!galleryRef.current?.contains(event.target as Node)) {
-        setPreviewId(null);
+        setExpandedId(null);
       }
     };
 
@@ -33,7 +34,7 @@ function HireUnitGallery({ images, title }: { images: HireImage[]; title: string
       document.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("pointerdown", onPointerDown);
     };
-  }, [previewId]);
+  }, [expandedId]);
 
   if (images.length === 0) {
     return (
@@ -44,73 +45,50 @@ function HireUnitGallery({ images, title }: { images: HireImage[]; title: string
   }
 
   return (
-    <div
-      ref={galleryRef}
-      className="hire-gallery relative"
-      onMouseLeave={() => {
-        if (canHoverFinePointer()) setPreviewId(null);
-      }}
-      onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-          setPreviewId(null);
-        }
-      }}
-    >
+    <div ref={galleryRef} className="hire-gallery relative">
       <div className="grid grid-cols-2 gap-3">
         {images.slice(0, 4).map((img, i) => {
           const featured = i === 0;
-          const selected = previewId === img.id;
+          const expanded = expandedId === img.id;
+          const sizes = featured
+            ? "(max-width: 1024px) 100vw, 50vw"
+            : "(max-width: 1024px) 50vw, 25vw";
           return (
             <button
               key={img.id}
               type="button"
-              aria-expanded={selected}
-              aria-label={`${selected ? "Hide" : "Show"} full photo: ${img.alt || title}`}
-              className={`hire-img-tile group relative rounded-2xl overflow-hidden ring-1 ring-white/5 ${
-                featured ? "col-span-2 h-56" : "h-36"
+              aria-expanded={expanded}
+              aria-label={`${expanded ? "Hide" : "Show"} full photo: ${img.alt || title}`}
+              className={`hire-img-tile ${featured ? "hire-img-tile--hero col-span-2 h-56" : "hire-img-tile--thumb h-36"} ${
+                expanded ? "is-expanded" : ""
               }`}
-              onMouseEnter={() => {
-                if (canHoverFinePointer()) setPreviewId(img.id);
-              }}
-              onFocus={() => setPreviewId(img.id)}
-              onClick={() => {
-                if (!canHoverFinePointer()) {
-                  setPreviewId((current) => (current === img.id ? null : img.id));
-                }
+              onPointerUp={(event) => {
+                if (event.pointerType === "mouse") return;
+                setExpandedId((current) => (current === img.id ? null : img.id));
               }}
             >
-              <Image
-                src={img.url}
-                alt={img.alt || title}
-                fill
-                sizes={
-                  featured
-                    ? "(max-width: 1024px) 100vw, 50vw"
-                    : "(max-width: 1024px) 50vw, 25vw"
-                }
-                className="object-cover"
-              />
+              <span className="hire-img-crop ring-1 ring-white/5">
+                <Image
+                  src={img.url}
+                  alt={img.alt || title}
+                  fill
+                  sizes={sizes}
+                  className="object-cover"
+                />
+              </span>
+              <span className="hire-img-expand" aria-hidden="true">
+                <Image
+                  src={img.url}
+                  alt=""
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-contain p-3"
+                />
+              </span>
             </button>
           );
         })}
       </div>
-
-      {preview ? (
-        <div
-          className="hire-gallery-preview"
-          onClick={() => {
-            if (!canHoverFinePointer()) setPreviewId(null);
-          }}
-        >
-          <Image
-            src={preview.url}
-            alt={preview.alt || title}
-            fill
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            className="object-contain p-3"
-          />
-        </div>
-      ) : null}
     </div>
   );
 }
