@@ -163,32 +163,47 @@ body {
   transform: scale(1.07);
 }
 
-/* ── Hire tiles: cropped at rest, full photo on hover / focus / tap ── */
-.hire-img-reveal {
+/* ── Hire tiles: cropped at rest; hover/focus/tap expands a larger full photo ── */
+.hire-gallery {
+  isolation: isolate;
+}
+.hire-img-tile {
+  cursor: zoom-in;
   background: #0c1428;
 }
-.hire-img-reveal:focus {
+.hire-img-tile:focus {
   outline: none;
 }
-.hire-img-reveal:focus-visible {
+.hire-img-tile:focus-visible {
   outline: 2px solid rgba(96, 165, 250, 0.45);
   outline-offset: 2px;
 }
-.hire-img-reveal img {
-  object-fit: cover;
-  object-position: center;
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+.hire-gallery-preview {
+  position: absolute;
+  z-index: 30;
+  top: 50%;
+  left: 50%;
+  width: min(36rem, calc(100% + 3rem));
+  max-width: calc(100vw - 2rem);
+  height: min(28rem, 72vh);
+  transform: translate(-50%, -50%);
+  border-radius: 1.25rem;
+  background: #0c1428;
+  box-shadow:
+    0 28px 70px rgba(2, 8, 24, 0.62),
+    0 0 0 1px rgba(96, 165, 250, 0.22);
+  overflow: hidden;
+  cursor: zoom-out;
+  animation: hire-preview-in 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.hire-img-reveal:hover img,
-.hire-img-reveal:focus-within img,
-.hire-img-reveal:focus img {
-  object-fit: contain;
-  transform: scale(1.02);
-}
-@media (hover: none) {
-  .hire-img-reveal:active img {
-    object-fit: contain;
-    transform: scale(1.02);
+@keyframes hire-preview-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 
@@ -300,11 +315,8 @@ body.review-add-note {
   .img-zoom:hover img {
     transform: none;
   }
-  .hire-img-reveal:hover img,
-  .hire-img-reveal:focus-within img,
-  .hire-img-reveal:focus img,
-  .hire-img-reveal:active img {
-    transform: none;
+  .hire-gallery-preview {
+    animation: none;
   }
   .glow-card:hover {
     transform: none;
