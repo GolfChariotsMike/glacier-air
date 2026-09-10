@@ -133,7 +133,7 @@ export default function HireCatalogue({ units }: { units: HireUnit[] }) {
             {units.map((unit, index) => (
               <article
                 key={unit.id}
-                className={`reveal reveal-delay-${(index % 3) + 1} grid lg:grid-cols-2 gap-10 items-center`}
+                className={`hire-unit reveal reveal-delay-${(index % 3) + 1} grid lg:grid-cols-2 gap-10 items-center`}
               >
                 <div className={index % 2 === 1 ? "lg:order-2" : ""}>
                   <HireUnitGallery images={unit.images} title={unit.title} />
