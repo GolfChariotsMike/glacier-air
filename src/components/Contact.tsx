@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { Phone, Mail, MapPin, Send } from "lucide-react";
 import { ENQUIRY_TYPES } from "@/lib/enquiry-types";
-import { forwardViaFormSubmit } from "@/lib/forward-enquiry";
 
 const fieldClass =
   "w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-colors text-sm";
@@ -42,27 +41,11 @@ export default function Contact() {
       const data = (await res.json().catch(() => ({}))) as {
         ok?: boolean;
         error?: string;
-        code?: string;
       };
 
       if (data.ok) {
         setStatus("sent");
         return;
-      }
-
-      if (data.code === "browser-forward") {
-        const forwarded = await forwardViaFormSubmit({
-          name: form.name,
-          company: form.company,
-          phone: form.phone,
-          email: form.email,
-          type: form.type,
-          message: form.message,
-        });
-        if (forwarded) {
-          setStatus("sent");
-          return;
-        }
       }
 
       setStatus("error");
@@ -155,6 +138,24 @@ export default function Contact() {
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-2">Message Sent!</h3>
                 <p className="text-slate-400">We&apos;ll be in touch shortly.</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStatus("idle");
+                    setForm({
+                      name: "",
+                      company: "",
+                      phone: "",
+                      email: "",
+                      type: "",
+                      message: "",
+                      website: "",
+                    });
+                  }}
+                  className="mt-6 text-sm text-blue-400 hover:text-blue-300 underline-offset-2 hover:underline"
+                >
+                  Send another enquiry
+                </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5 relative">

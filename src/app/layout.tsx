@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     "Family-owned air conditioning, refrigeration and mechanical services in Perth, SouthWest and Great Southern WA. Design, install, maintain. Call (08) 9242 3111.",
   alternates: { canonical: "/" },
   icons: {
-    icon: "/favicon.ico",
+    icon: "/glacier-air-logo.png",
     apple: "/glacier-air-logo.png",
   },
   openGraph: {

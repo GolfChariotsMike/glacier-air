@@ -1,16 +1,11 @@
 import { NextResponse } from "next/server";
 import { ENQUIRY_TYPE_VALUES } from "@/lib/enquiry-types";
+import { sendEnquiryEmail, type Enquiry } from "@/lib/contact-mail";
+import { checkContactRateLimit, contactClientKey } from "@/lib/contact-rate-limit";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-type Enquiry = {
-  name: string;
-  company: string;
-  phone: string;
-  email: string;
-  type: string;
-  message: string;
-};
+const SEND_ERROR =
+  "Could not send just now. Call (08) 9242 3111 or email service@glacierair.com.au.";
 
 export async function POST(request: Request) {
   let body: Record<string, unknown>;
@@ -56,100 +51,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "That looks too long — try shortening it." }, { status: 400 });
   }
 
-  try {
-    await deliver(enquiry);
-  } catch (err) {
-    if (err instanceof Error && err.message === "browser-forward") {
-      return NextResponse.json({ ok: false, code: "browser-forward" }, { status: 202 });
-    }
+  const limited = checkContactRateLimit(contactClientKey(request));
+  if (!limited.ok) {
     return NextResponse.json(
       {
         ok: false,
-        error: "Could not send just now. Call (08) 9242 3111 or email service@glacierair.com.au.",
+        error: `Too many enquiries from this connection. Try again in ${limited.retryAfter} seconds, or call (08) 9242 3111.`,
       },
-      { status: 502 }
+      { status: 429, headers: { "Retry-After": String(limited.retryAfter) } }
     );
   }
 
+  const result = await sendEnquiryEmail(enquiry);
+  if (!result.ok) {
+    return NextResponse.json({ ok: false, error: SEND_ERROR }, { status: 502 });
+  }
+
   return NextResponse.json({ ok: true });
-}
-
-function formatBody(enquiry: Enquiry) {
-  return [
-    `Name: ${enquiry.name}`,
-    `Company: ${enquiry.company || "(not provided)"}`,
-    `Phone: ${enquiry.phone}`,
-    `Email: ${enquiry.email}`,
-    `Type: ${enquiry.type}`,
-    "",
-    enquiry.message,
-  ].join("\n");
-}
-
-async function deliver(enquiry: Enquiry) {
-  const resendKey = process.env.RESEND_API_KEY;
-  const formspreeId = process.env.FORMSPREE_ID;
-
-  if (resendKey) {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${resendKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: process.env.RESEND_FROM ?? "Glacier Air Website <onboarding@resend.dev>",
-        to: ["service@glacierair.com.au"],
-        reply_to: enquiry.email,
-        subject: `Website enquiry: ${enquiry.type} — ${enquiry.name}`,
-        text: formatBody(enquiry),
-      }),
-    });
-    if (!res.ok) throw new Error("resend");
-    return;
-  }
-
-  if (formspreeId) {
-    const res = await fetch(`https://formspree.io/f/${formspreeId}`, {
-      method: "POST",
-      headers: { Accept: "application/json", "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...enquiry,
-        _subject: `Website enquiry: ${enquiry.type}`,
-      }),
-    });
-    if (!res.ok) throw new Error("formspree");
-    return;
-  }
-
-  const res = await fetch("https://formsubmit.co/ajax/service@glacierair.com.au", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify({
-      name: enquiry.name,
-      email: enquiry.email,
-      _replyto: enquiry.email,
-      _subject: `Glacier Air website enquiry: ${enquiry.type}`,
-      _template: "table",
-      company: enquiry.company || "(not provided)",
-      phone: enquiry.phone,
-      type: enquiry.type,
-      message: enquiry.message,
-    }),
-  });
-
-  const raw = await res.text();
-  let data: { success?: string | boolean } | null = null;
-  try {
-    data = JSON.parse(raw) as { success?: string | boolean };
-  } catch {
-    // Cloudflare challenge on datacenter IPs — browser will forward instead.
-    throw new Error("browser-forward");
-  }
-  if (!res.ok || data?.success === "false" || data?.success === false) {
-    throw new Error("formsubmit");
-  }
 }
