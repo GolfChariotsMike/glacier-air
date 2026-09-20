@@ -1,31 +1,31 @@
 import type { MetadataRoute } from "next";
+import { SITE_ORIGIN, absoluteUrl } from "@/lib/site";
 
-const SITE = "https://glacierair.com.au";
-const LAST_MOD = "2026-09-01";
+const LAST_MOD = new Date("2026-09-20");
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
-    { url: SITE, lastModified: LAST_MOD, changeFrequency: "monthly", priority: 1 },
+    { url: SITE_ORIGIN, lastModified: LAST_MOD, changeFrequency: "monthly", priority: 1 },
     {
-      url: `${SITE}/about-us`,
+      url: absoluteUrl("/about-us"),
       lastModified: LAST_MOD,
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${SITE}/services`,
+      url: absoluteUrl("/services"),
       lastModified: LAST_MOD,
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${SITE}/projects`,
+      url: absoluteUrl("/projects"),
       lastModified: LAST_MOD,
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${SITE}/hire`,
+      url: absoluteUrl("/hire"),
       lastModified: LAST_MOD,
       changeFrequency: "monthly",
       priority: 0.8,

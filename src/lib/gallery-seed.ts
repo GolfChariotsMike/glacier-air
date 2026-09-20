@@ -16,7 +16,7 @@ export const SEED_IMAGES: GalleryImage[] = [
 
   seed("about-main", "about-main", "/images/fremantle-16.webp", "Glacier Air team at work", 0),
   seed("about-left", "about-left", "/images/about-1.webp", "Refrigeration installation", 0),
-  seed("about-right", "about-right", "/images/about-2.webp", "AC installation", 0),
+  seed("about-right", "about-right", "/images/about-2.webp", "Air conditioning installation", 0),
 
   seed("services-ac", "services-ac", "/images/tile-air-conditioning.webp", "Air conditioning", 0),
   seed("services-ref", "services-ref", "/images/tile-refrigeration.webp", "Refrigeration", 0),

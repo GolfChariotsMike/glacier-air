@@ -45,13 +45,21 @@ function LogoCard({
           : "bg-[#f4f6f8] ring-black/5"
       }`}
     >
-      <Image
-        src={src}
-        alt={decorative ? "" : name}
-        width={160}
-        height={72}
-        className="max-h-16 w-auto max-w-full object-contain"
-      />
+      {decorative ? (
+        <span
+          aria-hidden
+          className="max-h-16 h-16 w-full max-w-full bg-contain bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${src})` }}
+        />
+      ) : (
+        <Image
+          src={src}
+          alt={name || "Client logo"}
+          width={160}
+          height={72}
+          className="max-h-16 w-auto max-w-full object-contain"
+        />
+      )}
     </div>
   );
 }

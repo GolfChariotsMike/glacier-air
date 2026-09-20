@@ -2,24 +2,25 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
 import ScrollToSection from "@/components/ScrollToSection";
+import { SITE_ORIGIN } from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://glacierair.com.au"),
+  metadataBase: new URL(SITE_ORIGIN),
   title: "Glacier Air | Air Conditioning & Refrigeration | Perth, WA",
   description:
     "Family-owned air conditioning, refrigeration and mechanical services in Perth, SouthWest and Great Southern WA. Design, install, maintain. Call (08) 9242 3111.",
   alternates: { canonical: "/" },
   icons: {
     icon: "/glacier-air-logo.png",
-    apple: "/glacier-air-logo.png",
+    apple: "/apple-touch-icon.png",
   },
   openGraph: {
     title: "Glacier Air | Air Conditioning & Refrigeration",
     description: "Family-owned experts in AC and refrigeration across Perth and WA.",
-    url: "https://glacierair.com.au",
+    url: SITE_ORIGIN,
     siteName: "Glacier Air",
     locale: "en_AU",
     type: "website",

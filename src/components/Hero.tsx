@@ -95,17 +95,12 @@ export default function Hero({
           </div>
 
           <h1 className="mb-6">
-            <span className="sr-only">
-              Experts in air conditioning, refrigeration, mechanical services and HVAC design
+            <span className="block text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-2">
+              Experts in
             </span>
-            <span aria-hidden="true">
-              <span className="block text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-2">
-                Experts in
-              </span>
-              <span className="block text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold min-h-[1.2em] whitespace-nowrap">
-                <span className="gradient-text">{typedText}</span>
-                {showCursor && <span className="cursor" />}
-              </span>
+            <span className="block text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold min-h-[1.2em] whitespace-nowrap">
+              <span className="gradient-text">{typedText}</span>
+              {showCursor ? <span className="cursor" aria-hidden="true" /> : null}
             </span>
           </h1>
 

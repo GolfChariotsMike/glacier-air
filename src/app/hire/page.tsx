@@ -3,6 +3,8 @@ import SiteNavbar from "@/components/SiteNavbar";
 import Footer from "@/components/Footer";
 import HireCatalogue from "@/components/HireCatalogue";
 import HireEnquiryForm from "@/components/HireEnquiryForm";
+import { HireJsonLd } from "@/components/JsonLd";
+import { absoluteUrl } from "@/lib/site";
 import { readHireUnits } from "@/lib/supabase-hire";
 
 export const revalidate = 30;
@@ -16,7 +18,7 @@ export const metadata: Metadata = {
     title: "Equipment Hire | Glacier Air",
     description:
       "Hire air conditioning and chillers across Perth and regional WA — enquire for available units.",
-    url: "https://glacierair.com.au/hire",
+    url: absoluteUrl("/hire"),
   },
 };
 
@@ -32,6 +34,7 @@ export default async function HirePage({
 
   return (
     <>
+      <HireJsonLd />
       <SiteNavbar />
       <HireCatalogue units={units} />
       <HireEnquiryForm

@@ -45,7 +45,7 @@ function fromImageRow(row: ImageRow): HireImage {
     unitId: row.unit_id,
     url: row.url,
     path: row.path,
-    alt: row.alt ?? "",
+    alt: (row.alt ?? "").trim(),
     sortOrder: Number.isFinite(row.sort_order) ? row.sort_order : 0,
   };
 }
