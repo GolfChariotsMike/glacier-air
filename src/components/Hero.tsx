@@ -22,6 +22,7 @@ export default function Hero({
             sizes="(max-width: 640px) 100vw, 100vw"
             quality={70}
             loading="eager"
+            fetchPriority="low"
             className="object-cover object-[54%_center]"
           />
         </div>
