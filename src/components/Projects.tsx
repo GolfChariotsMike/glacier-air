@@ -74,7 +74,7 @@ export default function Projects({
                   >
                     <Image
                       src={img.url}
-                      alt={img.alt || project.publicTitle}
+                      alt={img.alt || project.publicTitle || "Project photo"}
                       fill
                       sizes={
                         i === 0
@@ -126,7 +126,7 @@ export default function Projects({
                       <div key={img.id} className="relative h-36 overflow-hidden">
                         <Image
                           src={img.url}
-                          alt={img.alt || p.publicTitle}
+                          alt={img.alt || p.publicTitle || "Project photo"}
                           fill
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                           className="object-cover"

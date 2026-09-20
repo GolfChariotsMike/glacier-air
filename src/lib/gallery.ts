@@ -123,8 +123,30 @@ export const SERVICE_SLOT: Record<string, GallerySlot> = {
 export const ABOUT_FALLBACKS = {
   main: { src: "/images/fremantle-16.webp", alt: "Glacier Air team at work" },
   left: { src: "/images/about-1.webp", alt: "Refrigeration installation" },
-  right: { src: "/images/about-2.webp", alt: "AC installation" },
+  right: { src: "/images/about-2.webp", alt: "Air conditioning installation" },
 } as const;
+
+export const SLOT_ALT_FALLBACKS: Record<GallerySlot, string> = {
+  hero: "Rooftop air conditioning",
+  projects: "Air conditioning and refrigeration project",
+  "services-ac": "Air conditioning installation",
+  "services-ref": "Commercial refrigeration",
+  "services-mech": "Mechanical services",
+  "about-main": ABOUT_FALLBACKS.main.alt,
+  "about-left": ABOUT_FALLBACKS.left.alt,
+  "about-right": ABOUT_FALLBACKS.right.alt,
+  clients: "Client logo",
+  library: "Glacier Air project photo",
+};
+
+const GENERIC_ALTS = new Set<string>([...Object.values(SLOT_LABELS), "Job photo", "Project photo"]);
+
+export function isGenericAlt(alt: string | null | undefined): boolean {
+  const trimmed = alt?.trim() ?? "";
+  if (!trimmed) return true;
+  if (GENERIC_ALTS.has(trimmed)) return true;
+  return /^(About|Services) —/.test(trimmed);
+}
 
 export const CLIENT_GREY_TILES = new Set([
   "/clients/luna-palace.png",
@@ -190,8 +212,41 @@ export function firstUrl(state: GalleryState, slot: GallerySlot, fallback: strin
   return imagesForSlot(state, slot)[0]?.url ?? fallback;
 }
 
+export function fallbackAltForImage(img: {
+  slot: GallerySlot;
+  url: string;
+  id?: string;
+  projectId?: ProjectId | null;
+}): string {
+  if (img.slot === "projects") {
+    const projectId = isProjectId(img.projectId) ? img.projectId : inferProjectId(img.url, img.id);
+    const group = PROJECT_GROUPS.find((item) => item.id === projectId);
+    if (group && group.id !== UNASSIGNED_ID) return group.publicTitle;
+  }
+  return SLOT_ALT_FALLBACKS[img.slot];
+}
+
+export function displayAlt(
+  img: {
+    slot: GallerySlot;
+    url: string;
+    alt?: string | null;
+    id?: string;
+    projectId?: ProjectId | null;
+  },
+  fallback?: string
+): string {
+  const trimmed = img.alt?.trim() ?? "";
+  if (trimmed && !isGenericAlt(trimmed)) return trimmed;
+  const explicit = fallback?.trim();
+  if (explicit && !isGenericAlt(explicit)) return explicit;
+  return fallbackAltForImage(img);
+}
+
 export function firstAlt(state: GalleryState, slot: GallerySlot, fallback: string): string {
-  return imagesForSlot(state, slot)[0]?.alt ?? fallback;
+  const img = imagesForSlot(state, slot)[0];
+  if (!img) return fallback;
+  return displayAlt(img, fallback);
 }
 
 export function isGallerySlot(value: string): value is GallerySlot {
@@ -229,18 +284,25 @@ export function normalizeGallery(input: unknown): GalleryState {
             : typeof (img as { project_id?: string }).project_id === "string"
               ? (img as { project_id?: string }).project_id
               : null;
+        const projectId =
+          img.slot === "projects"
+            ? isProjectId(rawProject)
+              ? rawProject
+              : inferProjectId(img.url, img.id)
+            : null;
         return {
           id: img.id,
           slot: img.slot,
           url: img.url,
-          alt: typeof img.alt === "string" && img.alt.trim() ? img.alt.trim() : "Job photo",
+          alt: displayAlt({
+            id: img.id,
+            slot: img.slot,
+            url: img.url,
+            alt: typeof img.alt === "string" ? img.alt : "",
+            projectId,
+          }),
           sort: Number.isFinite(img.sort) ? img.sort : i,
-          projectId:
-            img.slot === "projects"
-              ? isProjectId(rawProject)
-                ? rawProject
-                : inferProjectId(img.url, img.id)
-              : null,
+          projectId,
         };
       }),
   };

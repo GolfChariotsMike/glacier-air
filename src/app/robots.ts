@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { SITE_ORIGIN, absoluteUrl } from "@/lib/site";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -13,7 +14,7 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: "Google-Extended", allow: "/", disallow: ["/admin", "/review", "/api/admin"] },
       { userAgent: "Applebot-Extended", allow: "/", disallow: ["/admin", "/review", "/api/admin"] },
     ],
-    sitemap: "https://glacierair.com.au/sitemap.xml",
-    host: "https://glacierair.com.au",
+    sitemap: absoluteUrl("/sitemap.xml"),
+    host: SITE_ORIGIN,
   };
 }

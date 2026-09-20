@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { absoluteUrl } from "@/lib/site";
 import Home from "../page";
 
 export const revalidate = 30;
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
     title: "Services | Glacier Air",
     description:
       "Air conditioning, refrigeration and mechanical services across Perth and regional WA.",
-    url: "https://glacierair.com.au/services",
+    url: absoluteUrl("/services"),
   },
 };
 
