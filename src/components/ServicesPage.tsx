@@ -103,7 +103,7 @@ const pillars: Pillar[] = [
 ];
 
 export default function ServicesPage({ gallery }: { gallery: GalleryState }) {
-  const sectionRef = useRevealOnScroll();
+  const sectionRef = useRevealOnScroll<HTMLDivElement>();
 
   return (
     <div ref={sectionRef}>

@@ -24,7 +24,7 @@ const reasons = [
 ];
 
 export default function AboutPage({ gallery }: { gallery: GalleryState }) {
-  const sectionRef = useRevealOnScroll();
+  const sectionRef = useRevealOnScroll<HTMLDivElement>();
 
   return (
     <div ref={sectionRef}>

@@ -28,7 +28,7 @@ export default function ProjectsPage({
   gallery: GalleryState;
   projects: CatalogueProject[];
 }) {
-  const sectionRef = useRevealOnScroll();
+  const sectionRef = useRevealOnScroll<HTMLDivElement>();
   const named = namedProjects(projects).map((project) => ({
     ...project,
     photos: imagesForProject(gallery, project.id),
