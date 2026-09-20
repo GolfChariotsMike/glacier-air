@@ -6,15 +6,15 @@ import { navHref } from "@/lib/section-href";
 
 const links = {
   Services: [
-    { label: "Air Conditioning", href: "#air-conditioning" },
-    { label: "Refrigeration", href: "#refrigeration" },
-    { label: "Mechanical Services", href: "#mechanical-services" },
+    { label: "Air Conditioning", href: "/services#air-conditioning" },
+    { label: "Refrigeration", href: "/services#refrigeration" },
+    { label: "Mechanical Services", href: "/services#mechanical-services" },
     { label: "Equipment Hire", href: "/hire" },
-    { label: "Maintenance", href: "#services" },
+    { label: "Maintenance", href: "/services#maintenance" },
   ],
   Company: [
-    { label: "About Us", href: "#about-us" },
-    { label: "Projects", href: "#projects" },
+    { label: "About Us", href: "/about-us" },
+    { label: "Projects", href: "/projects" },
     { label: "Contact", href: "#contact-us" },
   ],
 };

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 const SITE = "https://glacierair.com.au";
-const LAST_MOD = "2026-09-01";
+const LAST_MOD = "2026-09-20";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

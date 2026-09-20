@@ -126,12 +126,20 @@ export default function About({ gallery }: { gallery: GalleryState }) {
               />
             </div>
 
-            <a
-              href="#contact"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-semibold transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5 reveal reveal-delay-4"
-            >
-              Work With Us
-            </a>
+            <div className="flex flex-wrap items-center gap-4 reveal reveal-delay-4">
+              <a
+                href="#contact"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-semibold transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5"
+              >
+                Work With Us
+              </a>
+              <a
+                href="/about-us"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl border border-white/15 text-slate-200 hover:text-white hover:border-white/30 font-semibold transition-all duration-300"
+              >
+                More about Glacier Air
+              </a>
+            </div>
           </div>
         </div>
       </div>

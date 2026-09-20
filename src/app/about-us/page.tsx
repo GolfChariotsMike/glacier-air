@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
-import Home from "../page";
+import SiteNavbar from "@/components/SiteNavbar";
+import Footer from "@/components/Footer";
+import Contact from "@/components/Contact";
+import AboutPage from "@/components/AboutPage";
+import { readGallery } from "@/lib/supabase-gallery";
 
 export const revalidate = 30;
 
@@ -16,4 +20,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default Home;
+export default async function AboutUsRoute() {
+  const gallery = await readGallery();
+
+  return (
+    <>
+      <SiteNavbar />
+      <AboutPage gallery={gallery} />
+      <Contact />
+      <Footer />
+    </>
+  );
+}

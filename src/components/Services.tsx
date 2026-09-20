@@ -79,9 +79,16 @@ export default function Services({ gallery }: { gallery: GalleryState }) {
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Our Services
           </h2>
-          <p className="text-slate-100 text-sm md:text-base max-w-4xl mx-auto leading-relaxed uppercase tracking-wide">
+          <p className="text-slate-100 text-sm md:text-base max-w-4xl mx-auto leading-relaxed uppercase tracking-wide mb-6">
             {specialisms.join(" – ")}
           </p>
+          <a
+            href="/services"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-[#c5e4f7] hover:text-white hover:underline"
+          >
+            Full services list
+            <ChevronRight className="w-4 h-4" />
+          </a>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
