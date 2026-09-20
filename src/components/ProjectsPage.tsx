@@ -137,17 +137,14 @@ export default function ProjectsPage({
                     )}
                   </div>
                   <div className={index % 2 === 1 ? "lg:order-1" : ""}>
-                    <h2 className="text-3xl font-bold text-white mb-4">{project.publicTitle}</h2>
+                    <h2 className={`text-3xl font-bold text-white ${project.description ? "mb-4" : "mb-6"}`}>
+                      {project.publicTitle}
+                    </h2>
                     {project.description ? (
                       <p className="text-slate-400 text-lg leading-relaxed mb-6">
                         {project.description}
                       </p>
-                    ) : (
-                      <p className="text-slate-400 leading-relaxed mb-6">
-                        Completed air conditioning or refrigeration work. Enquire if you have a
-                        similar site and we will talk through what is involved.
-                      </p>
-                    )}
+                    ) : null}
                     <a
                       href="#contact"
                       className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-blue-500/30 text-blue-400 hover:bg-blue-500/10 font-semibold transition-all duration-300 hover:border-blue-400/50 group"
