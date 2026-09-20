@@ -12,7 +12,7 @@ import {
 } from "@/lib/hire-enquiry";
 
 const fieldClass =
-  "w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-colors text-sm [color-scheme:dark]";
+  "w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 transition-colors text-sm [color-scheme:dark]";
 
 export type HireEnquiryUnit = {
   id: string;
@@ -127,7 +127,7 @@ export default function HireEnquiryForm({
                   <Phone className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500 mb-0.5 uppercase tracking-wide">Phone</p>
+                  <p className="text-xs text-slate-400 mb-0.5 uppercase tracking-wide">Phone</p>
                   <p className="text-white font-semibold">(08) 9242 3111</p>
                 </div>
               </a>
@@ -137,7 +137,7 @@ export default function HireEnquiryForm({
                   <Mail className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500 mb-0.5 uppercase tracking-wide">Email</p>
+                  <p className="text-xs text-slate-400 mb-0.5 uppercase tracking-wide">Email</p>
                   <p className="text-white font-semibold group-hover:text-blue-400 transition-colors">
                     service@glacierair.com.au
                   </p>
@@ -218,7 +218,7 @@ export default function HireEnquiryForm({
                       htmlFor="hire-company"
                     >
                       Company{" "}
-                      <span className="text-slate-600 normal-case tracking-normal">(optional)</span>
+                      <span className="text-slate-400 normal-case tracking-normal">(optional)</span>
                     </label>
                     <input
                       id="hire-company"
@@ -346,7 +346,7 @@ export default function HireEnquiryForm({
                   />
                   <span>
                     <span className="block text-sm font-semibold text-white">Long-term hire</span>
-                    <span className="block text-xs text-slate-500 mt-0.5">
+                    <span className="block text-xs text-slate-400 mt-0.5">
                       Pick a start date and leave the finish open — we&apos;ll discuss duration.
                     </span>
                   </span>
@@ -358,7 +358,7 @@ export default function HireEnquiryForm({
                     htmlFor="hire-message"
                   >
                     Message{" "}
-                    <span className="text-slate-600 normal-case tracking-normal">(optional)</span>
+                    <span className="text-slate-400 normal-case tracking-normal">(optional)</span>
                   </label>
                   <textarea
                     id="hire-message"
@@ -382,7 +382,7 @@ export default function HireEnquiryForm({
                 <button
                   type="submit"
                   disabled={status === "sending"}
-                  className="w-full flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-blue-500 hover:bg-blue-400 disabled:opacity-60 text-white font-semibold transition-all hover:shadow-lg hover:shadow-blue-500/25"
+                  className="w-full flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-60 text-white font-semibold transition-all hover:shadow-lg hover:shadow-blue-600/25"
                 >
                   {status === "sending" ? (
                     "Sending..."

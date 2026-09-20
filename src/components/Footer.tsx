@@ -1,8 +1,8 @@
-"use client";
-
 import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { navHref } from "@/lib/section-href";
+
+function footerHref(href: string) {
+  return href.startsWith("#") ? `/${href}` : href;
+}
 
 const links = {
   Services: [
@@ -20,7 +20,6 @@ const links = {
 };
 
 export default function Footer() {
-  const pathname = usePathname() ?? "/";
   return (
     <footer className="bg-[#050a18] border-t border-white/5 py-16">
       <div className="max-w-7xl mx-auto px-6">
@@ -39,7 +38,7 @@ export default function Footer() {
               Family-owned air conditioning, refrigeration and mechanical
               services across Perth, SouthWest and Great Southern WA.
             </p>
-            <p className="text-slate-500 text-xs mb-4">
+            <p className="text-slate-400 text-xs mb-4">
               ARC Licence AU18839 · AIRAH Member · HIA Member
             </p>
             <div className="flex items-center gap-3">
@@ -74,7 +73,7 @@ export default function Footer() {
                 {items.map((item) => (
                   <li key={item.label}>
                     <a
-                      href={navHref(pathname, item.href)}
+                      href={footerHref(item.href)}
                       className="text-slate-400 hover:text-white text-sm transition-colors"
                     >
                       {item.label}
@@ -87,7 +86,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-slate-500 text-sm">
+          <p className="text-slate-400 text-sm">
             © {new Date().getFullYear()} Glacier Air. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm">

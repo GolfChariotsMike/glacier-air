@@ -1,7 +1,6 @@
-"use client";
 import { Award, Users, MapPin, Clock } from "lucide-react";
 import Image from "next/image";
-import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
+import RevealRoot from "@/components/RevealRoot";
 import { ABOUT_FALLBACKS, firstAlt, firstUrl, type GalleryState } from "@/lib/gallery";
 
 const stats = [
@@ -12,10 +11,8 @@ const stats = [
 ];
 
 export default function About({ gallery }: { gallery: GalleryState }) {
-  const sectionRef = useRevealOnScroll();
-
   return (
-    <section id="about-us" className="py-24 bg-[#060c1a] scroll-mt-24" ref={sectionRef}>
+    <RevealRoot id="about-us" className="py-24 bg-[#060c1a] scroll-mt-24">
       <div id="about" className="max-w-7xl mx-auto px-6 scroll-mt-24">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left — images */}
@@ -128,13 +125,13 @@ export default function About({ gallery }: { gallery: GalleryState }) {
 
             <a
               href="#contact"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-semibold transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5 reveal reveal-delay-4"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-all duration-300 hover:shadow-xl hover:shadow-blue-600/30 hover:-translate-y-0.5 reveal reveal-delay-4"
             >
               Work With Us
             </a>
           </div>
         </div>
       </div>
-    </section>
+    </RevealRoot>
   );
 }

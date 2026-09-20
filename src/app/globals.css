@@ -13,7 +13,6 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 @layer utilities {
@@ -35,8 +34,7 @@ body {
 }
 .hero-kenburns {
   transform-origin: center center;
-  animation: ken-burns 22s ease-in-out infinite alternate;
-  will-change: transform;
+  animation: ken-burns 22s ease-in-out 0.8s infinite alternate;
 }
 
 /* ── Scroll reveal ── */

@@ -1,102 +1,13 @@
-"use client";
-
-import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
-import type { HireImage, HireUnit } from "@/lib/supabase-hire";
-
-function HireUnitGallery({ images, title }: { images: HireImage[]; title: string }) {
-  const galleryRef = useRef<HTMLDivElement>(null);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      setExpandedId(null);
-      const active = document.activeElement;
-      if (active instanceof HTMLElement && galleryRef.current?.contains(active)) {
-        active.blur();
-      }
-    };
-    const onPointerDown = (event: PointerEvent) => {
-      if (!galleryRef.current?.contains(event.target as Node)) {
-        setExpandedId(null);
-      }
-    };
-
-    document.addEventListener("keydown", onKeyDown);
-    document.addEventListener("pointerdown", onPointerDown);
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.removeEventListener("pointerdown", onPointerDown);
-    };
-  }, []);
-
-  if (images.length === 0) {
-    return (
-      <div className="h-56 rounded-2xl ring-1 ring-white/5 bg-white/[0.03] flex items-center justify-center">
-        <p className="text-sm text-slate-500">Photos coming soon</p>
-      </div>
-    );
-  }
-
-  return (
-    <div ref={galleryRef} className="hire-gallery relative">
-      <div className="grid grid-cols-2 gap-3">
-        {images.slice(0, 4).map((img, i) => {
-          const featured = i === 0;
-          const expanded = expandedId === img.id;
-          const sizes = featured
-            ? "(max-width: 1024px) 100vw, 50vw"
-            : "(max-width: 1024px) 50vw, 25vw";
-          return (
-            <button
-              key={img.id}
-              type="button"
-              aria-expanded={expanded}
-              aria-label={`${expanded ? "Hide" : "Show"} full photo: ${img.alt || title}`}
-              className={`hire-img-tile ${featured ? "hire-img-tile--hero col-span-2 h-56" : "hire-img-tile--thumb h-36"} ${
-                expanded ? "is-expanded" : ""
-              }`}
-              onPointerUp={(event) => {
-                if (event.pointerType === "mouse") return;
-                setExpandedId((current) => (current === img.id ? null : img.id));
-              }}
-            >
-              <span className="hire-img-crop ring-1 ring-white/5">
-                <Image
-                  src={img.url}
-                  alt={img.alt || title}
-                  fill
-                  sizes={sizes}
-                  className="object-cover"
-                />
-              </span>
-              <span className="hire-img-expand" aria-hidden="true">
-                <Image
-                  src={img.url}
-                  alt=""
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-contain p-3"
-                />
-              </span>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
+import RevealRoot from "@/components/RevealRoot";
+import HireUnitGallery from "@/components/HireUnitGallery";
+import type { HireUnit } from "@/lib/supabase-hire";
 
 export default function HireCatalogue({ units }: { units: HireUnit[] }) {
-  const sectionRef = useRevealOnScroll();
-
   return (
-    <section id="hire" className="pt-32 pb-24 bg-[#0a0f1e] min-h-[70vh]" ref={sectionRef}>
+    <RevealRoot id="hire" className="pt-32 pb-24 bg-[#0a0f1e] min-h-[70vh]">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16 reveal">
+        <div className="text-center mb-16">
           <p className="text-blue-400 text-sm font-semibold uppercase tracking-widest mb-3">
             Available now
           </p>
@@ -107,14 +18,14 @@ export default function HireCatalogue({ units }: { units: HireUnit[] }) {
           </p>
           <Link
             href="#hire-enquire"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-blue-600/25"
           >
             Make Enquiry
           </Link>
         </div>
 
         {units.length === 0 ? (
-          <div className="reveal max-w-xl mx-auto text-center rounded-2xl border border-white/10 bg-white/[0.03] px-8 py-16">
+          <div className="max-w-xl mx-auto text-center rounded-2xl border border-white/10 bg-white/[0.03] px-8 py-16">
             <h2 className="text-2xl font-bold text-white mb-3">Units coming soon</h2>
             <p className="text-slate-400 leading-relaxed mb-8">
               We&apos;re listing hire AC and chillers here. Enquire now and we&apos;ll confirm
@@ -161,6 +72,6 @@ export default function HireCatalogue({ units }: { units: HireUnit[] }) {
           </div>
         )}
       </div>
-    </section>
+    </RevealRoot>
   );
 }

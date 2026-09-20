@@ -4,7 +4,13 @@ import Script from "next/script";
 import ScrollToSection from "@/components/ScrollToSection";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], display: "swap" });
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  preload: true,
+  adjustFontFallback: true,
+  fallback: ["system-ui", "Segoe UI", "sans-serif"],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://glacierair.com.au"),
@@ -46,14 +52,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en-AU">
-      <body className={inter.className}>
+    <html lang="en-AU" className={inter.className}>
+      <body>
         <ScrollToSection />
         {children}
         <Script
           src="https://app.manyhandz.ai/widget.js"
           data-key="0f840990-0b36-4f50-83aa-4860ee66ac7c"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
       </body>
     </html>

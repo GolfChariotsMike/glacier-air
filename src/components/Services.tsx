@@ -1,7 +1,6 @@
-"use client";
 import { Wind, Thermometer, Wrench, ChevronRight } from "lucide-react";
 import Image from "next/image";
-import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
+import RevealRoot from "@/components/RevealRoot";
 import { firstAlt, firstUrl, SERVICE_FALLBACKS, SERVICE_SLOT, type GalleryState } from "@/lib/gallery";
 
 const specialisms = [
@@ -67,10 +66,8 @@ const services: {
 ];
 
 export default function Services({ gallery }: { gallery: GalleryState }) {
-  const sectionRef = useRevealOnScroll();
-
   return (
-    <section id="services" className="py-24 bg-[#2665AA]" ref={sectionRef}>
+    <RevealRoot id="services" className="py-24 bg-[#2665AA]">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16 reveal">
           <p className="text-white/80 text-sm font-semibold uppercase tracking-widest mb-3">
@@ -98,7 +95,7 @@ export default function Services({ gallery }: { gallery: GalleryState }) {
                     src={firstUrl(gallery, SERVICE_SLOT[svc.id], SERVICE_FALLBACKS[svc.id] ?? svc.image)}
                     alt={firstAlt(gallery, SERVICE_SLOT[svc.id], svc.title)}
                     fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover"
                   />
                 </div>
@@ -214,6 +211,6 @@ export default function Services({ gallery }: { gallery: GalleryState }) {
           </div>
         </div>
       </div>
-    </section>
+    </RevealRoot>
   );
 }

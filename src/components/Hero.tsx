@@ -1,64 +1,8 @@
-"use client";
-import { useEffect, useState, useSyncExternalStore } from "react";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
+import HeroTypewriter from "@/components/HeroTypewriter";
 
 const badges = ["ARC Licence AU18839", "AIRAH Member", "HIA Member", "Family Owned"];
-const typewriterWords = [
-  "Air Conditioning",
-  "Refrigeration",
-  "Mechanical Services",
-  "HVAC Design",
-];
-
-function usePrefersReducedMotion() {
-  return useSyncExternalStore(
-    (onChange) => {
-      const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-      mq.addEventListener("change", onChange);
-      return () => mq.removeEventListener("change", onChange);
-    },
-    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-    () => false
-  );
-}
-
-function useTypewriter(words: string[]) {
-  const reduceMotion = usePrefersReducedMotion();
-  const [text, setText] = useState(words[0]);
-  const [wordIndex, setWordIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  useEffect(() => {
-    if (reduceMotion) return;
-
-    const current = words[wordIndex % words.length];
-    let delay = isDeleting ? 40 : 70;
-    if (!isDeleting && text === current) delay = 1800;
-    if (isDeleting && text === "") delay = 280;
-
-    const timeout = setTimeout(() => {
-      if (!isDeleting && text === current) {
-        setIsDeleting(true);
-        return;
-      }
-      if (isDeleting && text === "") {
-        setIsDeleting(false);
-        setWordIndex((i) => (i + 1) % words.length);
-        return;
-      }
-      setText(
-        isDeleting
-          ? current.slice(0, text.length - 1)
-          : current.slice(0, text.length + 1)
-      );
-    }, delay);
-
-    return () => clearTimeout(timeout);
-  }, [text, isDeleting, wordIndex, words, reduceMotion]);
-
-  return { text: reduceMotion ? words[0] : text, showCursor: !reduceMotion };
-}
 
 export default function Hero({
   imageSrc = "/images/hero-bg.webp",
@@ -67,8 +11,6 @@ export default function Hero({
   imageSrc?: string;
   imageAlt?: string;
 }) {
-  const { text: typedText, showCursor } = useTypewriter(typewriterWords);
-
   return (
     <section id="home" className="relative min-h-screen overflow-hidden">
       <div className="absolute inset-0 overflow-hidden">
@@ -77,9 +19,9 @@ export default function Hero({
             src={imageSrc}
             alt={imageAlt}
             fill
-            sizes="100vw"
-            quality={75}
-            preload
+            sizes="(max-width: 640px) 100vw, 100vw"
+            quality={70}
+            loading="eager"
             className="object-cover object-[54%_center]"
           />
         </div>
@@ -102,10 +44,7 @@ export default function Hero({
               <span className="block text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-2">
                 Experts in
               </span>
-              <span className="block text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold min-h-[1.2em] whitespace-nowrap">
-                <span className="gradient-text">{typedText}</span>
-                {showCursor && <span className="cursor" />}
-              </span>
+              <HeroTypewriter />
             </span>
           </h1>
 
@@ -128,7 +67,7 @@ export default function Hero({
           <div className="flex flex-col sm:flex-row gap-4 mb-8">
             <a
               href="#contact"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-semibold text-lg transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-lg transition-all duration-300 hover:shadow-xl hover:shadow-blue-600/30 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
             >
               Make Enquiry <ArrowRight className="w-5 h-5" />
             </a>

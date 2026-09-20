@@ -1,6 +1,5 @@
-"use client";
 import Image from "next/image";
-import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
+import RevealRoot from "@/components/RevealRoot";
 import {
   imagesForProject,
   namedProjects,
@@ -17,7 +16,6 @@ export default function Projects({
   gallery: GalleryState;
   projects: CatalogueProject[];
 }) {
-  const sectionRef = useRevealOnScroll();
   const named = namedProjects(projects).map((project) => ({
     ...project,
     photos: imagesForProject(gallery, project.id),
@@ -31,7 +29,7 @@ export default function Projects({
   );
 
   return (
-    <section id="projects" className="py-24 bg-[#0a0f1e]" ref={sectionRef}>
+    <RevealRoot id="projects" className="py-24 bg-[#0a0f1e]">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16 reveal">
           <p className="text-blue-400 text-sm font-semibold uppercase tracking-widest mb-3">
@@ -87,7 +85,7 @@ export default function Projects({
                 ))}
                 {project.photos.length === 0 && (
                   <div className="col-span-2 h-56 rounded-2xl ring-1 ring-white/5 bg-white/[0.03] flex items-center justify-center">
-                    <p className="text-sm text-slate-500">Photos coming soon</p>
+                    <p className="text-sm text-slate-400">Photos coming soon</p>
                   </div>
                 )}
               </div>
@@ -154,6 +152,6 @@ export default function Projects({
           </p>
         </div>
       </div>
-    </section>
+    </RevealRoot>
   );
 }
