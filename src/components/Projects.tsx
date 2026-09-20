@@ -40,9 +40,15 @@ export default function Projects({
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
             Recent Projects
           </h2>
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+          <p className="text-slate-400 text-lg max-w-2xl mx-auto mb-6">
             Air conditioning and commercial refrigeration projects — residential and commercial.
           </p>
+          <a
+            href="/projects"
+            className="inline-flex items-center text-sm font-semibold text-blue-400 hover:text-blue-300 hover:underline"
+          >
+            See all projects →
+          </a>
         </div>
 
         {named

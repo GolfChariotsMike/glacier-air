@@ -133,7 +133,7 @@ export default function Hero({
               Make Enquiry <ArrowRight className="w-5 h-5" />
             </a>
             <a
-              href="#services"
+              href="/services"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl border border-white/10 hover:border-white/30 text-white font-semibold text-lg transition-all duration-300 hover:bg-white/5 motion-reduce:transition-none"
             >
               Our Services

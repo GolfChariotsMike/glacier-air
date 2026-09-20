@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import Home from "../page";
+import SiteNavbar from "@/components/SiteNavbar";
+import Footer from "@/components/Footer";
+import Contact from "@/components/Contact";
+import ProjectsPage from "@/components/ProjectsPage";
+import { readGallery } from "@/lib/supabase-gallery";
+import { readProjects } from "@/lib/supabase-projects";
 
 export const revalidate = 30;
 
@@ -16,4 +21,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default Home;
+export default async function ProjectsRoute() {
+  const [gallery, projects] = await Promise.all([readGallery(), readProjects()]);
+
+  return (
+    <>
+      <SiteNavbar />
+      <ProjectsPage gallery={gallery} projects={projects} />
+      <Contact />
+      <Footer />
+    </>
+  );
+}

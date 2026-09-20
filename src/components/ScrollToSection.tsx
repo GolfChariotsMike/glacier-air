@@ -2,22 +2,23 @@
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
-const PATH_TO_ID: Record<string, string> = {
-  "/about-us": "about-us",
-  "/services": "services",
-  "/projects": "projects",
-};
-
+/** Scroll to the URL hash after client navigations (e.g. /services#air-conditioning). */
 export default function ScrollToSection() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const id = PATH_TO_ID[pathname];
-    if (!id) return;
-    const timer = window.setTimeout(() => {
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-    }, 80);
-    return () => window.clearTimeout(timer);
+    const scrollToHash = () => {
+      const hash = window.location.hash.replace(/^#/, "");
+      if (!hash) return;
+      document.getElementById(hash)?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    const timer = window.setTimeout(scrollToHash, 80);
+    window.addEventListener("hashchange", scrollToHash);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("hashchange", scrollToHash);
+    };
   }, [pathname]);
 
   return null;

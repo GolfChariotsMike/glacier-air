@@ -25,25 +25,25 @@ type NavItem = {
 };
 
 const SERVICE_ITEMS: NavItem[] = [
-  { label: "Air Conditioning", href: "#air-conditioning" },
-  { label: "Refrigeration", href: "#refrigeration" },
-  { label: "Mechanical Services", href: "#mechanical-services" },
-  { label: "Panasonic Specialist Support", href: "#panasonic-specialist-support" },
+  { label: "Air Conditioning", href: "/services#air-conditioning" },
+  { label: "Refrigeration", href: "/services#refrigeration" },
+  { label: "Mechanical Services", href: "/services#mechanical-services" },
+  { label: "Panasonic Specialist Support", href: "/services#panasonic-specialist-support" },
   { label: "Equipment Hire", href: "/hire" },
 ];
 
 function projectItems(projects: NavbarProject[]): NavItem[] {
   if (!projects.length) {
-    return [{ label: "Recent projects", href: "#projects" }];
+    return [{ label: "Recent projects", href: "/projects" }];
   }
   return projects.map((project) => ({
     label: project.publicTitle,
-    href: `#${projectSectionId(project.id)}`,
+    href: `/projects#${projectSectionId(project.id)}`,
   }));
 }
 
 function NavLink({ href, ...props }: { href: string } & Omit<ComponentProps<"a">, "href">) {
-  if (href.startsWith("/") && !href.startsWith("/#")) {
+  if (href.startsWith("/") && !href.includes("#")) {
     return <Link href={href} {...props} />;
   }
   return <a href={href} {...props} />;
@@ -305,13 +305,13 @@ export default function Navbar({ projects = [] }: { projects?: NavbarProject[] }
             Home
           </a>
           <a
-            href={hrefFor("#about-us")}
+            href="/about-us"
             className="nav-link text-sm text-slate-300 hover:text-white transition-colors duration-200 font-medium py-1"
           >
             About
           </a>
-          <DesktopDropdown label="Services" href={hrefFor("#services")} items={serviceNavItems} />
-          <DesktopDropdown label="Projects" href={hrefFor("#projects")} items={projectNavItems} />
+          <DesktopDropdown label="Services" href="/services" items={serviceNavItems} />
+          <DesktopDropdown label="Projects" href="/projects" items={projectNavItems} />
           <a
             href={hrefFor("#contact-us")}
             className="nav-link text-sm text-slate-300 hover:text-white transition-colors duration-200 font-medium py-1"
@@ -363,7 +363,7 @@ export default function Navbar({ projects = [] }: { projects?: NavbarProject[] }
             Home
           </a>
           <a
-            href={hrefFor("#about-us")}
+            href="/about-us"
             className="text-slate-300 hover:text-white font-medium transition-colors py-1"
             onClick={closeMenu}
           >
@@ -371,7 +371,7 @@ export default function Navbar({ projects = [] }: { projects?: NavbarProject[] }
           </a>
           <MobileAccordion
             label="Services"
-            href={hrefFor("#services")}
+            href="/services"
             items={serviceNavItems}
             expanded={mobileSection === "services"}
             onToggle={() => setMobileSection((current) => (current === "services" ? null : "services"))}
@@ -379,7 +379,7 @@ export default function Navbar({ projects = [] }: { projects?: NavbarProject[] }
           />
           <MobileAccordion
             label="Projects"
-            href={hrefFor("#projects")}
+            href="/projects"
             items={projectNavItems}
             expanded={mobileSection === "projects"}
             onToggle={() => setMobileSection((current) => (current === "projects" ? null : "projects"))}
