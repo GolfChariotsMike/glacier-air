@@ -32,9 +32,9 @@ const pillars: Pillar[] = [
     icon: Wind,
     title: "Air conditioning",
     problem:
-      "Offices, shops and homes that run too hot, too cold, or on plant that is past its service life.",
+      "Homes and workplaces that need air conditioning designed, installed and kept in service.",
     solution:
-      "We design, install and maintain residential and commercial air conditioning as separate jobs — the right capacity for the space, then the servicing to keep it that way. Panasonic ASC warranty agent and Specialist Air Network dealer.",
+      "Residential and commercial air conditioning as distinct jobs — design, install, service and maintain for homes and workplaces separately. Panasonic ASC warranty agent and repairs. Panasonic Specialist Air Network dealer.",
     href: { label: "Panasonic specialist support", to: "#panasonic-specialist-support" },
     image: "/images/tile-air-conditioning.webp",
   },
@@ -43,9 +43,9 @@ const pillars: Pillar[] = [
     icon: Thermometer,
     title: "Refrigeration",
     problem:
-      "Cold rooms and commercial plant that cannot hold temperature, keep up with loading, or wait on a long parts delay.",
+      "Commercial refrigeration — cold rooms and related plant — that needs design, installation or ongoing service.",
     solution:
-      "Commercial refrigeration — cool rooms, freezers and related plant — from design through installation, service and maintenance. We also service ammonia refrigeration and can place a hire chiller on site when you need temporary capacity.",
+      "Commercial refrigeration and winery glycol systems — from cold rooms to ammonia plant — plus hire chillers. Design, installation, service and maintenance, including ammonia refrigeration service.",
     href: { label: "Hire chillers and AC", to: "/hire" },
     image: "/images/tile-refrigeration.webp",
   },
@@ -54,9 +54,9 @@ const pillars: Pillar[] = [
     icon: Wrench,
     title: "Mechanical services",
     problem:
-      "Buildings that need exhaust, fresh air and compliance work — not only a condenser on the roof.",
+      "Commercial and light industrial buildings that need ventilation and compliance work.",
     solution:
-      "Commercial exhaust and fresh-air systems, plus the certification that goes with them. We design, install, service and maintain mechanical services for commercial and light industrial sites across Perth and regional WA.",
+      "Ventilation and compliance work across Perth and regional WA: commercial exhaust and fresh air — design, installation, service and maintenance — plus compliance and certification.",
     href: { label: "Enquire about mechanical work", to: "#contact" },
     image: "/images/tile-mechanical.webp",
   },
@@ -65,19 +65,19 @@ const pillars: Pillar[] = [
     icon: Grape,
     title: "Winery refrigeration",
     problem:
-      "Vintage and cellar work that depends on stable glycol and plant that is ready when fruit arrives.",
+      "Wineries that need glycol refrigeration designed, installed or serviced.",
     solution:
-      "Winery glycol refrigeration — design, installation, service and maintenance. Recent work includes chiller upgrades and cellar air conditioning for South West and Great Southern producers. If harvest plant is the issue, say so when you call.",
-    href: { label: "See winery and cellar projects", to: "/projects" },
+      "Winery glycol refrigeration — design, installation, service and maintenance.",
+    href: { label: "Recent projects", to: "/projects" },
   },
   {
     id: "equipment-hire",
     icon: Truck,
     title: "Equipment hire",
     problem:
-      "A breakdown, a fitout, or a seasonal load that needs cooling before permanent plant is ready.",
+      "Short-term air conditioning or chiller capacity for a site or project.",
     solution:
-      "Hire air conditioning and chillers for short-term or project work across Perth and regional WA. Tell us the site and the dates — we will match a unit from the hire list.",
+      "Hire air conditioning and chillers across Perth and regional WA. The hire catalogue lists the units we have available.",
     href: { label: "View hire catalogue", to: "/hire" },
   },
   {
@@ -85,9 +85,9 @@ const pillars: Pillar[] = [
     icon: PenTool,
     title: "Design and install",
     problem:
-      "A space that needs the right capacity and layout, not a catalogue unit dropped in and hoped for.",
+      "A space that needs a system designed and installed, not only a service call.",
     solution:
-      "We start with the room, the load and how the site is used — then design, supply and install. That applies to commercial air conditioning, cool rooms, winery glycol and mechanical ventilation alike.",
+      "From design and supply through to installation. For commercial refrigeration, room size, insulation, stored goods and daily loading feed the design — the same approach we take for air conditioning and mechanical work.",
     href: { label: "Talk through a design", to: "#contact" },
   },
   {
@@ -95,9 +95,9 @@ const pillars: Pillar[] = [
     icon: Factory,
     title: "Maintenance",
     problem:
-      "Plant that only gets attention after it fails — filters, drains, electrics and gas left until there is a breakdown.",
+      "Air conditioning or refrigeration that needs servicing, repairs or warranty work.",
     solution:
-      "Scheduled servicing and repairs for air conditioning and refrigeration we install, and for existing plant on site. Warranty repairs on Panasonic equipment we look after, plus spare parts support and maintenance across the range.",
+      "Electrical or gas issues, filters and drains, ice build-up, plus advice on keeping commercial refrigeration in good condition. Warranty repairs and service on Panasonic air conditioning we install.",
     href: { label: "Book a service call", to: "#contact" },
   },
 ];
@@ -116,9 +116,9 @@ export default function ServicesPage({ gallery }: { gallery: GalleryState }) {
             HVAC services across Western Australia
           </h1>
           <p className="text-slate-100 text-lg md:text-xl leading-relaxed max-w-3xl reveal reveal-delay-2">
-            Air conditioning, refrigeration and mechanical services — designed, installed and
-            maintained for homes, commercial sites and industrial plant from Osborne Park through
-            Perth, the South West and the Great Southern.
+            Air conditioning, refrigeration and mechanical services — design, install and
+            maintain — for residential, commercial and industrial sites across Perth, the South
+            West and the Great Southern.
           </p>
         </div>
       </section>

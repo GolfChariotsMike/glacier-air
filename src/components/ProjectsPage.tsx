@@ -57,9 +57,7 @@ export default function ProjectsPage({
             Projects across Perth and regional WA
           </h1>
           <p className="text-slate-400 text-lg md:text-xl leading-relaxed max-w-3xl mb-8 reveal reveal-delay-2">
-            Air conditioning and commercial refrigeration jobs we have completed — offices, food
-            production, wineries, and commercial plant. Photos and headings come from the jobs
-            themselves.
+            Air conditioning and commercial refrigeration projects — residential and commercial.
           </p>
           <div className="flex flex-wrap gap-4 reveal reveal-delay-3">
             <a
@@ -163,8 +161,7 @@ export default function ProjectsPage({
                 >
                   <h2 className="text-2xl font-bold text-white mb-3">Other work</h2>
                   <p className="text-slate-400 leading-relaxed mb-8 max-w-2xl">
-                    Additional job photos from sites that are not listed as a named project
-                    above — including office fitouts and refrigeration work.
+                    Job photos that are not grouped under a named project.
                   </p>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {otherWork.photos.map((img) => (

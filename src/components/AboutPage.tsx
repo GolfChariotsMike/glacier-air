@@ -1,6 +1,6 @@
 "use client";
 
-import { Award, Handshake, MapPin, Phone, Wrench } from "lucide-react";
+import { Award, Clock, MapPin, Phone, Wrench } from "lucide-react";
 import Image from "next/image";
 import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
 import { ABOUT_FALLBACKS, firstAlt, firstUrl, type GalleryState } from "@/lib/gallery";
@@ -8,18 +8,18 @@ import { ABOUT_FALLBACKS, firstAlt, firstUrl, type GalleryState } from "@/lib/ga
 const reasons = [
   {
     icon: Wrench,
-    title: "Technical expertise",
-    body: "Refrigeration, air conditioning and mechanical work is what we do — from cool rooms and glycol plant through to office and residential systems. The same team designs, installs and services the plant.",
+    title: "Technical knowledge",
+    body: "Air conditioning, refrigeration and mechanical services — design, supply, installation, servicing and maintenance for the systems we look after.",
   },
   {
-    icon: Handshake,
-    title: "Personal service",
-    body: "We are a family business. You deal with people who know the job, not a call centre. That matters when a cold room is down or a harvest window is tight.",
+    icon: Clock,
+    title: "Service and response",
+    body: "Excellent service, fast response times, and sound technical knowledge.",
   },
   {
     icon: Award,
     title: "Design, install and maintain",
-    body: "One contractor from the first site visit through installation, servicing and ongoing maintenance. We stay with the system after it is commissioned.",
+    body: "From the first site visit through installation and ongoing maintenance — one contractor for each stage.",
   },
 ];
 
@@ -31,15 +31,15 @@ export default function AboutPage({ gallery }: { gallery: GalleryState }) {
       <section id="about-us" className="pt-32 pb-16 bg-[#060c1a] scroll-mt-24">
         <div className="max-w-7xl mx-auto px-6">
           <p className="text-blue-400 text-sm font-semibold uppercase tracking-widest mb-3 reveal">
-            Family-owned since 1995
+            Family-owned
           </p>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight reveal reveal-delay-1">
             About Glacier Air
           </h1>
           <p className="text-slate-300 text-lg md:text-xl leading-relaxed max-w-3xl reveal reveal-delay-2">
-            Glacier Air (WA) Pty Ltd is a family-run refrigeration, air conditioning and
-            mechanical services company based in Osborne Park. We look after commercial and
-            residential work across Perth, the South West and the Great Southern.
+            Glacier Air is a family-owned air conditioning and refrigeration company based in
+            Osborne Park. We provide services across Perth, the South West and the Great
+            Southern region of Western Australia.
           </p>
         </div>
       </section>
@@ -81,23 +81,17 @@ export default function AboutPage({ gallery }: { gallery: GalleryState }) {
 
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight reveal">
-                A family business from Osborne Park
+                A family business in Osborne Park
               </h2>
               <p className="text-slate-300 text-lg leading-relaxed mb-5 reveal reveal-delay-1">
-                Heinz Studer established Glacier Air in 1995. Thirty years on, the company is
-                still family-run from U10/28 Frobisher Street, Osborne Park — the workshop and
-                office we work out of for jobs across Western Australia.
-              </p>
-              <p className="text-slate-400 leading-relaxed mb-5 reveal reveal-delay-2">
-                The work covers refrigeration, air conditioning and mechanical services: cool
-                rooms, winery plant, commercial and residential air conditioning, ventilation,
-                and the servicing that keeps that plant running. We design, supply, install and
-                maintain.
+                We work from U10/28 Frobisher Street, Osborne Park. The company is family-owned
+                and covers refrigeration, air conditioning and mechanical services — residential
+                and commercial.
               </p>
               <p className="text-slate-400 leading-relaxed mb-8 reveal reveal-delay-2">
-                We are an ARC licensed contractor (AU18839) and members of AIRAH and the HIA.
-                Those memberships sit alongside the day-to-day work — turning up, diagnosing
-                properly, and leaving the site in a state you can rely on.
+                From design and supply through to installation, servicing and maintenance, we
+                handle each stage for the systems we install and look after. ARC licence AU18839.
+                AIRAH member. HIA member.
               </p>
               <div className="flex flex-wrap items-center gap-6 reveal reveal-delay-3">
                 <Image
@@ -130,11 +124,10 @@ export default function AboutPage({ gallery }: { gallery: GalleryState }) {
       <section className="py-20 bg-[#060c1a]">
         <div className="max-w-7xl mx-auto px-6">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 reveal">
-            Why clients work with us
+            How we work
           </h2>
           <p className="text-slate-400 text-lg max-w-2xl mb-12 reveal reveal-delay-1">
-            The jobs vary — offices, food production, wineries, homes — but the reasons people
-            call us back are consistent.
+            Design, install and maintain — with a direct line to the office.
           </p>
           <div className="grid md:grid-cols-3 gap-6">
             {reasons.map((reason, i) => {
@@ -169,22 +162,16 @@ export default function AboutPage({ gallery }: { gallery: GalleryState }) {
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
                 Perth, the South West and the Great Southern
               </h2>
-              <p className="text-slate-400 text-lg leading-relaxed mb-5">
-                Osborne Park is the base. From there we travel for commercial and residential
-                work through metropolitan Perth, down the South West, and into the Great
-                Southern — including winery refrigeration and regional plant that cannot wait
-                on a metro-only contractor.
-              </p>
-              <p className="text-slate-400 leading-relaxed">
-                If you are not sure we cover the site, call and ask. We would rather tell you
-                straight than send you looking.
+              <p className="text-slate-400 text-lg leading-relaxed">
+                Services across the metropolitan area, the South West and the Great Southern.
+                If you are not sure we cover the site, call the office.
               </p>
             </div>
             <div className="reveal reveal-delay-1 rounded-2xl border border-white/10 bg-white/[0.02] p-8">
               <h2 className="text-2xl font-bold text-white mb-4">Talk to us</h2>
               <p className="text-slate-400 leading-relaxed mb-8">
-                For a new installation, a service call, or a larger commercial job — phone the
-                office or send an enquiry. We will get back to you.
+                New installation, a service call, or a larger commercial job — phone or send an
+                enquiry.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <a
