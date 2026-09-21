@@ -22,6 +22,7 @@ export type NavbarProject = {
 type NavItem = {
   label: string;
   href: string;
+  footer?: boolean;
 };
 
 const SERVICE_ITEMS: NavItem[] = [
@@ -36,10 +37,13 @@ function projectItems(projects: NavbarProject[]): NavItem[] {
   if (!projects.length) {
     return [{ label: "Recent projects", href: "#projects" }];
   }
-  return projects.map((project) => ({
-    label: project.publicTitle,
-    href: `#${projectSectionId(project.id)}`,
-  }));
+  return [
+    ...projects.map((project) => ({
+      label: project.publicTitle,
+      href: `#${projectSectionId(project.id)}`,
+    })),
+    { label: "More projects", href: "#projects", footer: true },
+  ];
 }
 
 function NavLink({ href, ...props }: { href: string } & Omit<ComponentProps<"a">, "href">) {
@@ -171,11 +175,16 @@ function DesktopDropdown({ label, href, items }: { label: string; href: string; 
       >
         <ul className="min-w-[17.5rem] rounded-xl border border-white/10 bg-[#0d1428]/95 backdrop-blur-xl py-2 shadow-xl shadow-black/40">
           {items.map((item, index) => (
-            <li key={item.href}>
+            <li
+              key={`${item.label}-${item.href}`}
+              className={item.footer ? "mt-1 border-t border-white/10" : undefined}
+            >
               <NavLink
                 href={item.href}
                 data-nav-item
-                className="block px-4 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-white/[0.06] border-l-2 border-transparent hover:border-[#E01F26] focus-visible:outline-none focus-visible:text-white focus-visible:bg-white/[0.06] focus-visible:border-[#E01F26] transition-colors"
+                className={`block px-4 py-2.5 text-sm hover:text-white hover:bg-white/[0.06] border-l-2 border-transparent hover:border-[#E01F26] focus-visible:outline-none focus-visible:text-white focus-visible:bg-white/[0.06] focus-visible:border-[#E01F26] transition-colors ${
+                  item.footer ? "text-slate-400" : "text-slate-300"
+                }`}
                 onClick={() => setOpen(false)}
                 onKeyDown={(event) => onItemKeyDown(event, index)}
               >
@@ -240,10 +249,15 @@ function MobileAccordion({
         className={`mt-1 mb-1 ml-3 border-l border-white/10 pl-3 ${expanded ? "space-y-1" : ""}`}
       >
         {items.map((item) => (
-          <li key={item.href}>
+          <li
+            key={`${item.label}-${item.href}`}
+            className={item.footer ? "mt-1 border-t border-white/10" : undefined}
+          >
             <NavLink
               href={item.href}
-              className="block py-2 text-sm text-slate-400 hover:text-white transition-colors"
+              className={`block py-2 text-sm hover:text-white transition-colors ${
+                item.footer ? "text-slate-500" : "text-slate-400"
+              }`}
               onClick={onNavigate}
             >
               {item.label}
